@@ -35,9 +35,15 @@ st.set_page_config(page_title="NexGenWebLab VIP | Enterprise SEO", layout="wide"
 st.markdown('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">', unsafe_allow_html=True)
 st.markdown('<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">', unsafe_allow_html=True)
 
-# --- ADVANCED CUSTOM CSS (PERFECT UI ALIGNMENT) ---
+# --- ADVANCED CUSTOM CSS (PERFECT UI ALIGNMENT & HIDING STREAMLIT BRANDING) ---
 st.markdown("""
 <style>
+    /* HIDE STREAMLIT BRANDING & TOP BUTTONS */
+    #MainMenu {visibility: hidden;}
+    header {visibility: hidden;}
+    footer {visibility: hidden;}
+    [data-testid="stAppDeployButton"] {display: none !important;}
+    
     /* Global Styles */
     * { font-family: 'Inter', sans-serif; }
     .block-container { padding-top: 1rem; padding-bottom: 2rem; max-width: 1300px; }
@@ -52,8 +58,14 @@ st.markdown("""
     .hero-title span { background: linear-gradient(135deg, #6D28D9, #DB2777); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .hero-subtitle { font-size: 18px; color: #64748b; max-width: 600px; margin: 0 auto 30px auto; }
     
-    /* --- CRITICAL FIX: SEARCH BAR VERTICAL & HORIZONTAL ALIGNMENT --- */
+    /* Search Bar Alignment */
     div[data-testid="stHorizontalBlock"] { align-items: center !important; }
+    
+    /* Dropdown Protocol Box */
+    div[data-baseweb="select"] {
+        height: 56px !important;
+        border-radius: 8px !important;
+    }
     
     .stTextInput div[data-baseweb="base-input"] { 
         height: 56px !important; 
@@ -67,11 +79,9 @@ st.markdown("""
     .stTextInput input { 
         height: 54px !important; 
         line-height: normal !important; 
-        padding-top: 0px !important;
-        padding-bottom: 0px !important;
         font-size: 16px !important; 
         text-align: left !important; 
-        padding-left: 20px !important;
+        padding-left: 15px !important;
         font-weight: 500 !important;
         color: #0f172a !important;
     }
@@ -92,17 +102,12 @@ st.markdown("""
         width: 100% !important; 
         text-transform: uppercase !important; 
         letter-spacing: 1px !important;
-        display: flex !important;
-        justify-content: center !important; 
-        align-items: center !important;
         margin: 0 !important;
     }
     div.stButton > button[kind="primary"]:hover { box-shadow: 0 6px 20px rgba(219, 39, 119, 0.3) !important; transform: translateY(-1px); }
     
     /* Score Overview Section */
-    .score-container { background: #ffffff; border-radius: 16px; padding: 30px; border: 1px solid #e2e8f0; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.01); margin-bottom: 30px;}
-    
-    /* Issue Cards */
+    .score-container { background: #ffffff; border-radius: 16px; padding: 30px; border: 1px solid #e2e8f0; margin-bottom: 30px;}
     .issue-card { border-radius: 12px; padding: 25px; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: center; height: 100%;}
     .issue-count { font-size: 48px; font-weight: 900; line-height: 1; margin-bottom: 5px; }
     .issue-label { font-size: 14px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -113,6 +118,7 @@ st.markdown("""
     .stTabs [aria-selected="true"] { background: linear-gradient(135deg, #6D28D9, #DB2777) !important; color: white !important; }
 
     /* VIP Data Containers */
+    div[data-testid="column"] > div { height: 100%; }
     .audit-item { 
         background: #ffffff; 
         border: 1px solid #e2e8f0; 
@@ -123,7 +129,7 @@ st.markdown("""
         overflow: hidden; 
         display: flex; 
         flex-direction: column; 
-        height: calc(100% - 15px); 
+        min-height: 220px; 
     }
     .audit-item::before { content:''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; }
     
@@ -167,7 +173,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- HELPER FUNCTIONS ---
-
 def render_overview_donut(score):
     color = "#ef4444" if score < 50 else "#f59e0b" if score < 90 else "#10b981"
     fig = go.Figure(go.Pie(
@@ -182,7 +187,6 @@ def render_overview_donut(score):
     )
     return fig
 
-# FIXED: Now strictly accepts ONLY ONE argument (score)
 def render_small_gauge(score):
     color = "#ef4444" if score < 50 else "#f59e0b" if score < 90 else "#10b981"
     fig = go.Figure(go.Pie(
@@ -359,7 +363,7 @@ with st.sidebar:
     elif os.path.exists("logo.jpg"):
         st.image("logo.jpg", use_container_width=True)
     else:
-        st.markdown('<div class="sidebar-brand">NexGen<span class="brand-gradient">WebLab</span></div>', unsafe_allow_html=True)
+        st.markdown('<div class="sidebar-brand" style="font-size:24px; font-weight:900; text-align:center;">NexGen<span style="color:#DB2777;">WebLab</span></div>', unsafe_allow_html=True)
         st.markdown("<div style='text-align:center; color:#94a3b8; font-size:10px; margin-top:-10px;'>Place 'logo.png' in folder to replace this</div>", unsafe_allow_html=True)
         
     st.markdown("<div style='text-align:center; color:#64748b; font-size:12px; margin-bottom:20px; margin-top: 10px;'>Enterprise SEO Suite v2.0</div>", unsafe_allow_html=True)
@@ -387,16 +391,23 @@ if menu_selection == "Site Auditor":
     </div>
     """, unsafe_allow_html=True)
     
+    # --- FIXED URL INPUT SECTION ---
     with st.form("audit_form", border=False):
-        col_input, col_btn = st.columns([7.5, 2.5], gap="small")
-        with col_input: 
-            target_url = st.text_input("Target URL", label_visibility="collapsed", placeholder="https://arabiansquare.ae")
+        col_proto, col_domain, col_btn = st.columns([1.5, 6, 2.5], gap="small")
+        with col_proto: 
+            protocol = st.selectbox("Protocol", ["https://", "http://"], label_visibility="collapsed")
+        with col_domain: 
+            # Blank box with placeholder
+            domain_input = st.text_input("Domain", value="", placeholder="arabiansquare.ae", label_visibility="collapsed")
         with col_btn: 
             run_button = st.form_submit_button("ANALYZE NOW", type="primary", use_container_width=True)
     
     st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
 
-    if run_button and target_url:
+    if run_button and domain_input:
+        # Construct the full URL
+        target_url = f"{protocol}{domain_input.strip().strip('/')}"
+        
         progress_bar = st.progress(0, text="Initializing Audit Engine...")
         
         progress_bar.progress(15, text="Scraping SEO Architecture...")
@@ -474,7 +485,6 @@ if menu_selection == "Site Auditor":
                 st.markdown("<h4 style='color: #0f172a; margin-bottom: 25px; text-align: center;'>Mobile Device Analysis</h4>", unsafe_allow_html=True)
                 m_gauges = st.columns(4)
                 
-                # --- FIXED: REMOVED SECOND ARGUMENT FROM GAUGE FUNCTION CALLS ---
                 with m_gauges[0]: 
                     st.plotly_chart(render_small_gauge(speed_data['mobile'].get('performance', 0)), use_container_width=True, config={'displayModeBar': False}, key="m_g1")
                     st.markdown("<div style='text-align:center; font-size:14px; font-weight:700; color:#475569; margin-top:-15px;'>Performance</div>", unsafe_allow_html=True)
@@ -556,7 +566,8 @@ if menu_selection == "Site Auditor":
             st.markdown("<h4 style='color: #0f172a; margin-bottom: 20px;'>AI Action Plan</h4>", unsafe_allow_html=True)
             if ai_suggestions and isinstance(ai_suggestions, list):
                 for item in ai_suggestions:
-                    clean_text = item.get('text', '').replace('```json', '').replace('```html', '').replace('```', '').strip()
+                    clean_text = item.get('text', '').replace('```json', '').replace('
+```html', '').replace('```', '').strip()
                     st.markdown(f"""
                     <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 15px; border-left: 4px solid #6D28D9; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
                         <h5 style="color: #0f172a; margin-top: 0; margin-bottom: 10px; font-size: 16px;"><i class="{item.get('icon', 'fa-solid fa-lightbulb')}" style="color: #DB2777; margin-right: 10px;"></i>{item.get('title', 'Recommendation')}</h5>
@@ -567,6 +578,8 @@ if menu_selection == "Site Auditor":
                 st.error("AI recommendations failed to generate.")
 
         with tab5:
+            st.markdown("### Export Full Report")
+            st.write("Download a beautifully formatted, agency-ready Microsoft Word (.DOCX) report. You can easily save this Word file as a PDF on your computer.")
             if run_button and onpage_data:
                 word_file = generate_word_report(target_url, onpage_data, speed_data, ai_suggestions)
                 st.download_button(
