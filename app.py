@@ -38,11 +38,11 @@ st.markdown('<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400
 # --- ADVANCED CUSTOM CSS (PERFECT UI ALIGNMENT & HIDING STREAMLIT BRANDING) ---
 st.markdown("""
 <style>
-    /* HIDE STREAMLIT BRANDING & TOP BUTTONS */
+    /* HIDE STREAMLIT BRANDING BUT KEEP SIDEBAR BUTTON */
     #MainMenu {visibility: hidden;}
-    header {visibility: hidden;}
     footer {visibility: hidden;}
     [data-testid="stAppDeployButton"] {display: none !important;}
+    [data-testid="stHeader"] {background-color: transparent !important;}
     
     /* Global Styles */
     * { font-family: 'Inter', sans-serif; }
@@ -59,8 +59,10 @@ st.markdown("""
     .hero-subtitle { font-size: 18px; color: #64748b; max-width: 600px; margin: 0 auto 30px auto; }
     
     /* --- CRITICAL ALIGNMENT FIX FOR SEARCH BAR --- */
-    /* Force elements in the form to align middle */
     div[data-testid="stForm"] div[data-testid="stHorizontalBlock"] { align-items: center !important; }
+    
+    /* Force exact heights for all form elements */
+    .stSelectbox, .stTextInput, .stButton { margin-bottom: 0 !important; }
     
     /* Dropdown Protocol Box */
     div[data-baseweb="select"] > div {
@@ -93,7 +95,7 @@ st.markdown("""
         color: #0f172a !important;
     }
     
-    .stTextInput div[data-baseweb="base-input"]:focus-within { 
+    .stTextInput div[data-baseweb="base-input"]:focus-within, div[data-baseweb="select"] > div:focus-within { 
         border-color: #6D28D9 !important; 
         box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.1) !important; 
     }
@@ -115,7 +117,6 @@ st.markdown("""
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        padding: 0 !important;
     }
     div.stButton > button[kind="primary"]:hover { box-shadow: 0 6px 20px rgba(219, 39, 119, 0.3) !important; transform: translateY(-1px); }
     
@@ -429,7 +430,6 @@ if menu_selection == "Site Auditor":
         with col_proto: 
             protocol = st.selectbox("Protocol", ["https://", "http://"], label_visibility="collapsed")
         with col_domain: 
-            # Updated Placeholder
             domain_input = st.text_input("Domain", value="", placeholder="Paste URL or Type URL", label_visibility="collapsed")
         with col_btn: 
             run_button = st.form_submit_button("ANALYZE NOW", type="primary", use_container_width=True)
@@ -598,7 +598,6 @@ if menu_selection == "Site Auditor":
             st.markdown("<h4 style='color: #0f172a; margin-bottom: 20px;'>AI Action Plan</h4>", unsafe_allow_html=True)
             if ai_suggestions and isinstance(ai_suggestions, list):
                 for item in ai_suggestions:
-                    # Logic updated to completely bypass VS Code parsing bug
                     b_ticks = "`" * 3
                     clean_text = str(item.get("text", "")).replace(f"{b_ticks}json", "").replace(f"{b_ticks}html", "").replace(b_ticks, "").strip()
                     
