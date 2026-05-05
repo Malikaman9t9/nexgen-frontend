@@ -35,14 +35,13 @@ st.set_page_config(page_title="NexGenWebLab VIP | Enterprise SEO", layout="wide"
 st.markdown('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">', unsafe_allow_html=True)
 st.markdown('<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">', unsafe_allow_html=True)
 
-# --- ADVANCED CUSTOM CSS (PERFECT UI ALIGNMENT & HIDING STREAMLIT BRANDING) ---
+# --- ADVANCED CUSTOM CSS (PERFECT UI ALIGNMENT & TOP RIGHT ICONS HIDING) ---
 st.markdown("""
 <style>
-    /* HIDE STREAMLIT BRANDING BUT KEEP SIDEBAR BUTTON */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    [data-testid="stAppDeployButton"] {display: none !important;}
-    [data-testid="stHeader"] {background-color: transparent !important;}
+    /* HIDE TOP RIGHT ICONS (Share, GitHub, etc.) BUT KEEP SIDEBAR BUTTON */
+    [data-testid="stToolbar"] { visibility: hidden !important; }
+    #MainMenu { visibility: hidden !important; }
+    [data-testid="stAppDeployButton"] { display: none !important; }
     
     /* Global Styles */
     * { font-family: 'Inter', sans-serif; }
@@ -58,26 +57,27 @@ st.markdown("""
     .hero-title span { background: linear-gradient(135deg, #6D28D9, #DB2777); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .hero-subtitle { font-size: 18px; color: #64748b; max-width: 600px; margin: 0 auto 30px auto; }
     
-    /* --- CRITICAL ALIGNMENT FIX FOR SEARCH BAR --- */
-    div[data-testid="stForm"] div[data-testid="stHorizontalBlock"] { align-items: center !important; }
+    /* --- CRITICAL LEVEL ALIGNMENT FIX FOR SEARCH BAR --- */
+    div[data-testid="stForm"] div[data-testid="stHorizontalBlock"] { align-items: end !important; }
     
-    /* Force exact heights for all form elements */
+    /* Remove default margins that cause uneven heights */
     .stSelectbox, .stTextInput, .stButton { margin-bottom: 0 !important; }
     
     /* Dropdown Protocol Box */
     div[data-baseweb="select"] > div {
-        height: 56px !important;
-        min-height: 56px !important;
+        height: 54px !important;
+        min-height: 54px !important;
         border-radius: 8px !important;
         border: 2px solid #e2e8f0 !important;
+        background-color: #f8fafc !important;
         display: flex !important;
         align-items: center !important;
     }
     
     /* URL Input Box */
     .stTextInput div[data-baseweb="base-input"] { 
-        height: 56px !important; 
-        min-height: 56px !important;
+        height: 54px !important; 
+        min-height: 54px !important;
         border-radius: 8px !important; 
         border: 2px solid #e2e8f0 !important; 
         background-color: #ffffff !important; 
@@ -86,7 +86,7 @@ st.markdown("""
     }
     
     .stTextInput input { 
-        height: 54px !important; 
+        height: 52px !important; 
         line-height: normal !important; 
         font-size: 16px !important; 
         text-align: left !important; 
@@ -102,8 +102,8 @@ st.markdown("""
     
     /* Submit Button */
     div.stButton > button[kind="primary"] { 
-        height: 56px !important; 
-        min-height: 56px !important;
+        height: 54px !important; 
+        min-height: 54px !important;
         border-radius: 8px !important; 
         font-size: 16px !important; 
         font-weight: 800 !important; 
@@ -117,6 +117,7 @@ st.markdown("""
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
+        padding: 0 !important;
     }
     div.stButton > button[kind="primary"]:hover { box-shadow: 0 6px 20px rgba(219, 39, 119, 0.3) !important; transform: translateY(-1px); }
     
@@ -426,7 +427,7 @@ if menu_selection == "Site Auditor":
     
     # --- FIXED URL INPUT SECTION ---
     with st.form("audit_form", border=False):
-        col_proto, col_domain, col_btn = st.columns([1.5, 6, 2.5], gap="small")
+        col_proto, col_domain, col_btn = st.columns([1.8, 6, 2.5], gap="small")
         with col_proto: 
             protocol = st.selectbox("Protocol", ["https://", "http://"], label_visibility="collapsed")
         with col_domain: 
@@ -437,8 +438,17 @@ if menu_selection == "Site Auditor":
     st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
 
     if run_button and domain_input:
-        # Construct the full URL
-        target_url = f"{protocol}{domain_input.strip().strip('/')}"
+        # --- SMART URL PARSER (Handles Pasted URLs) ---
+        raw_input = domain_input.strip()
+        if raw_input.startswith("https://"):
+            target_url = raw_input
+        elif raw_input.startswith("http://"):
+            target_url = raw_input
+        else:
+            # Dropdown apply hoga agar URL mein protocol nahi hai
+            target_url = f"{protocol}{raw_input.strip('/')}"
+            
+        target_url = target_url.rstrip('/') # Aakhri slash khatam karne ke liye
         
         progress_bar = st.progress(0, text="Initializing Audit Engine...")
         
