@@ -58,17 +58,24 @@ st.markdown("""
     .hero-title span { background: linear-gradient(135deg, #6D28D9, #DB2777); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .hero-subtitle { font-size: 18px; color: #64748b; max-width: 600px; margin: 0 auto 30px auto; }
     
-    /* Search Bar Alignment */
-    div[data-testid="stHorizontalBlock"] { align-items: center !important; }
+    /* --- CRITICAL ALIGNMENT FIX FOR SEARCH BAR --- */
+    /* Force elements in the form to align middle */
+    div[data-testid="stForm"] div[data-testid="stHorizontalBlock"] { align-items: center !important; }
     
     /* Dropdown Protocol Box */
-    div[data-baseweb="select"] {
+    div[data-baseweb="select"] > div {
         height: 56px !important;
+        min-height: 56px !important;
         border-radius: 8px !important;
+        border: 2px solid #e2e8f0 !important;
+        display: flex !important;
+        align-items: center !important;
     }
     
+    /* URL Input Box */
     .stTextInput div[data-baseweb="base-input"] { 
         height: 56px !important; 
+        min-height: 56px !important;
         border-radius: 8px !important; 
         border: 2px solid #e2e8f0 !important; 
         background-color: #ffffff !important; 
@@ -91,8 +98,10 @@ st.markdown("""
         box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.1) !important; 
     }
     
+    /* Submit Button */
     div.stButton > button[kind="primary"] { 
         height: 56px !important; 
+        min-height: 56px !important;
         border-radius: 8px !important; 
         font-size: 16px !important; 
         font-weight: 800 !important; 
@@ -103,8 +112,26 @@ st.markdown("""
         text-transform: uppercase !important; 
         letter-spacing: 1px !important;
         margin: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
     }
     div.stButton > button[kind="primary"]:hover { box-shadow: 0 6px 20px rgba(219, 39, 119, 0.3) !important; transform: translateY(-1px); }
+    
+    /* Sidebar Start New Audit Button */
+    div.stButton > button[kind="secondary"] {
+        border-radius: 8px !important; 
+        font-weight: 700 !important;
+        border: 1px solid #e2e8f0 !important;
+        color: #475569 !important;
+        background-color: #f8fafc !important;
+    }
+    div.stButton > button[kind="secondary"]:hover {
+        border-color: #6D28D9 !important;
+        color: #6D28D9 !important;
+        background-color: #f3f0ff !important;
+    }
     
     /* Score Overview Section */
     .score-container { background: #ffffff; border-radius: 16px; padding: 30px; border: 1px solid #e2e8f0; margin-bottom: 30px;}
@@ -380,6 +407,11 @@ with st.sidebar:
             "nav-link-selected": {"background": "linear-gradient(135deg, rgba(109, 40, 217, 0.07), rgba(219, 39, 119, 0.07))", "color": "#6D28D9", "border-left": "4px solid #DB2777"},
         }
     )
+    
+    # --- START NEW AUDIT BUTTON (RESET/HOME) ---
+    st.markdown("<hr style='border-top: 1px dashed #e2e8f0; margin: 20px 0;'>", unsafe_allow_html=True)
+    if st.button("🔄 Start New Audit", type="secondary", use_container_width=True):
+        st.rerun()
 
 # --- MAIN CONTENT ---
 if menu_selection == "Site Auditor":
@@ -397,8 +429,8 @@ if menu_selection == "Site Auditor":
         with col_proto: 
             protocol = st.selectbox("Protocol", ["https://", "http://"], label_visibility="collapsed")
         with col_domain: 
-            # Blank box with placeholder
-            domain_input = st.text_input("Domain", value="", placeholder="arabiansquare.ae", label_visibility="collapsed")
+            # Updated Placeholder
+            domain_input = st.text_input("Domain", value="", placeholder="Paste URL or Type URL", label_visibility="collapsed")
         with col_btn: 
             run_button = st.form_submit_button("ANALYZE NOW", type="primary", use_container_width=True)
     
@@ -566,7 +598,10 @@ if menu_selection == "Site Auditor":
             st.markdown("<h4 style='color: #0f172a; margin-bottom: 20px;'>AI Action Plan</h4>", unsafe_allow_html=True)
             if ai_suggestions and isinstance(ai_suggestions, list):
                 for item in ai_suggestions:
-                    clean_text = item.get("text", "").replace("```json", "").replace("```html", "").replace("```", "").strip()
+                    # Logic updated to completely bypass VS Code parsing bug
+                    b_ticks = "`" * 3
+                    clean_text = str(item.get("text", "")).replace(f"{b_ticks}json", "").replace(f"{b_ticks}html", "").replace(b_ticks, "").strip()
+                    
                     st.markdown(f"""
                     <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 15px; border-left: 4px solid #6D28D9; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
                         <h5 style="color: #0f172a; margin-top: 0; margin-bottom: 10px; font-size: 16px;"><i class="{item.get('icon', 'fa-solid fa-lightbulb')}" style="color: #DB2777; margin-right: 10px;"></i>{item.get('title', 'Recommendation')}</h5>
