@@ -566,8 +566,7 @@ if menu_selection == "Site Auditor":
             st.markdown("<h4 style='color: #0f172a; margin-bottom: 20px;'>AI Action Plan</h4>", unsafe_allow_html=True)
             if ai_suggestions and isinstance(ai_suggestions, list):
                 for item in ai_suggestions:
-                    clean_text = item.get('text', '').replace('```json', '').replace('
-```html', '').replace('```', '').strip()
+                    clean_text = item.get("text", "").replace("```json", "").replace("```html", "").replace("```", "").strip()
                     st.markdown(f"""
                     <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 15px; border-left: 4px solid #6D28D9; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
                         <h5 style="color: #0f172a; margin-top: 0; margin-bottom: 10px; font-size: 16px;"><i class="{item.get('icon', 'fa-solid fa-lightbulb')}" style="color: #DB2777; margin-right: 10px;"></i>{item.get('title', 'Recommendation')}</h5>
