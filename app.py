@@ -98,7 +98,7 @@ st.markdown("""
         margin: 0 !important;
         width: 100% !important;
         box-sizing: border-box !important;
-            margin-top: -12px !important; /* Minus (-) sign zaroori hai. Isko -4px, -6px ya -8px kar ke check karein */
+            margin-top: -16px !important; /* Minus (-) sign zaroori hai. Isko -4px, -6px ya -8px kar ke check karein */
         margin-bottom: 0px !important;
         margin-left: 0px !important;
         margin-right: 0px !important;
