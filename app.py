@@ -82,9 +82,9 @@ st.markdown("""
     
     /* --- 2. PREFIX (LEFT PART: https://) EXACTLY LIKE A BUTTON --- */
     .url-prefix {
-        height: 46px !important;  /* Dhyan rahe ke height same ho */
-        min-height: 46px !important;
-        line-height: 46px !important;
+        height: 44px !important;  /* Dhyan rahe ke height same ho */
+        min-height: 44px !important;
+        line-height: 44px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -98,6 +98,10 @@ st.markdown("""
         margin: 0 !important;
         width: 100% !important;
         box-sizing: border-box !important;
+            margin-top: -6px !important; /* Minus (-) sign zaroori hai. Isko -4px, -6px ya -8px kar ke check karein */
+        margin-bottom: 0px !important;
+        margin-left: 0px !important;
+        margin-right: 0px !important;
     }
     
     /* --- 3. URL INPUT (MIDDLE PART) FLAT --- */
