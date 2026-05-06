@@ -35,7 +35,7 @@ st.set_page_config(page_title="NexGenWebLab VIP | Enterprise SEO", layout="wide"
 st.markdown('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">', unsafe_allow_html=True)
 st.markdown('<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">', unsafe_allow_html=True)
 
-# --- ADVANCED CUSTOM CSS ---
+# --- ADVANCED CUSTOM CSS (STRICT 56px LOCK & ALIGNMENT) ---
 st.markdown("""
 <style>
     /* 1. RESTORE HAMBURGER MENU & HIDE RIGHT ICONS ONLY */
@@ -58,42 +58,40 @@ st.markdown("""
     .hero-title span { background: linear-gradient(135deg, #6D28D9, #DB2777); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .hero-subtitle { font-size: 18px; color: #64748b; max-width: 600px; margin: 0 auto 30px auto; }
     
-    /* --- 2. CRITICAL FORM ALIGNMENT FIX --- */
-    /* Push all column elements to the exact bottom baseline */
-    [data-testid="stForm"] [data-testid="column"] {
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: flex-end !important;
+    /* --- 2. CRITICAL FORM ALIGNMENT (STRICT 56px HEIGHT) --- */
+    /* Force the columns to align perfectly in the center vertically */
+    [data-testid="stForm"] div[data-testid="stHorizontalBlock"] { 
+        align-items: center !important; 
     }
     
-    /* Force exactly 55px height on all three elements */
-    div[data-baseweb="select"] > div, 
-    .stTextInput div[data-baseweb="base-input"], 
-    div.stButton > button[kind="primary"] {
-        height: 55px !important;
-        min-height: 55px !important;
-        box-sizing: border-box !important;
-        margin-bottom: 0 !important;
-        border-radius: 8px !important;
-    }
+    /* Remove unpredictable margins */
+    .stSelectbox, .stTextInput, .stButton { margin-bottom: 0 !important; padding-bottom: 0 !important; }
     
     /* Dropdown Protocol Box */
     div[data-baseweb="select"] > div {
+        height: 56px !important;
+        min-height: 56px !important;
         border: 2px solid #e2e8f0 !important;
         background-color: #f8fafc !important;
-        padding-top: 0 !important;
-        padding-bottom: 0 !important;
+        border-radius: 8px !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        align-items: center !important;
     }
     
     /* URL Input Box */
     .stTextInput div[data-baseweb="base-input"] { 
+        height: 56px !important;
+        min-height: 56px !important;
         border: 2px solid #e2e8f0 !important; 
         background-color: #ffffff !important; 
-        padding-top: 0 !important;
-        padding-bottom: 0 !important;
+        border-radius: 8px !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        align-items: center !important;
     }
     .stTextInput input { 
-        height: 53px !important; 
+        height: 52px !important; 
         line-height: normal !important; 
         font-size: 16px !important; 
         text-align: left !important; 
@@ -109,6 +107,9 @@ st.markdown("""
     
     /* Submit Button */
     div.stButton > button[kind="primary"] { 
+        height: 56px !important;
+        min-height: 56px !important;
+        border-radius: 8px !important; 
         font-size: 16px !important; 
         font-weight: 800 !important; 
         background: linear-gradient(135deg, #6D28D9, #DB2777) !important; 
@@ -117,10 +118,11 @@ st.markdown("""
         width: 100% !important; 
         text-transform: uppercase !important; 
         letter-spacing: 1px !important;
+        margin: 0 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        padding: 0 !important;
+        box-sizing: border-box !important;
     }
     div.stButton > button[kind="primary"]:hover { box-shadow: 0 6px 20px rgba(219, 39, 119, 0.3) !important; transform: translateY(-1px); }
     
@@ -430,7 +432,7 @@ if menu_selection == "Site Auditor":
     
     # --- FIXED URL INPUT SECTION ---
     with st.form("audit_form", border=False):
-        col_proto, col_domain, col_btn = st.columns([1.8, 6, 2.5], gap="small")
+        col_proto, col_domain, col_btn = st.columns([1.5, 6, 2.5], gap="small")
         with col_proto: 
             protocol = st.selectbox("Protocol", ["https://", "http://"], label_visibility="collapsed")
         with col_domain: 
@@ -441,17 +443,23 @@ if menu_selection == "Site Auditor":
     st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
 
     if run_button and domain_input:
-        # --- SMART URL PARSER (Handles Pasted URLs) ---
+        
+        # --- SMART URL PARSER (Handles Pasted URLs with HTTPS/HTTP) ---
         raw_input = domain_input.strip()
+        
+        # Determine the correct protocol (overrides dropdown if user pasted it)
         if raw_input.startswith("https://"):
-            target_url = raw_input
+            actual_protocol = "https://"
         elif raw_input.startswith("http://"):
-            target_url = raw_input
+            actual_protocol = "http://"
         else:
-            # Dropdown apply hoga agar URL mein protocol nahi hai
-            target_url = f"{protocol}{raw_input.strip('/')}"
+            actual_protocol = protocol
             
-        target_url = target_url.rstrip('/') # Aakhri slash khatam karne ke liye
+        # Clean the domain part (remove protocols and www. to avoid errors)
+        clean_domain = raw_input.replace("https://", "").replace("http://", "").strip('/')
+        
+        # Final perfect URL for the backend
+        target_url = f"{actual_protocol}{clean_domain}"
         
         progress_bar = st.progress(0, text="Initializing Audit Engine...")
         
