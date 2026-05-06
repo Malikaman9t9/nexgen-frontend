@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing | NexGenWebLab</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], },
+                    colors: { primary: '#6D28D9', secondary: '#DB2777', }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="min-h-screen bg-slate-50 font-sans text-slate-900 antialiased selection:bg-primary selection:text-white flex flex-col">
+
+    <header class="sticky top-0 z-50 backdrop-blur-xl border-b border-slate-200/90 bg-white/80">
+        <div class="max-w-7xl mx-auto flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
+            <a href="home.html" class="flex items-center gap-2">
+                <i class="fa-solid fa-chart-line text-2xl text-primary"></i>
+                <span class="text-xl font-black tracking-tight">NexGen<span class="text-secondary">WebLab</span></span>
+            </a>
+            
+            <nav class="hidden md:flex items-center gap-6 font-medium text-sm text-slate-600">
+                <a href="home.html#features" class="hover:text-primary transition-colors">Features</a>
+                <a href="pricing.html" class="text-primary font-semibold transition-colors">Pricing</a>
+            </nav>
+            <div class="flex items-center gap-3">
+                <a href="auth.html" class="hidden sm:inline-block text-sm font-semibold text-slate-600 hover:text-slate-900">Log in</a>
+                <a href="#" class="text-sm font-bold bg-slate-900 text-white px-5 py-2.5 rounded-lg hover:bg-slate-800 transition-all shadow-md">
+                    Open App <i class="fa-solid fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <section class="pt-20 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h1 class="text-4xl md:text-5xl font-black tracking-tight mb-4 text-slate-900">Simple, transparent pricing</h1>
+                <p class="text-lg text-slate-600 max-w-2xl mx-auto">No hidden fees. Start for free, upgrade when you need full AI capabilities and bulk reporting.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                    <h3 class="text-2xl font-bold text-slate-900 mb-2">Starter</h3>
+                    <p class="text-slate-500 mb-6">Perfect for quick, single-site audits.</p>
+                    <div class="mb-8">
+                        <span class="text-5xl font-black">$0</span>
+                        <span class="text-slate-500 font-medium">/forever</span>
+                    </div>
+                    <ul class="space-y-4 mb-8 flex-grow">
+                        <li class="flex items-start gap-3 text-slate-600"><i class="fa-solid fa-check text-emerald-500 mt-1"></i> 117+ Technical SEO Checks</li>
+                        <li class="flex items-start gap-3 text-slate-600"><i class="fa-solid fa-check text-emerald-500 mt-1"></i> Core Web Vitals (Mobile & Desktop)</li>
+                        <li class="flex items-start gap-3 text-slate-600"><i class="fa-solid fa-check text-emerald-500 mt-1"></i> Basic Security Checks</li>
+                        <li class="flex items-start gap-3 text-slate-400"><i class="fa-solid fa-xmark mt-1"></i> No AI Action Plan</li>
+                        <li class="flex items-start gap-3 text-slate-400"><i class="fa-solid fa-xmark mt-1"></i> No Bulk Analysis</li>
+                    </ul>
+                    <a href="home.html" class="block w-full py-3 px-4 text-center rounded-xl font-bold border-2 border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition-colors">Start Free Audit</a>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl flex flex-col relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary to-secondary text-white text-xs font-bold uppercase tracking-wide py-1 px-4 rounded-b-lg">Most Popular</div>
+                    
+                    <h3 class="text-2xl font-bold text-white mb-2 mt-2">Enterprise Pro</h3>
+                    <p class="text-slate-400 mb-6">For agencies and serious marketers.</p>
+                    <div class="mb-8">
+                        <span class="text-5xl font-black text-white">$19.99</span>
+                        <span class="text-slate-400 font-medium">/month</span>
+                    </div>
+                    <ul class="space-y-4 mb-8 flex-grow">
+                        <li class="flex items-start gap-3 text-slate-300"><i class="fa-solid fa-check text-primary mt-1"></i> Everything in Starter</li>
+                        <li class="flex items-start gap-3 text-white font-medium"><i class="fa-solid fa-check text-primary mt-1"></i> Full AI Strategy & Action Plan</li>
+                        <li class="flex items-start gap-3 text-white font-medium"><i class="fa-solid fa-check text-primary mt-1"></i> Bulk Excel Analysis Engine</li>
+                        <li class="flex items-start gap-3 text-white font-medium"><i class="fa-solid fa-check text-primary mt-1"></i> Export .DOCX White-label Reports</li>
+                        <li class="flex items-start gap-3 text-slate-300"><i class="fa-solid fa-check text-primary mt-1"></i> Live Traffic API Integration</li>
+                    </ul>
+                    <a href="auth.html" class="block w-full py-3 px-4 text-center rounded-xl font-bold bg-gradient-to-r from-primary to-secondary text-white hover:opacity-90 transition-opacity">Get Started</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-16 bg-white border-t border-slate-200">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900">Common Questions</h2>
+                </div>
+                
+                <div class="space-y-4">
+                    <details class="group bg-slate-50 rounded-xl border border-slate-200 [&_summary::-webkit-details-marker]:hidden">
+                        <summary class="flex cursor-pointer items-center justify-between gap-1.5 p-5 text-slate-900 font-semibold">
+                            What does the free audit check?
+                            <i class="fa-solid fa-chevron-down shrink-0 transition duration-300 group-open:-rotate-180"></i>
+                        </summary>
+                        <div class="px-5 pb-5 text-slate-600 leading-relaxed">
+                            The free audit checks over 117+ technical SEO factors, including Core Web Vitals (LCP, FCP, CLS), meta tags, headers, image alts, SSL security, and mobile accessibility.
+                        </div>
+                    </details>
+                    
+                    <details class="group bg-slate-50 rounded-xl border border-slate-200 [&_summary::-webkit-details-marker]:hidden">
+                        <summary class="flex cursor-pointer items-center justify-between gap-1.5 p-5 text-slate-900 font-semibold">
+                            How do the AI recommendations work?
+                            <i class="fa-solid fa-chevron-down shrink-0 transition duration-300 group-open:-rotate-180"></i>
+                        </summary>
+                        <div class="px-5 pb-5 text-slate-600 leading-relaxed">
+                            Available in the Pro plan, our AI engine (powered by Google Gemini) analyzes your specific errors and generates a custom, step-by-step action plan to fix them, instead of generic blog advice.
+                        </div>
+                    </details>
+
+                    <details class="group bg-slate-50 rounded-xl border border-slate-200 [&_summary::-webkit-details-marker]:hidden">
+                        <summary class="flex cursor-pointer items-center justify-between gap-1.5 p-5 text-slate-900 font-semibold">
+                            Can I cancel my subscription anytime?
+                            <i class="fa-solid fa-chevron-down shrink-0 transition duration-300 group-open:-rotate-180"></i>
+                        </summary>
+                        <div class="px-5 pb-5 text-slate-600 leading-relaxed">
+                            Yes, absolutely. There are no long-term contracts. You can cancel your subscription from your dashboard at any time.
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-50 border-t border-slate-200 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-sm font-bold text-slate-800">
+                NexGenWebLab
+            </div>
+            <div class="text-sm text-slate-500">
+                &copy; 2026 NexGenWebLab. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
