@@ -464,7 +464,7 @@ with st.sidebar:
     
     # --- START NEW AUDIT BUTTON (RESET/HOME) ---
     st.markdown("<hr style='border-top: 1px dashed #e2e8f0; margin: 20px 0;'>", unsafe_allow_html=True)
-    if st.button("🔄 Start New Audit", type="secondary", use_container_width=True):
+    if st.button("Start New Audit", type="secondary", use_container_width=True):
         st.rerun()
 
 # --- MAIN CONTENT ---
