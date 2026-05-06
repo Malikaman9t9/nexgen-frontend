@@ -82,18 +82,18 @@ st.markdown("""
     
     /* --- 2. PREFIX (LEFT PART: https://) EXACTLY LIKE A BUTTON --- */
     .url-prefix {
-        height: 54px !important;
+        height: 56px !important;  /* Dhyan rahe ke height same ho */
+        min-height: 56px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        background-color: #e2e8f0 !important; /* Button-like solid grey */
-        color: #0f172a !important; /* Dark text */
-        font-family: 'Inter', sans-serif !important;
+        background-color: #e2e8f0 !important;
+        color: #0f172a !important;
         font-size: 16px !important;
         font-weight: 700 !important;
         border: 2px solid #e2e8f0 !important;
-        border-right: none !important; /* Joins seamlessly */
-        border-radius: 30px 0 0 30px !important; /* Perfect Pill Left */
+        border-right: none !important; 
+        border-radius: 30px 0 0 30px !important; /* Left se Gol */
         margin: 0 !important;
         width: 100% !important;
         box-sizing: border-box !important;
@@ -102,18 +102,22 @@ st.markdown("""
     /* --- 3. URL INPUT (MIDDLE PART) FLAT --- */
     [data-testid="stForm"] .stTextInput { margin: 0px !important; padding: 0px !important; }
     
-    [data-testid="stForm"] .stTextInput div[data-baseweb="base-input"] { 
-        height: 54px !important;
-        min-height: 54px !important;
-        border-top: 2px solid #e2e8f0 !important; 
-        border-bottom: 2px solid #e2e8f0 !important; 
-        border-left: none !important; /* Removes inner border */
-        border-right: none !important; /* Removes inner border */
-        background-color: #ffffff !important; 
-        border-radius: 0px !important; /* Force square corners in middle */
+    [data-testid="stForm"] button[kind="primary"] { 
+        height: 56px !important; /* Dhyan rahe ke height same ho */
+        min-height: 56px !important;
+        border-radius: 0 30px 30px 0 !important; /* Right se Gol */
+        font-size: 16px !important; 
+        font-weight: 800 !important; 
+        background: linear-gradient(135deg, #6D28D9, #DB2777) !important; 
+        color: white !important; 
+        border: none !important; 
+        width: 100% !important; 
+        margin: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
         box-sizing: border-box !important;
-        padding: 0px !important;
-        margin: 0px !important;
+        padding: 0 20px !important;
     }
     
     [data-testid="stForm"] .stTextInput input { 
@@ -470,7 +474,7 @@ if menu_selection == "Site Auditor":
     
     # --- THE NEW UNIFIED PILL-SHAPED SEARCH BAR STRUCTURE ---
     with st.form("audit_form", border=False):
-        col_prefix, col_domain, col_btn = st.columns([1.5, 6, 2.5])
+        col_prefix, col_domain, col_btn = st.columns([2.5, 5, 2.5])
         
         with col_prefix: 
             st.markdown('<div class="url-prefix">https://</div>', unsafe_allow_html=True)
