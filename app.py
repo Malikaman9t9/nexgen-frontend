@@ -35,7 +35,7 @@ st.set_page_config(page_title="NexGenWebLab VIP | Enterprise SEO", layout="wide"
 st.markdown('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">', unsafe_allow_html=True)
 st.markdown('<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">', unsafe_allow_html=True)
 
-# --- ADVANCED CUSTOM CSS (UNIFIED PILL-SHAPED SEARCH BAR) ---
+# --- ADVANCED CUSTOM CSS (PREMIUM UNIFIED PILL SEARCH BAR) ---
 st.markdown("""
 <style>
     /* HIDE RIGHT ICONS BUT KEEP SIDEBAR BUTTON */
@@ -58,74 +58,95 @@ st.markdown("""
     .hero-title span { background: linear-gradient(135deg, #6D28D9, #DB2777); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .hero-subtitle { font-size: 18px; color: #64748b; max-width: 600px; margin: 0 auto 30px auto; }
     
-    /* --- THE UNIFIED SEARCH BAR CSS --- */
+    /* --- 1. UNIFIED PILL CONTAINER FIX --- */
     
-    /* 1. Remove gaps between columns in the form */
+    /* Remove gaps and align columns perfectly */
     div[data-testid="stForm"] div[data-testid="stHorizontalBlock"] { 
-        gap: 0rem !important; /* Crucial: joins the elements together */
+        gap: 0rem !important; 
         align-items: center !important; 
+        border-radius: 40px !important;
+        background: #ffffff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03) !important;
     }
     
-    /* 2. Reset margins/paddings for inner elements */
+    /* Reset margins for internal columns */
+    div[data-testid="stForm"] div[data-testid="column"] {
+        padding: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+    }
+    
+    /* Remove padding around elements */
     [data-testid="stForm"] .element-container { margin: 0 !important; padding: 0 !important; }
     [data-testid="stMarkdownContainer"] p { margin: 0 !important; padding: 0 !important; }
-    .stTextInput, .stButton { margin-bottom: 0 !important; padding-bottom: 0 !important; }
     
-    /* 3. The Static Uneditable Prefix (Left part) */
+    /* --- 2. PREFIX (LEFT: https://) --- */
     .url-prefix {
-        height: 60px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: #f1f5f9; /* Slight gray background */
-        color: #475569;
-        font-family: monospace;
-        font-size: 16px;
-        font-weight: 700;
-        border: 2px solid #e2e8f0;
-        border-right: none; /* Join seamlessly to input */
-        border-radius: 30px 0 0 30px; /* Fully rounded on the left only */
-        margin: 0;
-        width: 100%;
-        box-sizing: border-box;
+        height: 60px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background-color: #f8fafc !important;
+        color: #64748b !important;
+        font-family: 'Inter', monospace !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        border: 2px solid #e2e8f0 !important;
+        border-right: none !important; /* Seamless join */
+        border-radius: 40px 0 0 40px !important;
+        margin: 0 !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        line-height: 60px !important;
     }
     
-    /* 4. The URL Text Input (Middle part) */
+    /* --- 3. URL INPUT (MIDDLE) --- */
+    .stTextInput { margin: 0 !important; padding: 0 !important; }
+    
     .stTextInput div[data-baseweb="base-input"] { 
         height: 60px !important;
         min-height: 60px !important;
         border: 2px solid #e2e8f0 !important; 
-        border-left: none !important; /* Join to prefix */
-        border-right: none !important; /* Join to button */
+        border-left: none !important; /* Seamless join */
+        border-right: none !important; /* Seamless join */
         background-color: #ffffff !important; 
-        border-radius: 0 !important; /* Square corners to fit in middle */
+        border-radius: 0 !important; 
         box-sizing: border-box !important;
         display: flex !important;
         align-items: center !important;
-    }
-    .stTextInput input { 
-        height: 56px !important; 
-        line-height: normal !important; 
-        font-size: 16px !important; 
-        text-align: left !important; 
-        padding-left: 5px !important;
-        font-weight: 500 !important;
-        color: #0f172a !important;
-    }
-    /* Remove glow effect to keep the bar looking like a single unit */
-    .stTextInput div[data-baseweb="base-input"]:focus-within { 
-        border-color: #e2e8f0 !important; 
-        box-shadow: none !important; 
-        background-color: #fafafa !important;
+        padding: 0 !important; /* CRITICAL: removes the downward push */
     }
     
-    /* 5. The Submit Button (Right part) */
+    .stTextInput input { 
+        height: 60px !important; 
+        line-height: 60px !important; /* CRITICAL: perfectly centers the text vertically */
+        font-size: 16px !important; 
+        text-align: left !important; 
+        padding: 0 10px !important;
+        margin: 0 !important;
+        font-weight: 500 !important;
+        color: #0f172a !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Subtle focus state */
+    .stTextInput div[data-baseweb="base-input"]:focus-within { 
+        border-top-color: #6D28D9 !important; 
+        border-bottom-color: #6D28D9 !important;
+        background-color: #fafafa !important;
+        box-shadow: none !important; 
+    }
+    
+    /* --- 4. SUBMIT BUTTON (RIGHT) --- */
+    div.stButton { margin: 0 !important; padding: 0 !important; }
+    
     div.stButton > button[kind="primary"] { 
         height: 60px !important;
         min-height: 60px !important;
-        border-radius: 0 30px 30px 0 !important; /* Fully rounded on right only */
+        border-radius: 0 40px 40px 0 !important; 
         font-size: 16px !important; 
-        font-weight: 800 !important; 
+        font-weight: 700 !important; 
         background: linear-gradient(135deg, #6D28D9, #DB2777) !important; 
         color: white !important; 
         border: none !important; 
@@ -137,14 +158,15 @@ st.markdown("""
         align-items: center !important;
         justify-content: center !important;
         box-sizing: border-box !important;
+        padding: 0 20px !important;
         transition: all 0.3s ease;
     }
     div.stButton > button[kind="primary"]:hover { 
         filter: brightness(1.1);
-        transform: none !important; /* Prevents button from popping out of the unified bar */
+        transform: none !important; /* Prevents breaking the pill shape on hover */
     }
     
-    /* Sidebar Start New Audit Button */
+    /* --- SIDEBAR BUTTON --- */
     div.stButton > button[kind="secondary"] {
         border-radius: 8px !important; 
         font-weight: 700 !important;
@@ -448,20 +470,17 @@ if menu_selection == "Site Auditor":
     </div>
     """, unsafe_allow_html=True)
     
-    # --- THE NEW UNIFIED SEARCH BAR STRUCTURE ---
+    # --- THE NEW UNIFIED PILL-SHAPED SEARCH BAR STRUCTURE ---
     with st.form("audit_form", border=False):
-        # We adjust the column ratios to accommodate the unified look perfectly
         col_prefix, col_domain, col_btn = st.columns([1.5, 6, 2.5])
         
         with col_prefix: 
-            # Replaced dropdown with a static, uneditable visual block
             st.markdown('<div class="url-prefix">https://</div>', unsafe_allow_html=True)
             
         with col_domain: 
             domain_input = st.text_input("Domain", value="", placeholder="arabiansquare.ae", label_visibility="collapsed")
             
         with col_btn: 
-            # Added arrow symbol to match the "View Source ->" vibe
             run_button = st.form_submit_button("Analyze Now  →", type="primary", use_container_width=True)
     
     st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
