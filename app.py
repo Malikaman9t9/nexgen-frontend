@@ -35,7 +35,7 @@ st.set_page_config(page_title="NexGenWebLab VIP | Enterprise SEO", layout="wide"
 st.markdown('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">', unsafe_allow_html=True)
 st.markdown('<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">', unsafe_allow_html=True)
 
-# --- ADVANCED CUSTOM CSS (MODERN SAAS INPUT UI) ---
+# --- ADVANCED CUSTOM CSS (UNIFIED PILL-SHAPED SEARCH BAR) ---
 st.markdown("""
 <style>
     /* HIDE RIGHT ICONS BUT KEEP SIDEBAR BUTTON */
@@ -58,64 +58,72 @@ st.markdown("""
     .hero-title span { background: linear-gradient(135deg, #6D28D9, #DB2777); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .hero-subtitle { font-size: 18px; color: #64748b; max-width: 600px; margin: 0 auto 30px auto; }
     
-    /* --- THE ULTIMATE FORM ALIGNMENT FIX & MODERN PREFIX --- */
+    /* --- THE UNIFIED SEARCH BAR CSS --- */
     
-    [data-testid="stForm"] div[data-testid="stHorizontalBlock"] { 
+    /* 1. Remove gaps between columns in the form */
+    div[data-testid="stForm"] div[data-testid="stHorizontalBlock"] { 
+        gap: 0rem !important; /* Crucial: joins the elements together */
         align-items: center !important; 
     }
     
+    /* 2. Reset margins/paddings for inner elements */
+    [data-testid="stForm"] .element-container { margin: 0 !important; padding: 0 !important; }
+    [data-testid="stMarkdownContainer"] p { margin: 0 !important; padding: 0 !important; }
     .stTextInput, .stButton { margin-bottom: 0 !important; padding-bottom: 0 !important; }
     
-    /* URL Input Box Configuration */
-    .stTextInput div[data-baseweb="base-input"] { 
-        height: 54px !important; 
-        min-height: 54px !important;
-        border: 2px solid #e2e8f0 !important; 
-        background-color: #ffffff !important; 
-        display: flex !important;
-        align-items: center !important;
-        padding-left: 0 !important; /* Important for prefix to touch edge */
-        overflow: hidden !important;
-        border-radius: 8px !important;
-    }
-    
-    /* INJECTING STATIC NON-EDITABLE 'https://' PREFIX */
-    .stTextInput div[data-baseweb="base-input"]::before {
-        content: 'https://';
+    /* 3. The Static Uneditable Prefix (Left part) */
+    .url-prefix {
+        height: 60px;
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: #f1f5f9;
-        color: #64748b;
-        font-weight: 600;
-        font-size: 15px;
-        padding: 0 16px;
-        height: 100%;
-        border-right: 2px solid #e2e8f0;
-        letter-spacing: 0.5px;
+        background-color: #f1f5f9; /* Slight gray background */
+        color: #475569;
+        font-family: monospace;
+        font-size: 16px;
+        font-weight: 700;
+        border: 2px solid #e2e8f0;
+        border-right: none; /* Join seamlessly to input */
+        border-radius: 30px 0 0 30px; /* Fully rounded on the left only */
+        margin: 0;
+        width: 100%;
+        box-sizing: border-box;
     }
     
+    /* 4. The URL Text Input (Middle part) */
+    .stTextInput div[data-baseweb="base-input"] { 
+        height: 60px !important;
+        min-height: 60px !important;
+        border: 2px solid #e2e8f0 !important; 
+        border-left: none !important; /* Join to prefix */
+        border-right: none !important; /* Join to button */
+        background-color: #ffffff !important; 
+        border-radius: 0 !important; /* Square corners to fit in middle */
+        box-sizing: border-box !important;
+        display: flex !important;
+        align-items: center !important;
+    }
     .stTextInput input { 
-        height: 50px !important; 
-        line-height: 50px !important; 
+        height: 56px !important; 
+        line-height: normal !important; 
         font-size: 16px !important; 
         text-align: left !important; 
-        padding-left: 15px !important;
+        padding-left: 5px !important;
         font-weight: 500 !important;
         color: #0f172a !important;
-        margin: 0 !important;
     }
-    
+    /* Remove glow effect to keep the bar looking like a single unit */
     .stTextInput div[data-baseweb="base-input"]:focus-within { 
-        border-color: #6D28D9 !important; 
-        box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.1) !important; 
+        border-color: #e2e8f0 !important; 
+        box-shadow: none !important; 
+        background-color: #fafafa !important;
     }
     
-    /* Submit Button Configuration */
+    /* 5. The Submit Button (Right part) */
     div.stButton > button[kind="primary"] { 
-        height: 54px !important;
-        min-height: 54px !important;
-        border-radius: 8px !important; 
+        height: 60px !important;
+        min-height: 60px !important;
+        border-radius: 0 30px 30px 0 !important; /* Fully rounded on right only */
         font-size: 16px !important; 
         font-weight: 800 !important; 
         background: linear-gradient(135deg, #6D28D9, #DB2777) !important; 
@@ -124,12 +132,17 @@ st.markdown("""
         width: 100% !important; 
         text-transform: uppercase !important; 
         letter-spacing: 1px !important;
+        margin: 0 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        margin: 0 !important;
+        box-sizing: border-box !important;
+        transition: all 0.3s ease;
     }
-    div.stButton > button[kind="primary"]:hover { box-shadow: 0 6px 20px rgba(219, 39, 119, 0.3) !important; transform: translateY(-1px); }
+    div.stButton > button[kind="primary"]:hover { 
+        filter: brightness(1.1);
+        transform: none !important; /* Prevents button from popping out of the unified bar */
+    }
     
     /* Sidebar Start New Audit Button */
     div.stButton > button[kind="secondary"] {
@@ -435,29 +448,34 @@ if menu_selection == "Site Auditor":
     </div>
     """, unsafe_allow_html=True)
     
-    # --- NEW MODERN SAAS UI FORM (No Dropdown) ---
+    # --- THE NEW UNIFIED SEARCH BAR STRUCTURE ---
     with st.form("audit_form", border=False):
-        col_input, col_btn = st.columns([7.5, 2.5], gap="small")
-        with col_input: 
-            domain_input = st.text_input("Domain", value="", placeholder="example.com", label_visibility="collapsed")
+        # We adjust the column ratios to accommodate the unified look perfectly
+        col_prefix, col_domain, col_btn = st.columns([1.5, 6, 2.5])
+        
+        with col_prefix: 
+            # Replaced dropdown with a static, uneditable visual block
+            st.markdown('<div class="url-prefix">https://</div>', unsafe_allow_html=True)
+            
+        with col_domain: 
+            domain_input = st.text_input("Domain", value="", placeholder="arabiansquare.ae", label_visibility="collapsed")
+            
         with col_btn: 
-            run_button = st.form_submit_button("ANALYZE NOW", type="primary", use_container_width=True)
+            # Added arrow symbol to match the "View Source ->" vibe
+            run_button = st.form_submit_button("Analyze Now  →", type="primary", use_container_width=True)
     
     st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
 
     if run_button and domain_input:
         
-        # --- SMART URL PARSER (Handles http and https dynamically) ---
+        # --- SMART URL PARSER (Handles Pasted URLs) ---
         raw_input = domain_input.strip()
         
-        # If user explicitly pasted http:// or https://, respect that. 
-        if raw_input.startswith("http://") or raw_input.startswith("https://"):
-            target_url = raw_input
-        else:
-            # By default, use https:// (which visually matches our UI prefix)
-            target_url = f"https://{raw_input.strip('/')}"
-            
-        target_url = target_url.rstrip('/') # Clean up trailing slash
+        # Strip out any user-pasted protocols or www to get the pure domain
+        clean_domain = raw_input.replace("https://", "").replace("http://", "").replace("www.", "").strip('/')
+        
+        # Attach our fixed https protocol (since we visually show https:// in the bar)
+        target_url = f"https://{clean_domain}"
         
         progress_bar = st.progress(0, text="Initializing Audit Engine...")
         
