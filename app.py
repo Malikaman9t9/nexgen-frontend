@@ -60,24 +60,26 @@ st.markdown("""
     
     /* --- THE UNIFIED PILL CONTAINER FIX --- */
     
-    /* 1. Remove all gaps and paddings between columns to glue them together */
+    /* 1. Remove ALL Streamlit gaps between columns */
     [data-testid="stForm"] div[data-testid="stHorizontalBlock"] { 
         gap: 0px !important; 
         align-items: center !important; 
         padding: 0 !important;
     }
     
+    /* CRITICAL: Streamlit puts default left/right padding on columns. This removes it so they glue together! */
     [data-testid="stForm"] div[data-testid="column"] {
         padding-left: 0px !important;
         padding-right: 0px !important;
+        margin: 0px !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: center !important;
     }
     
     /* Remove unpredictable Streamlit container margins */
-    [data-testid="stForm"] .element-container { margin-bottom: 0px !important; }
-    [data-testid="stForm"] [data-testid="stMarkdownContainer"] p { margin: 0px !important; width: 100% !important; }
+    [data-testid="stForm"] .element-container { margin: 0px !important; padding: 0px !important; }
+    [data-testid="stForm"] [data-testid="stMarkdownContainer"] p { margin: 0px !important; padding: 0px !important; width: 100% !important; }
     
     /* --- 2. PREFIX (LEFT PART: https://) --- */
     .url-prefix {
@@ -99,11 +101,12 @@ st.markdown("""
     }
     
     /* --- 3. URL INPUT (MIDDLE PART) --- */
-    .stTextInput { margin-bottom: 0px !important; }
+    .stTextInput { margin: 0px !important; padding: 0px !important; }
     
     .stTextInput div[data-baseweb="base-input"] { 
         height: 56px !important;
         min-height: 56px !important;
+        max-height: 56px !important;
         border-top: 2px solid #e2e8f0 !important; 
         border-bottom: 2px solid #e2e8f0 !important; 
         border-left: none !important; /* Joins with prefix */
@@ -113,16 +116,19 @@ st.markdown("""
         box-sizing: border-box !important;
         display: flex !important;
         align-items: center !important;
-        padding: 0 !important;
-        margin: 0 !important;
+        padding: 0px !important;
+        margin: 0px !important;
     }
     
     .stTextInput input { 
-        height: 52px !important; 
-        line-height: 52px !important; /* PERFECT VERTICAL CENTERING */
+        height: 56px !important; 
+        line-height: 56px !important; /* CRITICAL: PERFECT VERTICAL CENTERING */
         font-size: 16px !important; 
         text-align: left !important; 
-        padding-left: 5px !important;
+        padding-left: 10px !important;
+        padding-top: 0px !important; /* Removes push-down effect */
+        padding-bottom: 0px !important;
+        margin: 0px !important;
         font-weight: 500 !important;
         color: #0f172a !important;
         box-sizing: border-box !important;
@@ -137,9 +143,11 @@ st.markdown("""
     }
     
     /* --- 4. SUBMIT BUTTON (RIGHT PART) --- */
+    div.stButton { margin: 0px !important; padding: 0px !important; }
     div.stButton > button[kind="primary"] { 
         height: 56px !important;
         min-height: 56px !important;
+        max-height: 56px !important;
         border-radius: 0 30px 30px 0 !important; /* Right rounded only */
         font-size: 16px !important; 
         font-weight: 700 !important; 
@@ -248,7 +256,7 @@ def render_overview_donut(score):
     fig = go.Figure(go.Pie(
         values=[max(score, 0), max(100-score, 0)],
         labels=["Score", "Remaining"], hole=.8,
-        marker_colors=[color, "#f1f5f9"], textinfo='none', hoverinfo='none',
+        marker_colors=[color, "#a9b9c9"], textinfo='none', hoverinfo='none',
     ))
     fig.update_layout(
         annotations=[dict(text=str(int(score)), x=0.5, y=0.5, font_size=45, font_weight=900, font_color='#0f172a', showarrow=False)],
