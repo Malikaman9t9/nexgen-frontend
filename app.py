@@ -82,9 +82,9 @@ st.markdown("""
     
     /* --- 2. PREFIX (LEFT PART: https://) EXACTLY LIKE A BUTTON --- */
     .url-prefix {
-        height: 52px !important;  /* Dhyan rahe ke height same ho */
-        min-height: 52px !important;
-        line-height: 52px !important;
+        height: 46px !important;  /* Dhyan rahe ke height same ho */
+        min-height: 46px !important;
+        line-height: 46px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -94,7 +94,7 @@ st.markdown("""
         font-weight: 700 !important;
         border: 2px solid #e2e8f0 !important;
         border-right: none !important; 
-        border-radius: 30px 0 0 30px !important; /* Left se Gol */
+        border-radius: 20px 0 0 20px !important; /* Left se Gol */
         margin: 0 !important;
         width: 100% !important;
         box-sizing: border-box !important;
