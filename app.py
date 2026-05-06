@@ -485,7 +485,7 @@ if menu_selection == "Site Auditor":
             st.markdown('<div class="url-prefix">https://</div>', unsafe_allow_html=True)
             
         with col_domain: 
-            domain_input = st.text_input("Domain", value="", placeholder="arabiansquare.ae", label_visibility="collapsed")
+            domain_input = st.text_input("Domain", value="", placeholder="paste url here", label_visibility="collapsed")
             
         with col_btn: 
             run_button = st.form_submit_button("Analyze Now  →", type="primary", use_container_width=True)
