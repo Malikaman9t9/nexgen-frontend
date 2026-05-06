@@ -35,7 +35,7 @@ st.set_page_config(page_title="NexGenWebLab VIP | Enterprise SEO", layout="wide"
 st.markdown('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">', unsafe_allow_html=True)
 st.markdown('<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">', unsafe_allow_html=True)
 
-# --- ADVANCED CUSTOM CSS (PREMIUM UNIFIED PILL SEARCH BAR) ---
+# --- ADVANCED CUSTOM CSS (THE PERFECT UNIFIED PILL SEARCH BAR) ---
 st.markdown("""
 <style>
     /* HIDE RIGHT ICONS BUT KEEP SIDEBAR BUTTON */
@@ -58,101 +58,97 @@ st.markdown("""
     .hero-title span { background: linear-gradient(135deg, #6D28D9, #DB2777); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .hero-subtitle { font-size: 18px; color: #64748b; max-width: 600px; margin: 0 auto 30px auto; }
     
-    /* --- 1. UNIFIED PILL CONTAINER FIX --- */
+    /* --- THE UNIFIED PILL CONTAINER FIX --- */
     
-    /* Remove gaps and align columns perfectly */
-    div[data-testid="stForm"] div[data-testid="stHorizontalBlock"] { 
-        gap: 0rem !important; 
+    /* 1. Remove all gaps and paddings between columns to glue them together */
+    [data-testid="stForm"] div[data-testid="stHorizontalBlock"] { 
+        gap: 0px !important; 
         align-items: center !important; 
-        border-radius: 40px !important;
-        background: #ffffff;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03) !important;
+        padding: 0 !important;
     }
     
-    /* Reset margins for internal columns */
-    div[data-testid="stForm"] div[data-testid="column"] {
-        padding: 0 !important;
+    [data-testid="stForm"] div[data-testid="column"] {
+        padding-left: 0px !important;
+        padding-right: 0px !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: center !important;
     }
     
-    /* Remove padding around elements */
-    [data-testid="stForm"] .element-container { margin: 0 !important; padding: 0 !important; }
-    [data-testid="stMarkdownContainer"] p { margin: 0 !important; padding: 0 !important; }
+    /* Remove unpredictable Streamlit container margins */
+    [data-testid="stForm"] .element-container { margin-bottom: 0px !important; }
+    [data-testid="stForm"] [data-testid="stMarkdownContainer"] p { margin: 0px !important; width: 100% !important; }
     
-    /* --- 2. PREFIX (LEFT: https://) --- */
+    /* --- 2. PREFIX (LEFT PART: https://) --- */
     .url-prefix {
-        height: 60px !important;
+        height: 56px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        background-color: #f8fafc !important;
-        color: #64748b !important;
+        background-color: #f1f5f9 !important;
+        color: #475569 !important;
         font-family: 'Inter', monospace !important;
         font-size: 16px !important;
         font-weight: 600 !important;
         border: 2px solid #e2e8f0 !important;
-        border-right: none !important; /* Seamless join */
-        border-radius: 40px 0 0 40px !important;
+        border-right: none !important; /* Joins with input box seamlessly */
+        border-radius: 30px 0 0 30px !important; /* Left rounded only */
         margin: 0 !important;
         width: 100% !important;
         box-sizing: border-box !important;
-        line-height: 60px !important;
     }
     
-    /* --- 3. URL INPUT (MIDDLE) --- */
-    .stTextInput { margin: 0 !important; padding: 0 !important; }
+    /* --- 3. URL INPUT (MIDDLE PART) --- */
+    .stTextInput { margin-bottom: 0px !important; }
     
     .stTextInput div[data-baseweb="base-input"] { 
-        height: 60px !important;
-        min-height: 60px !important;
-        border: 2px solid #e2e8f0 !important; 
-        border-left: none !important; /* Seamless join */
-        border-right: none !important; /* Seamless join */
+        height: 56px !important;
+        min-height: 56px !important;
+        border-top: 2px solid #e2e8f0 !important; 
+        border-bottom: 2px solid #e2e8f0 !important; 
+        border-left: none !important; /* Joins with prefix */
+        border-right: none !important; /* Joins with button */
         background-color: #ffffff !important; 
-        border-radius: 0 !important; 
+        border-radius: 0px !important; /* Square corners */
         box-sizing: border-box !important;
         display: flex !important;
         align-items: center !important;
-        padding: 0 !important; /* CRITICAL: removes the downward push */
+        padding: 0 !important;
+        margin: 0 !important;
     }
     
     .stTextInput input { 
-        height: 60px !important; 
-        line-height: 60px !important; /* CRITICAL: perfectly centers the text vertically */
+        height: 52px !important; 
+        line-height: 52px !important; /* PERFECT VERTICAL CENTERING */
         font-size: 16px !important; 
         text-align: left !important; 
-        padding: 0 10px !important;
-        margin: 0 !important;
+        padding-left: 5px !important;
         font-weight: 500 !important;
         color: #0f172a !important;
         box-sizing: border-box !important;
     }
     
-    /* Subtle focus state */
+    /* Keep borders clean on click */
     .stTextInput div[data-baseweb="base-input"]:focus-within { 
         border-top-color: #6D28D9 !important; 
         border-bottom-color: #6D28D9 !important;
-        background-color: #fafafa !important;
         box-shadow: none !important; 
+        background-color: #ffffff !important;
     }
     
-    /* --- 4. SUBMIT BUTTON (RIGHT) --- */
-    div.stButton { margin: 0 !important; padding: 0 !important; }
-    
+    /* --- 4. SUBMIT BUTTON (RIGHT PART) --- */
     div.stButton > button[kind="primary"] { 
-        height: 60px !important;
-        min-height: 60px !important;
-        border-radius: 0 40px 40px 0 !important; 
+        height: 56px !important;
+        min-height: 56px !important;
+        border-radius: 0 30px 30px 0 !important; /* Right rounded only */
         font-size: 16px !important; 
         font-weight: 700 !important; 
         background: linear-gradient(135deg, #6D28D9, #DB2777) !important; 
         color: white !important; 
         border: none !important; 
         width: 100% !important; 
-        text-transform: uppercase !important; 
-        letter-spacing: 1px !important;
+        text-transform: none !important; 
+        letter-spacing: 0.5px !important;
         margin: 0 !important;
         display: flex !important;
         align-items: center !important;
@@ -163,7 +159,7 @@ st.markdown("""
     }
     div.stButton > button[kind="primary"]:hover { 
         filter: brightness(1.1);
-        transform: none !important; /* Prevents breaking the pill shape on hover */
+        transform: none !important; 
     }
     
     /* --- SIDEBAR BUTTON --- */
@@ -493,7 +489,7 @@ if menu_selection == "Site Auditor":
         # Strip out any user-pasted protocols or www to get the pure domain
         clean_domain = raw_input.replace("https://", "").replace("http://", "").replace("www.", "").strip('/')
         
-        # Attach our fixed https protocol (since we visually show https:// in the bar)
+        # Attach our fixed https protocol
         target_url = f"https://{clean_domain}"
         
         progress_bar = st.progress(0, text="Initializing Audit Engine...")
