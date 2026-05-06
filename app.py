@@ -35,10 +35,10 @@ st.set_page_config(page_title="NexGenWebLab VIP | Enterprise SEO", layout="wide"
 st.markdown('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">', unsafe_allow_html=True)
 st.markdown('<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">', unsafe_allow_html=True)
 
-# --- ADVANCED CUSTOM CSS (STRICT 56px LOCK & ALIGNMENT) ---
+# --- ADVANCED CUSTOM CSS (STRICT EXACT 54px ALIGNMENT) ---
 st.markdown("""
 <style>
-    /* 1. RESTORE HAMBURGER MENU & HIDE RIGHT ICONS ONLY */
+    /* HIDE RIGHT ICONS BUT KEEP SIDEBAR BUTTON */
     [data-testid="stHeader"] { background-color: transparent !important; }
     [data-testid="stToolbarActions"] { display: none !important; }
     .stAppDeployButton { display: none !important; }
@@ -58,46 +58,52 @@ st.markdown("""
     .hero-title span { background: linear-gradient(135deg, #6D28D9, #DB2777); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .hero-subtitle { font-size: 18px; color: #64748b; max-width: 600px; margin: 0 auto 30px auto; }
     
-    /* --- 2. CRITICAL FORM ALIGNMENT (STRICT 56px HEIGHT) --- */
-    /* Force the columns to align perfectly in the center vertically */
-    [data-testid="stForm"] div[data-testid="stHorizontalBlock"] { 
-        align-items: center !important; 
+    /* --- 2. THE ULTIMATE FORM ALIGNMENT FIX --- */
+    
+    /* Force exactly 54px height across all elements */
+    div[data-baseweb="select"] > div, 
+    .stTextInput div[data-baseweb="base-input"], 
+    div.stButton > button[kind="primary"] {
+        height: 54px !important;
+        min-height: 54px !important;
+        max-height: 54px !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        border-radius: 8px !important;
+    }
+
+    /* Remove Streamlit's hidden paddings inside columns */
+    [data-testid="stForm"] div[data-testid="stVerticalBlockBorderWrapper"] {
+        padding-bottom: 0 !important;
+        padding-top: 0 !important;
     }
     
-    /* Remove unpredictable margins */
-    .stSelectbox, .stTextInput, .stButton { margin-bottom: 0 !important; padding-bottom: 0 !important; }
-    
-    /* Dropdown Protocol Box */
+    /* Dropdown Settings */
     div[data-baseweb="select"] > div {
-        height: 56px !important;
-        min-height: 56px !important;
         border: 2px solid #e2e8f0 !important;
         background-color: #f8fafc !important;
-        border-radius: 8px !important;
-        box-sizing: border-box !important;
         display: flex !important;
         align-items: center !important;
     }
     
-    /* URL Input Box */
+    /* URL Input Settings */
     .stTextInput div[data-baseweb="base-input"] { 
-        height: 56px !important;
-        min-height: 56px !important;
         border: 2px solid #e2e8f0 !important; 
         background-color: #ffffff !important; 
-        border-radius: 8px !important;
-        box-sizing: border-box !important;
         display: flex !important;
         align-items: center !important;
     }
     .stTextInput input { 
-        height: 52px !important; 
-        line-height: normal !important; 
+        height: 50px !important; 
+        line-height: 50px !important; 
         font-size: 16px !important; 
         text-align: left !important; 
         padding-left: 15px !important;
         font-weight: 500 !important;
         color: #0f172a !important;
+        margin: 0 !important;
     }
     
     .stTextInput div[data-baseweb="base-input"]:focus-within, div[data-baseweb="select"] > div:focus-within { 
@@ -105,11 +111,8 @@ st.markdown("""
         box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.1) !important; 
     }
     
-    /* Submit Button */
+    /* Button Settings */
     div.stButton > button[kind="primary"] { 
-        height: 56px !important;
-        min-height: 56px !important;
-        border-radius: 8px !important; 
         font-size: 16px !important; 
         font-weight: 800 !important; 
         background: linear-gradient(135deg, #6D28D9, #DB2777) !important; 
@@ -118,11 +121,9 @@ st.markdown("""
         width: 100% !important; 
         text-transform: uppercase !important; 
         letter-spacing: 1px !important;
-        margin: 0 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        box-sizing: border-box !important;
     }
     div.stButton > button[kind="primary"]:hover { box-shadow: 0 6px 20px rgba(219, 39, 119, 0.3) !important; transform: translateY(-1px); }
     
@@ -432,7 +433,7 @@ if menu_selection == "Site Auditor":
     
     # --- FIXED URL INPUT SECTION ---
     with st.form("audit_form", border=False):
-        col_proto, col_domain, col_btn = st.columns([1.5, 6, 2.5], gap="small")
+        col_proto, col_domain, col_btn = st.columns([1.8, 6, 2.5], gap="small")
         with col_proto: 
             protocol = st.selectbox("Protocol", ["https://", "http://"], label_visibility="collapsed")
         with col_domain: 
@@ -444,22 +445,16 @@ if menu_selection == "Site Auditor":
 
     if run_button and domain_input:
         
-        # --- SMART URL PARSER (Handles Pasted URLs with HTTPS/HTTP) ---
+        # --- BULLETPROOF URL PARSER ---
         raw_input = domain_input.strip()
         
-        # Determine the correct protocol (overrides dropdown if user pasted it)
-        if raw_input.startswith("https://"):
-            actual_protocol = "https://"
-        elif raw_input.startswith("http://"):
-            actual_protocol = "http://"
+        # Check if user blindly pasted "http" or "https" in the box
+        if "://" in raw_input:
+            target_url = raw_input # Use exactly what they pasted, ignore dropdown
         else:
-            actual_protocol = protocol
+            target_url = f"{protocol}{raw_input}" # Combine dropdown and input
             
-        # Clean the domain part (remove protocols and www. to avoid errors)
-        clean_domain = raw_input.replace("https://", "").replace("http://", "").strip('/')
-        
-        # Final perfect URL for the backend
-        target_url = f"{actual_protocol}{clean_domain}"
+        target_url = target_url.rstrip('/') # Clean up
         
         progress_bar = st.progress(0, text="Initializing Audit Engine...")
         
