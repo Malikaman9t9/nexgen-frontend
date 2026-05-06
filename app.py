@@ -474,7 +474,7 @@ if menu_selection == "Site Auditor":
     
     # --- THE NEW UNIFIED PILL-SHAPED SEARCH BAR STRUCTURE ---
     with st.form("audit_form", border=False):
-        col_prefix, col_domain, col_btn = st.columns([2.5, 5, 2.5])
+        col_prefix, col_domain, col_btn = st.columns([1.2, 6.3, 2.5])
         
         with col_prefix: 
             st.markdown('<div class="url-prefix">https://</div>', unsafe_allow_html=True)
