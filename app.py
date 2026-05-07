@@ -2,28 +2,43 @@ import os
 import streamlit as st
 from supabase import create_client, Client
 from dotenv import load_dotenv
+from streamlit_option_menu import option_menu
+import time
+import pandas as pd
+from urllib.parse import urlparse
+import plotly.graph_objects as go
+import plotly.express as px
+from datetime import datetime, timedelta
+import zipfile
+import io
 
-# Load Environment Variables
+# Load APIs
 load_dotenv()
-
+SPEED_API_KEY = os.getenv("SPEED_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
-# Initialize Supabase
+# Initialize Supabase (Only Once with Advanced Error Logging)
 try:
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        st.error("Error: Render is not reading the Environment Variables. They are empty (None).")
+        st.stop()
+        
     supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 except Exception as e:
-    st.error("Database connection failed. Please check Render Environment Variables.")
+    st.error(f"Database connection failed. Exact Error: {str(e)}")
     st.stop()
 
-# --- AUTHENTICATION GATE ---
+# --- AUTHENTICATION GATE (Only Once) ---
 if 'user' not in st.session_state:
     st.session_state.user = None
 
-# Agar user login nahi hai, toh sirf yeh screen dikhao
 if st.session_state.user is None:
     st.markdown("""
     <div style="text-align: center; margin-top: 50px;">
+        <i class="fa-solid fa-lock" style="font-size: 40px; color: #DB2777; margin-bottom: 20px;"></i>
         <h2 style="color: #0f172a; font-weight: 800;">NexGenWebLab Secure Portal</h2>
         <p style="color: #64748b; margin-bottom: 30px;">Please log in from the main website to access the Enterprise SEO Engine.</p>
     </div>
@@ -44,87 +59,6 @@ if st.session_state.user is None:
                 except Exception as e:
                     st.error("⚠️ Invalid email or password. Try again.")
         
-        st.markdown("""
-        <div style="text-align: center; margin-top: 20px;">
-            <a href="https://nexgenweblab.com" target="_blank" style="text-decoration: none; color: #6D28D9; font-weight: 700;">&larr; Go back to Home Page</a>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    st.stop() # Iske aage ka tool load nahi hoga jab tak login na ho
-
-# ==========================================
-# YAHAN SE NEECHAY AAPKE TOOL KA PURANA CODE AAYEGA
-# ==========================================
-
-import streamlit as st
-import os
-from streamlit_option_menu import option_menu
-from dotenv import load_dotenv
-import time
-import pandas as pd
-from urllib.parse import urlparse
-import plotly.graph_objects as go
-import plotly.express as px
-from datetime import datetime, timedelta
-import zipfile
-import io
-
-# Load APIs
-load_dotenv()
-SPEED_API_KEY = os.getenv("SPEED_API_KEY")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
-
-from supabase import create_client, Client
-
-# Load Supabase APIs (Inko bhi apni .env file mein daalna hai)
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-
-# Initialize Supabase
-# Initialize Supabase
-try:
-    # Pehle check karte hain ke Render ne variables uthaye bhi hain ya nahi
-    if not SUPABASE_URL or not SUPABASE_KEY:
-        st.error("Error: Render is not reading the Environment Variables. They are empty (None).")
-        st.stop()
-        
-    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-except Exception as e:
-    # Agar connect hone mein masla hai toh asli error screen par dikhao
-    st.error(f"Database connection failed. Exact Error: {str(e)}")
-    st.stop()
-
-# --- AUTHENTICATION GATE ---
-if 'user' not in st.session_state:
-    st.session_state.user = None
-
-# Agar user login nahi hai, toh sirf yeh screen dikhao aur baqi tool block kar do
-if st.session_state.user is None:
-    st.markdown("""
-    <div style="text-align: center; margin-top: 50px;">
-        <i class="fa-solid fa-lock" style="font-size: 40px; color: #DB2777; margin-bottom: 20px;"></i>
-        <h2 style="color: #0f172a; font-weight: 800;">NexGenWebLab Secure Portal</h2>
-        <p style="color: #64748b; margin-bottom: 30px;">Please log in to access the Enterprise SEO Engine.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        with st.form("login_form"):
-            login_email = st.text_input("Email Address")
-            login_password = st.text_input("Password", type="password")
-            submitted = st.form_submit_button("Log In to Dashboard", type="primary", use_container_width=True)
-            
-            if submitted:
-                try:
-                    # Supabase Authentication
-                    response = supabase.auth.sign_in_with_password({"email": login_email, "password": login_password})
-                    st.session_state.user = response.user
-                    st.rerun() # Login hote hi page refresh hoga aur tool khul jayega
-                except Exception as e:
-                    st.error("⚠️ Invalid email or password. Try again.")
-        
         st.markdown("<hr style='border-top: 1px dashed #e2e8f0; margin: 20px 0;'>", unsafe_allow_html=True)
         st.markdown("""
         <div style="text-align: center;">
@@ -133,13 +67,13 @@ if st.session_state.user is None:
         </div>
         """, unsafe_allow_html=True)
     
-    # st.stop() ke baad ka koi bhi code run nahi hoga jab tak login na ho jaye
     st.stop() 
 
-# --- YAHAN SE AAPKA PURANA APP KA CODE SHURU HOTA HAI ---
-# (st.set_page_config wali line se baqi sab waisa hi rahay ga)
+# ==========================================
+# TOOL CORE FUNCTIONALITY START
+# ==========================================
 
-# Import Modules
+# Import Custom Modules
 try:
     from modules.onpage_scraper import get_basic_onpage
     from modules.speed_checker import check_speed
@@ -157,7 +91,7 @@ st.set_page_config(page_title="NexGenWebLab VIP | Enterprise SEO", layout="wide"
 st.markdown('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">', unsafe_allow_html=True)
 st.markdown('<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">', unsafe_allow_html=True)
 
-# --- ADVANCED CUSTOM CSS (THE FINAL PILL SHAPE FIX) ---
+# --- ADVANCED CUSTOM CSS ---
 st.markdown("""
 <style>
     /* HIDE RIGHT ICONS BUT KEEP SIDEBAR BUTTON */
@@ -204,7 +138,7 @@ st.markdown("""
     
     /* --- 2. PREFIX (LEFT PART: https://) EXACTLY LIKE A BUTTON --- */
     .url-prefix {
-        height: 38px !important;  /* Dhyan rahe ke height same ho */
+        height: 38px !important;  
         min-height: 38px !important;
         line-height: 38px !important;
         display: flex !important;
@@ -216,11 +150,11 @@ st.markdown("""
         font-weight: 700 !important;
         border: 2px solid #e2e8f0 !important;
         border-right: none !important; 
-        border-radius: 20px 0 0 20px !important; /* Left se Gol */
+        border-radius: 20px 0 0 20px !important; 
         margin: 0 !important;
         width: 100% !important;
         box-sizing: border-box !important;
-            margin-top: -16px !important; /* Minus (-) sign zaroori hai. Isko -4px, -6px ya -8px kar ke check karein */
+        margin-top: -16px !important; 
         margin-bottom: 0px !important;
         margin-left: 0px !important;
         margin-right: 0px !important;
@@ -230,9 +164,9 @@ st.markdown("""
     [data-testid="stForm"] .stTextInput { margin: 0px !important; padding: 0px !important; }
     
     [data-testid="stForm"] button[kind="primary"] { 
-        height: 56px !important; /* Dhyan rahe ke height same ho */
+        height: 56px !important; 
         min-height: 56px !important;
-        border-radius: 0 30px 30px 0 !important; /* Right se Gol */
+        border-radius: 0 30px 30px 0 !important; 
         font-size: 16px !important; 
         font-weight: 800 !important; 
         background: linear-gradient(135deg, #6D28D9, #DB2777) !important; 
@@ -259,7 +193,7 @@ st.markdown("""
         font-weight: 500 !important;
         color: #0f172a !important;
         box-sizing: border-box !important;
-        border-radius: 0px !important; /* Ensure input itself doesn't curve */
+        border-radius: 0px !important; 
     }
     
     [data-testid="stForm"] .stTextInput div[data-baseweb="base-input"]:focus-within { 
@@ -274,7 +208,7 @@ st.markdown("""
     [data-testid="stForm"] button[kind="primary"] { 
         height: 54px !important;
         min-height: 54px !important;
-        border-radius: 0 30px 30px 0 !important; /* Perfect Pill Right */
+        border-radius: 0 30px 30px 0 !important; 
         font-size: 16px !important; 
         font-weight: 800 !important; 
         background: linear-gradient(135deg, #6D28D9, #DB2777) !important; 
