@@ -13,3 +13,4 @@ lxml
 aiohttp
 google-generativeai
 python-docx
+supabase==2.3.0

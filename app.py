@@ -17,6 +17,63 @@ SPEED_API_KEY = os.getenv("SPEED_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
 
+from supabase import create_client, Client
+
+# Load Supabase APIs (Inko bhi apni .env file mein daalna hai)
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+# Initialize Supabase
+try:
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+except Exception as e:
+    st.error("Database connection failed. Please check configuration.")
+    st.stop()
+
+# --- AUTHENTICATION GATE ---
+if 'user' not in st.session_state:
+    st.session_state.user = None
+
+# Agar user login nahi hai, toh sirf yeh screen dikhao aur baqi tool block kar do
+if st.session_state.user is None:
+    st.markdown("""
+    <div style="text-align: center; margin-top: 50px;">
+        <i class="fa-solid fa-lock" style="font-size: 40px; color: #DB2777; margin-bottom: 20px;"></i>
+        <h2 style="color: #0f172a; font-weight: 800;">NexGenWebLab Secure Portal</h2>
+        <p style="color: #64748b; margin-bottom: 30px;">Please log in to access the Enterprise SEO Engine.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        with st.form("login_form"):
+            login_email = st.text_input("Email Address")
+            login_password = st.text_input("Password", type="password")
+            submitted = st.form_submit_button("Log In to Dashboard", type="primary", use_container_width=True)
+            
+            if submitted:
+                try:
+                    # Supabase Authentication
+                    response = supabase.auth.sign_in_with_password({"email": login_email, "password": login_password})
+                    st.session_state.user = response.user
+                    st.rerun() # Login hote hi page refresh hoga aur tool khul jayega
+                except Exception as e:
+                    st.error("⚠️ Invalid email or password. Try again.")
+        
+        st.markdown("<hr style='border-top: 1px dashed #e2e8f0; margin: 20px 0;'>", unsafe_allow_html=True)
+        st.markdown("""
+        <div style="text-align: center;">
+            <p style="color: #475569; font-size: 14px;">Don't have an account?</p>
+            <a href="https://nexgenweblab.com" target="_blank" style="text-decoration: none; color: #6D28D9; font-weight: 700;">&larr; Go back to Home Page</a>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # st.stop() ke baad ka koi bhi code run nahi hoga jab tak login na ho jaye
+    st.stop() 
+
+# --- YAHAN SE AAPKA PURANA APP KA CODE SHURU HOTA HAI ---
+# (st.set_page_config wali line se baqi sab waisa hi rahay ga)
+
 # Import Modules
 try:
     from modules.onpage_scraper import get_basic_onpage
