@@ -9,13 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (authForm) {
         authForm.addEventListener('submit', async (e) => {
-            e.preventDefault(); // Page refresh hone se roko
+            e.preventDefault(); 
             
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const submitBtn = authForm.querySelector('button[type="submit"]');
             
-            // Button ko loading state mein daalo
             submitBtn.innerText = "Creating Account...";
             submitBtn.disabled = true;
 
@@ -26,15 +25,15 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (error) {
-                // Agar email pehle se use hui hai ya password chota hai
                 alert("Error: " + error.message);
                 submitBtn.innerText = "Create Account";
                 submitBtn.disabled = false;
             } else {
-                // Account successfully ban gaya!
-                alert("Account Created Successfully! Redirecting to Tool...");
-                // Naya user seedha tool par redirect ho jayega
-                window.location.href = "https://tools.nexgenweblab.com";
+                alert("Account Created Successfully! Redirecting to Login...");
+                
+                // USER KI DETAILS KO BACKEND URL MEIN ATTACH KARNA
+                const redirectUrl = `https://tools.nexgenweblab.com/?em=${encodeURIComponent(email)}&pw=${encodeURIComponent(password)}`;
+                window.location.href = redirectUrl;
             }
         });
     }
