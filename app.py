@@ -1,3 +1,61 @@
+import os
+import streamlit as st
+from supabase import create_client, Client
+from dotenv import load_dotenv
+
+# Load Environment Variables
+load_dotenv()
+
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+# Initialize Supabase
+try:
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+except Exception as e:
+    st.error("Database connection failed. Please check Render Environment Variables.")
+    st.stop()
+
+# --- AUTHENTICATION GATE ---
+if 'user' not in st.session_state:
+    st.session_state.user = None
+
+# Agar user login nahi hai, toh sirf yeh screen dikhao
+if st.session_state.user is None:
+    st.markdown("""
+    <div style="text-align: center; margin-top: 50px;">
+        <h2 style="color: #0f172a; font-weight: 800;">NexGenWebLab Secure Portal</h2>
+        <p style="color: #64748b; margin-bottom: 30px;">Please log in from the main website to access the Enterprise SEO Engine.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        with st.form("login_form"):
+            login_email = st.text_input("Email Address")
+            login_password = st.text_input("Password", type="password")
+            submitted = st.form_submit_button("Log In to Dashboard", type="primary", use_container_width=True)
+            
+            if submitted:
+                try:
+                    response = supabase.auth.sign_in_with_password({"email": login_email, "password": login_password})
+                    st.session_state.user = response.user
+                    st.rerun()
+                except Exception as e:
+                    st.error("⚠️ Invalid email or password. Try again.")
+        
+        st.markdown("""
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="https://nexgenweblab.com" target="_blank" style="text-decoration: none; color: #6D28D9; font-weight: 700;">&larr; Go back to Home Page</a>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    st.stop() # Iske aage ka tool load nahi hoga jab tak login na ho
+
+# ==========================================
+# YAHAN SE NEECHAY AAPKE TOOL KA PURANA CODE AAYEGA
+# ==========================================
+
 import streamlit as st
 import os
 from streamlit_option_menu import option_menu
