@@ -82,10 +82,17 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 # Initialize Supabase
+# Initialize Supabase
 try:
+    # Pehle check karte hain ke Render ne variables uthaye bhi hain ya nahi
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        st.error("Error: Render is not reading the Environment Variables. They are empty (None).")
+        st.stop()
+        
     supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 except Exception as e:
-    st.error("Database connection failed. Please check configuration.")
+    # Agar connect hone mein masla hai toh asli error screen par dikhao
+    st.error(f"Database connection failed. Exact Error: {str(e)}")
     st.stop()
 
 # --- AUTHENTICATION GATE ---
