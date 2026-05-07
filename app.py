@@ -31,6 +31,9 @@ except Exception as e:
     st.error(f"Database connection failed. Exact Error: {str(e)}")
     st.stop()
 
+# --- PAGE CONFIG MUST BE BEFORE EVERYTHING ELSE ---
+st.set_page_config(page_title="NexGenWebLab VIP | Enterprise SEO", layout="wide", initial_sidebar_state="expanded")
+
 # --- AUTHENTICATION GATE WITH AUTO-FILL ---
 if 'user' not in st.session_state:
     st.session_state.user = None
@@ -44,14 +47,12 @@ if st.session_state.user is None:
     </div>
     """, unsafe_allow_html=True)
     
-    # 1. URL se details pakarna
     url_email = st.query_params.get("em", "")
     url_pwd = st.query_params.get("pw", "")
     
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         with st.form("login_form"):
-            # 2. Form mein Auto-fill daalna
             login_email = st.text_input("Email Address", value=url_email)
             login_password = st.text_input("Password", type="password", value=url_pwd)
             submitted = st.form_submit_button("Log In to Dashboard", type="primary", use_container_width=True)
@@ -60,7 +61,6 @@ if st.session_state.user is None:
                 try:
                     response = supabase.auth.sign_in_with_password({"email": login_email, "password": login_password})
                     st.session_state.user = response.user
-                    # 3. Login hone ke baad URL se parameters hata dain taake safe rahay
                     st.query_params.clear()
                     st.rerun()
                 except Exception as e:
@@ -90,8 +90,6 @@ except ImportError as e:
     st.error(f"Critical Error: Missing module file. {e}")
     st.stop()
 
-st.set_page_config(page_title="NexGenWebLab VIP | Enterprise SEO", layout="wide", initial_sidebar_state="expanded")
-
 st.markdown('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">', unsafe_allow_html=True)
 st.markdown('<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">', unsafe_allow_html=True)
 
@@ -113,48 +111,24 @@ st.markdown("""
     .hero-title span { background: linear-gradient(135deg, #6D28D9, #DB2777); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .hero-subtitle { font-size: 18px; color: #64748b; max-width: 600px; margin: 0 auto 30px auto; }
     
-    [data-testid="stForm"] div[data-testid="stHorizontalBlock"] { 
-        gap: 0px !important; align-items: center !important; padding: 0 !important;
-    }
-    [data-testid="stForm"] div[data-testid="column"] {
-        padding: 0px !important; margin: 0px !important; display: flex !important; flex-direction: column !important; justify-content: center !important;
-    }
+    /* Search Bar CSS */
+    [data-testid="stForm"] div[data-testid="stHorizontalBlock"] { gap: 0px !important; align-items: center !important; padding: 0 !important; }
+    [data-testid="stForm"] div[data-testid="column"] { padding: 0px !important; margin: 0px !important; display: flex !important; flex-direction: column !important; justify-content: center !important; }
     [data-testid="stForm"] .element-container { margin: 0px !important; padding: 0px !important; }
     [data-testid="stForm"] [data-testid="stMarkdownContainer"] p { margin: 0px !important; padding: 0px !important; width: 100% !important; }
     
-    .url-prefix {
-        height: 38px !important; min-height: 38px !important; line-height: 38px !important; display: flex !important;
-        align-items: center !important; justify-content: center !important; background-color: #e2e8f0 !important;
-        color: #0f172a !important; font-size: 16px !important; font-weight: 700 !important; border: 2px solid #e2e8f0 !important;
-        border-right: none !important; border-radius: 20px 0 0 20px !important; margin: 0 !important; width: 100% !important;
-        box-sizing: border-box !important; margin-top: -16px !important; margin-bottom: 0px !important;
-    }
+    .url-prefix { height: 38px !important; min-height: 38px !important; line-height: 38px !important; display: flex !important; align-items: center !important; justify-content: center !important; background-color: #e2e8f0 !important; color: #0f172a !important; font-size: 16px !important; font-weight: 700 !important; border: 2px solid #e2e8f0 !important; border-right: none !important; border-radius: 20px 0 0 20px !important; margin: 0 !important; width: 100% !important; box-sizing: border-box !important; margin-top: -16px !important; margin-bottom: 0px !important; }
     
     [data-testid="stForm"] .stTextInput { margin: 0px !important; padding: 0px !important; }
-    [data-testid="stForm"] .stTextInput input { 
-        height: 50px !important; line-height: 50px !important; font-size: 16px !important; text-align: left !important; 
-        padding-left: 10px !important; margin: 0px !important; font-weight: 500 !important; color: #0f172a !important;
-        box-sizing: border-box !important; border-radius: 0px !important; 
-    }
-    [data-testid="stForm"] .stTextInput div[data-baseweb="base-input"]:focus-within { 
-        border-top-color: #6D28D9 !important; border-bottom-color: #6D28D9 !important; box-shadow: none !important; background-color: #ffffff !important;
-    }
+    [data-testid="stForm"] .stTextInput input { height: 50px !important; line-height: 50px !important; font-size: 16px !important; text-align: left !important; padding-left: 10px !important; margin: 0px !important; font-weight: 500 !important; color: #0f172a !important; box-sizing: border-box !important; border-radius: 0px !important; }
+    [data-testid="stForm"] .stTextInput div[data-baseweb="base-input"]:focus-within { border-top-color: #6D28D9 !important; border-bottom-color: #6D28D9 !important; box-shadow: none !important; background-color: #ffffff !important; }
     
     div.stButton { margin: 0px !important; padding: 0px !important; }
-    [data-testid="stForm"] button[kind="primary"] { 
-        height: 54px !important; min-height: 54px !important; border-radius: 0 30px 30px 0 !important; 
-        font-size: 16px !important; font-weight: 800 !important; background: linear-gradient(135deg, #6D28D9, #DB2777) !important; 
-        color: white !important; border: none !important; width: 100% !important; text-transform: none !important; margin: 0 !important;
-        display: flex !important; align-items: center !important; justify-content: center !important; padding: 0 20px !important; transition: all 0.3s ease;
-    }
+    [data-testid="stForm"] button[kind="primary"] { height: 54px !important; min-height: 54px !important; border-radius: 0 30px 30px 0 !important; font-size: 16px !important; font-weight: 800 !important; background: linear-gradient(135deg, #6D28D9, #DB2777) !important; color: white !important; border: none !important; width: 100% !important; text-transform: none !important; margin: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; padding: 0 20px !important; transition: all 0.3s ease; }
     [data-testid="stForm"] button[kind="primary"]:hover { filter: brightness(1.1); transform: none !important; }
     
-    div.stButton > button[kind="secondary"] {
-        border-radius: 8px !important; font-weight: 700 !important; border: 1px solid #e2e8f0 !important; color: #475569 !important; background-color: #f8fafc !important;
-    }
-    div.stButton > button[kind="secondary"]:hover {
-        border-color: #6D28D9 !important; color: #6D28D9 !important; background-color: #f3f0ff !important;
-    }
+    div.stButton > button[kind="secondary"] { border-radius: 8px !important; font-weight: 700 !important; border: 1px solid #e2e8f0 !important; color: #475569 !important; background-color: #f8fafc !important; }
+    div.stButton > button[kind="secondary"]:hover { border-color: #6D28D9 !important; color: #6D28D9 !important; background-color: #f3f0ff !important; }
     
     .score-container { background: #ffffff; border-radius: 16px; padding: 30px; border: 1px solid #e2e8f0; margin-bottom: 30px;}
     .issue-card { border-radius: 12px; padding: 25px; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: center; height: 100%;}
@@ -330,6 +304,40 @@ def calculate_ov_vip(onpage, speed):
     return final_score, critical, warnings, passed
 
 with st.sidebar:
+    # --- USER PROFILE CARD ---
+    if st.session_state.user:
+        user_email = st.session_state.user.email
+        # Default Plan logic
+        plan_name = "Starter Plan"
+        if "pro" in user_email.lower() or "admin" in user_email.lower():
+            plan_name = "Enterprise Pro"
+
+        st.markdown(f"""
+        <div style="background-color: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #6D28D9, #DB2777); color: white; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                    {user_email[0].upper()}
+                </div>
+                <div style="overflow: hidden; flex: 1;">
+                    <div style="font-size: 13px; font-weight: 800; color: #0f172a; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;" title="{user_email}">{user_email}</div>
+                    <div style="font-size: 11px; color: #10b981; font-weight: 700; margin-top: 2px;"><i class="fa-solid fa-circle-check"></i> {plan_name}</div>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # LOGOUT BUTTON
+        if st.button("Log Out", use_container_width=True):
+            try:
+                supabase.auth.sign_out()
+            except:
+                pass
+            st.session_state.user = None
+            st.query_params.clear()
+            st.rerun()
+            
+        st.markdown("<hr style='border-top: 1px dashed #e2e8f0; margin: 20px 0;'>", unsafe_allow_html=True)
+
     if os.path.exists("logo.png"): st.image("logo.png", use_container_width=True)
     elif os.path.exists("logo.jpg"): st.image("logo.jpg", use_container_width=True)
     else: st.markdown('<div class="sidebar-brand" style="font-size:24px; font-weight:900; text-align:center;">NexGen<span style="color:#DB2777;">WebLab</span></div>', unsafe_allow_html=True)
