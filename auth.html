@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | NexGenWebLab</title>
+    <title>Sign Up | NexGenWebLab</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -21,31 +21,27 @@
     </script>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<div class="flex items-center gap-3">
-    <a href="https://tools.nexgenweblab.com" class="hidden sm:inline-block text-sm font-semibold text-slate-600 hover:text-slate-900">Log in</a>
-    <a href="auth.html" class="hidden sm:inline-block text-sm font-bold border-2 border-primary text-primary px-4 py-2 rounded-lg hover:bg-primary hover:text-white transition-all">Sign up</a>
-    <a href="https://tools.nexgenweblab.com" class="text-sm font-bold bg-slate-900 text-white px-5 py-2.5 rounded-lg hover:bg-slate-800 transition-all shadow-md">
-        Open App <i class="fa-solid fa-arrow-right ml-1"></i>
-    </a>
-</div>
-
-<div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl flex flex-col relative overflow-hidden">
-    <a href="auth.html" class="block w-full py-3 px-4 text-center rounded-xl font-bold bg-gradient-to-r from-primary to-secondary text-white hover:opacity-90 transition-opacity">Get Started</a>
-</div>
 <body class="min-h-screen bg-slate-50 font-sans text-slate-900 antialiased flex flex-col justify-center items-center p-4">
 
     <a href="index.html" class="absolute top-6 left-6 text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors">
         <i class="fa-solid fa-arrow-left mr-2"></i> Back to Home
     </a>
 
+    <div class="absolute top-6 right-6 hidden sm:flex items-center gap-3">
+        <a href="https://tools.nexgenweblab.com" class="text-sm font-semibold text-slate-600 hover:text-slate-900">Log in</a>
+        <a href="https://tools.nexgenweblab.com" class="text-sm font-bold bg-slate-900 text-white px-5 py-2 rounded-lg hover:bg-slate-800 transition-all shadow-md">
+            Open App <i class="fa-solid fa-arrow-right ml-1"></i>
+        </a>
+    </div>
+
     <div class="w-full max-w-md bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-200 p-8 sm:p-10">
         
         <div class="text-center mb-8">
             <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 text-primary text-2xl mb-4">
-                <i class="fa-solid fa-chart-line"></i>
+                <i class="fa-solid fa-user-plus"></i>
             </div>
-            <h1 class="text-2xl font-bold tracking-tight">Welcome back</h1>
-            <p class="text-slate-500 text-sm mt-2">Log in to your NexGenWebLab account</p>
+            <h1 class="text-2xl font-bold tracking-tight">Create an account</h1>
+            <p class="text-slate-500 text-sm mt-2">Sign up to access NexGenWebLab tools</p>
         </div>
 
         <form id="auth-form" class="space-y-5">
@@ -56,30 +52,18 @@
             </div>
             
             <div>
-                <div class="flex justify-between items-center mb-1.5">
-                    <label for="password" class="block text-sm font-semibold text-slate-700">Password</label>
-                    <a href="#" class="text-xs font-semibold text-primary hover:underline">Forgot password?</a>
-                </div>
+                <label for="password" class="block text-sm font-semibold text-slate-700 mb-1.5">Password</label>
                 <input type="password" id="password" required placeholder="••••••••" 
                     class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-medium">
             </div>
 
             <button type="submit" class="w-full py-3 px-4 rounded-xl font-bold bg-slate-900 text-white hover:bg-slate-800 transition-colors mt-2">
-                Sign In
+                Create Account
             </button>
         </form>
 
-        <div class="mt-6 relative flex items-center justify-center">
-            <div class="absolute w-full border-t border-slate-200"></div>
-            <span class="bg-white px-4 text-xs font-medium text-slate-400 relative z-10 uppercase tracking-wider">Or continue with</span>
-        </div>
-
-        <button class="mt-6 w-full py-3 px-4 rounded-xl font-bold border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 transition-colors flex items-center justify-center gap-2">
-            <i class="fa-brands fa-google text-red-500"></i> Google
-        </button>
-
         <p class="text-center text-sm text-slate-600 mt-8 font-medium">
-            Don't have an account? <a href="#" class="text-primary hover:underline">Sign up for free</a>
+            Already have an account? <a href="https://tools.nexgenweblab.com" class="text-primary hover:underline">Log in here</a>
         </p>
     </div>
 
