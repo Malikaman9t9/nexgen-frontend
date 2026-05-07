@@ -1,5 +1,5 @@
 // Apni Supabase Details Yahan Daalein
-const SUPABASE_URL = 'https://ubnvjmvobwzsystdktpk.supabase.co';
+const SUPABASE_URL = 'https://ubnvjmvobwzsystdktpk.supabase.co/rest/v1/';
 const SUPABASE_KEY = 'sb_publishable_Fj_rv9LPpfh5nDouVW-bSw_hdfpn4-v';
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
