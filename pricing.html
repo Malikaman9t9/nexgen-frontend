@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up | NexGenWebLab</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Pricing | NexGenWebLab</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -20,103 +19,95 @@
     </script>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body class="min-h-screen bg-slate-50 font-sans text-slate-900 antialiased flex flex-col justify-center items-center p-4">
+<body class="min-h-screen bg-slate-50 font-sans text-slate-900 antialiased selection:bg-primary selection:text-white flex flex-col">
 
-    <a href="https://nexgenweblab.com" class="absolute top-6 left-6 text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors">
-        <i class="fa-solid fa-arrow-left mr-2"></i> Back to Home
-    </a>
-
-    <div class="w-full max-w-md bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-200 p-8 sm:p-10 my-8">
-        
-        <div class="text-center mb-6">
-            <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 text-primary text-2xl mb-4">
-                <i class="fa-solid fa-user-plus"></i>
+    <header class="sticky top-0 z-50 backdrop-blur-xl border-b border-slate-200/90 bg-white/80">
+        <div class="max-w-7xl mx-auto flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
+            
+            <a href="https://nexgenweblab.com" class="flex items-center">
+                <img src="assets/images/logo.png" alt="NexGenWebLab" class="h-10 w-auto object-contain">
+            </a>
+            
+            <nav class="hidden md:flex items-center gap-6 font-medium text-sm text-slate-600">
+                <a href="https://nexgenweblab.com" class="hover:text-primary transition-colors">Home</a>
+                <a href="pricing.html" class="text-primary font-semibold transition-colors">Pricing</a>
+            </nav>
+            <div class="flex items-center gap-3">
+                <a href="https://tools.nexgenweblab.com" class="hidden sm:inline-block text-sm font-semibold text-slate-600 hover:text-slate-900">Log in</a>
+                <a href="auth.html" class="hidden sm:inline-block text-sm font-bold border-2 border-primary text-primary px-4 py-2 rounded-lg hover:bg-primary hover:text-white transition-all">Sign up</a>
+                <a href="https://tools.nexgenweblab.com" class="text-sm font-bold bg-slate-900 text-white px-5 py-2.5 rounded-lg hover:bg-slate-800 transition-all shadow-md">
+                    Open App <i class="fa-solid fa-arrow-right ml-1"></i>
+                </a>
             </div>
-            <h1 class="text-2xl font-bold tracking-tight" id="form-title">Create an account</h1>
         </div>
+    </header>
 
-        <div id="step-1-container">
-            <form id="auth-form" class="space-y-4">
-                
-                <div class="grid grid-cols-2 gap-3 mb-4">
-                    <label class="cursor-pointer">
-                        <input type="radio" name="plan" value="free" id="plan-free" class="peer sr-only" checked>
-                        <div class="rounded-xl border-2 border-slate-200 p-3 peer-checked:border-primary peer-checked:bg-primary/5 transition-all text-center">
-                            <div class="font-bold text-slate-800">Starter</div>
-                            <div class="text-xs text-slate-500">Free forever</div>
-                        </div>
-                    </label>
-                    <label class="cursor-pointer">
-                        <input type="radio" name="plan" value="pro" id="plan-pro" class="peer sr-only">
-                        <div class="rounded-xl border-2 border-slate-200 p-3 peer-checked:border-secondary peer-checked:bg-secondary/5 transition-all text-center">
-                            <div class="font-bold text-secondary">Pro</div>
-                            <div class="text-xs text-slate-500">$9.99/month</div>
-                        </div>
-                    </label>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Email address</label>
-                    <input type="email" id="email" required placeholder="you@company.com" 
-                        class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all font-medium">
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Password</label>
-                    <input type="password" id="password" required placeholder="••••••••" 
-                        class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all font-medium">
-                </div>
-
-                <button type="submit" class="w-full py-3 px-4 rounded-xl font-bold bg-slate-900 text-white hover:bg-slate-800 transition-colors mt-2">
-                    Create Account & Continue
-                </button>
-            </form>
-
-            <div class="mt-6 relative flex items-center justify-center">
-                <div class="absolute w-full border-t border-slate-200"></div>
-                <span class="bg-white px-4 text-xs font-medium text-slate-400 relative z-10 uppercase tracking-wider">Or</span>
+    <main class="flex-grow">
+        <section class="pt-20 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h1 class="text-4xl md:text-5xl font-black tracking-tight mb-4 text-slate-900">Simple, transparent pricing</h1>
+                <p class="text-lg text-slate-600 max-w-2xl mx-auto">No hidden fees. Start for free, upgrade when you need traffic analytics and bulk reports.</p>
             </div>
 
-            <button type="button" id="google-login-btn" class="mt-6 w-full py-3 px-4 rounded-xl font-bold border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 transition-colors flex items-center justify-center gap-2">
-                <i class="fa-brands fa-google text-red-500"></i> Continue with Google
-            </button>
-
-            <p class="text-center text-sm text-slate-600 mt-6 font-medium">
-                Already have an account? <a href="https://tools.nexgenweblab.com" class="text-primary hover:underline">Log in here</a>
-            </p>
-        </div>
-
-        <div id="step-2-container" class="hidden">
-            <div class="p-5 border border-slate-200 rounded-xl bg-slate-50 space-y-4">
-                <div class="flex justify-between items-center border-b border-slate-200 pb-3">
-                    <h4 class="font-semibold text-slate-800"><i class="fa-brands fa-cc-stripe text-indigo-500 text-lg mr-1"></i> Secure Checkout</h4>
-                    <span class="text-sm font-bold text-secondary">Payoneer / Card</span>
-                </div>
-                <form id="payment-form" class="space-y-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Card Number / Account</label>
-                        <input type="text" required placeholder="0000 0000 0000 0000" class="w-full px-3 py-2.5 rounded-lg border border-slate-300 text-sm outline-none focus:border-primary bg-white">
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                    <h3 class="text-2xl font-bold text-slate-900 mb-2">Starter</h3>
+                    <p class="text-slate-500 mb-6">Perfect for quick, single-site audits.</p>
+                    <div class="mb-8">
+                        <span class="text-5xl font-black">$0</span>
+                        <span class="text-slate-500 font-medium">/forever</span>
                     </div>
-                    <div class="flex gap-3">
-                        <div class="w-1/2">
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Expiry</label>
-                            <input type="text" required placeholder="MM/YY" class="w-full px-3 py-2.5 rounded-lg border border-slate-300 text-sm outline-none focus:border-primary bg-white">
-                        </div>
-                        <div class="w-1/2">
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">CVC</label>
-                            <input type="text" required placeholder="123" class="w-full px-3 py-2.5 rounded-lg border border-slate-300 text-sm outline-none focus:border-primary bg-white">
-                        </div>
+                    <ul class="space-y-4 mb-8 flex-grow">
+                        <li class="flex items-start gap-3 text-slate-600"><i class="fa-solid fa-check text-emerald-500 mt-1"></i> Technical On-Page SEO Checks</li>
+                        <li class="flex items-start gap-3 text-slate-600"><i class="fa-solid fa-check text-emerald-500 mt-1"></i> Core Web Vitals (Speed)</li>
+                        <li class="flex items-start gap-3 text-slate-600"><i class="fa-solid fa-check text-emerald-500 mt-1"></i> AI Strategy Suggestions</li>
+                        <li class="flex items-start gap-3 text-slate-600"><i class="fa-solid fa-check text-emerald-500 mt-1"></i> Export .DOCX Reports</li>
+                        <li class="flex items-start gap-3 text-slate-400"><i class="fa-solid fa-xmark mt-1"></i> No Traffic Analytics</li>
+                        <li class="flex items-start gap-3 text-slate-400"><i class="fa-solid fa-xmark mt-1"></i> No Bulk Analysis Engine</li>
+                    </ul>
+                    <a href="auth.html?plan=free" class="block w-full py-3 px-4 text-center rounded-xl font-bold border-2 border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition-colors">Start Free Account</a>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl flex flex-col relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary to-secondary text-white text-xs font-bold uppercase tracking-wide py-1 px-4 rounded-b-lg">Most Popular</div>
+                    
+                    <h3 class="text-2xl font-bold text-white mb-2 mt-2">Enterprise Pro</h3>
+                    <p class="text-slate-400 mb-6">For agencies and serious marketers.</p>
+                    <div class="mb-8">
+                        <span class="text-5xl font-black text-white">$9.99</span>
+                        <span class="text-slate-400 font-medium">/month</span>
                     </div>
-                    <button type="submit" id="pay-btn" class="w-full py-3 px-4 rounded-xl font-bold bg-gradient-to-r from-primary to-secondary text-white hover:opacity-90 transition-opacity mt-4 shadow-md">
-                        Pay $9.99 & Start
-                    </button>
-                </form>
+                    <ul class="space-y-4 mb-8 flex-grow">
+                        <li class="flex items-start gap-3 text-slate-300"><i class="fa-solid fa-check text-primary mt-1"></i> Everything in Starter</li>
+                        <li class="flex items-start gap-3 text-white font-medium"><i class="fa-solid fa-check text-primary mt-1"></i> Live Traffic API Analytics</li>
+                        <li class="flex items-start gap-3 text-white font-medium"><i class="fa-solid fa-check text-primary mt-1"></i> Bulk Excel Analysis Engine</li>
+                        <li class="flex items-start gap-3 text-slate-300"><i class="fa-solid fa-check text-primary mt-1"></i> Priority Agency Support</li>
+                    </ul>
+                    <a href="auth.html?plan=pro" class="block w-full py-3 px-4 text-center rounded-xl font-bold bg-gradient-to-r from-primary to-secondary text-white hover:opacity-90 transition-opacity">Upgrade to Pro</a>
+                </div>
             </div>
-            <p class="text-center text-xs text-slate-400 mt-4"><i class="fa-solid fa-lock"></i> 256-bit Encrypted Transaction</p>
+        </section>
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            
+            <a href="https://nexgenweblab.com" class="flex items-center">
+                <img src="assets/images/logo.png" alt="NexGenWebLab" class="h-8 w-auto opacity-90 hover:opacity-100 transition-opacity">
+            </a>
+            
+            <div class="flex gap-6 text-sm font-semibold text-slate-500">
+                <a href="https://nexgenweblab.com" class="hover:text-primary transition-colors">Home</a>
+                <a href="pricing.html" class="hover:text-primary transition-colors">Pricing</a>
+            </div>
+            
+            <div class="text-sm text-slate-400 font-medium">
+                &copy; 2026 NexGenWebLab. All rights reserved.
+            </div>
         </div>
+    </footer>
 
-    </div>
-
-    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/main.js"></script>
 </body>
 </html>
