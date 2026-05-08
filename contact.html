@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | NexGenWebLab Support</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { primary: '#6D28D9', secondary: '#DB2777', } } } }
+    </script>
+</head>
+<body class="bg-slate-50">
+    <header class="sticky top-0 z-50 backdrop-blur-xl border-b border-slate-200 bg-white/80">
+        <div class="max-w-7xl mx-auto flex items-center justify-between h-16 px-6">
+            <a href="https://nexgenweblab.com" class="flex items-center">
+                <img src="assets/images/logo.png" alt="NexGenWebLab" class="h-10 w-auto">
+            </a>
+            <nav class="hidden md:flex items-center gap-8 font-medium text-sm text-slate-600">
+                <a href="https://nexgenweblab.com">Home</a>
+                <a href="about.html">About Us</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="contact.html" class="text-primary font-bold">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="py-20">
+        <div class="max-w-5xl mx-auto px-6 grid md:grid-cols-2 gap-12">
+            <div>
+                <h1 class="text-4xl font-black mb-6">Get in Touch</h1>
+                <p class="text-slate-600 mb-8 font-medium">Have a question about our Enterprise Pro plan? Or need help with your audit report? Our team is here to help 24/7.</p>
+                <div class="space-y-4">
+                    <div class="flex gap-4 items-center">
+                        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary"><i class="fa-solid fa-envelope"></i></div>
+                        <span class="font-bold">support@nexgenweblab.com</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+                <form class="space-y-4">
+                    <input type="text" placeholder="Your Name" class="w-full p-4 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:border-primary">
+                    <input type="email" placeholder="Your Email" class="w-full p-4 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:border-primary">
+                    <textarea placeholder="How can we help?" rows="4" class="w-full p-4 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:border-primary"></textarea>
+                    <button class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-slate-800 transition">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
