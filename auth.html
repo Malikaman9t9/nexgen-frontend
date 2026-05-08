@@ -4,97 +4,112 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up | NexGenWebLab</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'], },
-                    colors: { primary: '#6D28D9', secondary: '#DB2777', }
-                }
-            }
-        }
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'], }, colors: { primary: '#6D28D9', secondary: '#DB2777', } } } }
     </script>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body class="min-h-screen bg-slate-50 font-sans text-slate-900 antialiased flex flex-col justify-center items-center p-4">
+<body class="min-h-screen bg-slate-100 font-sans text-slate-900 antialiased flex flex-col justify-center items-center p-4 relative overflow-hidden">
 
-    <a href="index.html" class="absolute top-6 left-6 text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors">
-        <i class="fa-solid fa-arrow-left mr-2"></i> Back to Home
+    <div class="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
+    <div class="absolute bottom-0 left-0 w-96 h-96 bg-secondary/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
+
+    <a href="https://nexgenweblab.com" class="absolute top-8 left-8 text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors z-20 flex items-center gap-2">
+        <i class="fa-solid fa-arrow-left"></i> Back to Home
     </a>
 
-    <div class="w-full max-w-md bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-200 p-8 sm:p-10 my-8">
+    <div class="w-full max-w-lg bg-white rounded-[2rem] shadow-2xl shadow-slate-200/60 border border-slate-200 p-8 sm:p-12 my-8 relative z-10">
         
-        <div class="text-center mb-6">
-            <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 text-primary text-2xl mb-4">
-                <i class="fa-solid fa-user-plus"></i>
-            </div>
-            <h1 class="text-2xl font-bold tracking-tight">Create an account</h1>
+        <div class="text-center mb-8">
+            <img src="assets/images/logo.png" alt="Logo" class="h-8 mx-auto mb-6">
+            <h1 class="text-3xl font-black tracking-tight" id="form-title">Create an account</h1>
+            <p class="text-slate-500 font-medium mt-2">Start auditing your website in seconds.</p>
         </div>
 
-        <form id="auth-form" class="space-y-4">
-            
-            <div class="grid grid-cols-2 gap-3 mb-4">
-                <label class="cursor-pointer">
-                    <input type="radio" name="plan" value="free" id="plan-free" class="peer sr-only" checked>
-                    <div class="rounded-xl border-2 border-slate-200 p-3 peer-checked:border-primary peer-checked:bg-primary/5 transition-all text-center">
-                        <div class="font-bold text-slate-800">Starter</div>
-                        <div class="text-xs text-slate-500">Free forever</div>
-                    </div>
-                </label>
-                <label class="cursor-pointer">
-                    <input type="radio" name="plan" value="pro" id="plan-pro" class="peer sr-only">
-                    <div class="rounded-xl border-2 border-slate-200 p-3 peer-checked:border-secondary peer-checked:bg-secondary/5 transition-all text-center">
-                        <div class="font-bold text-secondary">Pro</div>
-                        <div class="text-xs text-slate-500">$9.99/month</div>
-                    </div>
-                </label>
-            </div>
-
-            <div id="payment-box" class="hidden p-4 border border-slate-200 rounded-xl bg-slate-50 space-y-3">
-                <div class="flex justify-between items-center">
-                    <h4 class="font-semibold text-sm text-slate-800"><i class="fa-brands fa-cc-stripe text-indigo-500"></i> Secure Checkout</h4>
-                    <span class="text-xs font-bold text-secondary">Payoneer / Card</span>
+        <div id="step-1-container">
+            <form id="auth-form" class="space-y-5">
+                
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="plan" value="free" id="plan-free" class="peer sr-only" checked>
+                        <div class="rounded-2xl border-2 border-slate-200 p-4 peer-checked:border-primary peer-checked:bg-primary/5 transition-all text-center">
+                            <div class="font-bold text-slate-900 text-lg">Starter</div>
+                            <div class="text-sm text-slate-500 font-medium mt-1">Free forever</div>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="plan" value="pro" id="plan-pro" class="peer sr-only">
+                        <div class="rounded-2xl border-2 border-slate-200 p-4 peer-checked:border-secondary peer-checked:bg-secondary/5 transition-all text-center">
+                            <div class="font-bold text-secondary text-lg">Pro</div>
+                            <div class="text-sm text-slate-500 font-medium mt-1">$9.99/mo</div>
+                        </div>
+                    </label>
                 </div>
-                <input type="text" placeholder="Card Number or Payoneer Email" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none bg-white">
-                <div class="flex gap-2">
-                    <input type="text" placeholder="MM/YY" class="w-1/2 px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none bg-white">
-                    <input type="text" placeholder="CVC" class="w-1/2 px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none bg-white">
+
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Email address</label>
+                    <input type="email" id="email" required placeholder="you@company.com" 
+                        class="w-full px-5 py-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-lg">
                 </div>
+                
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Password</label>
+                    <input type="password" id="password" required placeholder="••••••••" 
+                        class="w-full px-5 py-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-lg">
+                </div>
+
+                <button type="submit" class="w-full py-4 px-6 rounded-xl font-bold bg-slate-900 text-white hover:bg-slate-800 transition-colors mt-4 text-lg shadow-lg">
+                    Create Account & Continue
+                </button>
+            </form>
+
+            <div class="mt-8 relative flex items-center justify-center">
+                <div class="absolute w-full border-t border-slate-200"></div>
+                <span class="bg-white px-4 text-xs font-bold text-slate-400 relative z-10 uppercase tracking-widest">Or</span>
             </div>
 
-            <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Email address</label>
-                <input type="email" id="email" required placeholder="you@company.com" 
-                    class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all font-medium">
-            </div>
-            
-            <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Password</label>
-                <input type="password" id="password" required placeholder="••••••••" 
-                    class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all font-medium">
-            </div>
-
-            <button type="submit" class="w-full py-3 px-4 rounded-xl font-bold bg-slate-900 text-white hover:bg-slate-800 transition-colors mt-2">
-                Create Account & Continue
+            <button type="button" id="google-login-btn" class="mt-8 w-full py-4 px-6 rounded-xl font-bold border-2 border-slate-200 text-slate-700 bg-white hover:bg-slate-50 transition-colors flex items-center justify-center gap-3 text-lg">
+                <i class="fa-brands fa-google text-red-500"></i> Continue with Google
             </button>
-        </form>
 
-        <div class="mt-6 relative flex items-center justify-center">
-            <div class="absolute w-full border-t border-slate-200"></div>
-            <span class="bg-white px-4 text-xs font-medium text-slate-400 relative z-10 uppercase tracking-wider">Or</span>
+            <p class="text-center text-slate-600 mt-8 font-medium">
+                Already have an account? <a href="https://tools.nexgenweblab.com" class="text-primary font-bold hover:underline">Log in</a>
+            </p>
         </div>
 
-        <button type="button" id="google-login-btn" class="mt-6 w-full py-3 px-4 rounded-xl font-bold border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 transition-colors flex items-center justify-center gap-2">
-            <i class="fa-brands fa-google text-red-500"></i> Continue with Google
-        </button>
+        <div id="step-2-container" class="hidden">
+            <div class="p-6 border-2 border-slate-200 rounded-2xl bg-slate-50 space-y-5">
+                <div class="flex justify-between items-center border-b border-slate-200 pb-4">
+                    <h4 class="font-bold text-slate-800 text-lg"><i class="fa-brands fa-cc-stripe text-indigo-500 mr-2"></i> Secure Checkout</h4>
+                    <span class="text-sm font-black text-secondary uppercase tracking-wide">Payoneer / Card</span>
+                </div>
+                <form id="payment-form" class="space-y-4 pt-2">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Card Number</label>
+                        <input type="text" required placeholder="0000 0000 0000 0000" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-base font-medium outline-none focus:border-primary bg-white shadow-sm">
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="w-1/2">
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Expiry</label>
+                            <input type="text" required placeholder="MM/YY" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-base font-medium outline-none focus:border-primary bg-white shadow-sm">
+                        </div>
+                        <div class="w-1/2">
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">CVC</label>
+                            <input type="text" required placeholder="123" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-base font-medium outline-none focus:border-primary bg-white shadow-sm">
+                        </div>
+                    </div>
+                    <button type="submit" id="pay-btn" class="w-full py-4 px-6 rounded-xl font-black bg-gradient-to-r from-primary to-secondary text-white hover:opacity-90 transition-opacity mt-6 shadow-xl text-lg tracking-wide">
+                        Pay $9.99 & Start
+                    </button>
+                </form>
+            </div>
+            <p class="text-center text-xs font-bold text-slate-400 mt-6 uppercase tracking-widest"><i class="fa-solid fa-lock mr-1"></i> 256-bit Encrypted</p>
+        </div>
 
-        <p class="text-center text-sm text-slate-600 mt-6 font-medium">
-            Already have an account? <a href="https://tools.nexgenweblab.com" class="text-primary hover:underline">Log in here</a>
-        </p>
     </div>
 
     <script src="assets/js/auth.js"></script>
