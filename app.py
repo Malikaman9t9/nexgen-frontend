@@ -23,7 +23,12 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 # Streamlit Page Config (Must be first Streamlit command)
-st.set_page_config(page_title="NexGenWebLab VIP | Enterprise SEO", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(
+    page_title="NexGenWebLab VIP | Enterprise SEO", 
+    page_icon="favicon.png", 
+    layout="wide", 
+    initial_sidebar_state="expanded"
+)
 
 try:
     if not SUPABASE_URL or not SUPABASE_KEY:
