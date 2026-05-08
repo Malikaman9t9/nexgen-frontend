@@ -1,4 +1,4 @@
-// 1. Supabase Initialization
+// Supabase Initialization
 const SUPABASE_URL = 'https://ubnvjmvobwzsystdktpk.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Fj_rv9LPpfh5nDouVW-bSw_hdfpn4-v';
 
@@ -6,37 +6,31 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 document.addEventListener('DOMContentLoaded', () => {
     const authForm = document.getElementById('auth-form');
+    const paymentForm = document.getElementById('payment-form');
     const googleBtn = document.getElementById('google-login-btn');
-    const paymentBox = document.getElementById('payment-box');
-    const planRadios = document.querySelectorAll('input[name="plan"]');
     
-    // Check URL parameters for Plan auto-selection
+    const step1Container = document.getElementById('step-1-container');
+    const step2Container = document.getElementById('step-2-container');
+    const formTitle = document.getElementById('form-title');
+    
+    // Check URL parameters for Plan auto-selection from Pricing page
     const urlParams = new URLSearchParams(window.location.search);
     const planParam = urlParams.get('plan');
-    
     if (planParam === 'pro') {
         document.getElementById('plan-pro').checked = true;
-        paymentBox.classList.remove('hidden');
     }
 
-    // Toggle dummy payment box on radio change
-    planRadios.forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            if (e.target.value === 'pro') {
-                paymentBox.classList.remove('hidden');
-            } else {
-                paymentBox.classList.add('hidden');
-            }
-        });
-    });
+    // Temporary storage for redirect parameters
+    let userEmail = "";
+    let userPwd = "";
 
-    // --- EMAIL SIGNUP WITH PLAN METADATA ---
+    // --- STEP 1: CREATE ACCOUNT LOGIC ---
     if (authForm) {
         authForm.addEventListener('submit', async (e) => {
             e.preventDefault(); 
             
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            userEmail = document.getElementById('email').value;
+            userPwd = document.getElementById('password').value;
             const selectedPlan = document.querySelector('input[name="plan"]:checked').value;
             const submitBtn = authForm.querySelector('button[type="submit"]');
             
@@ -45,8 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Sending Plan info to Supabase Metadata
             const { data, error } = await supabaseClient.auth.signUp({
-                email: email,
-                password: password,
+                email: userEmail,
+                password: userPwd,
                 options: {
                     data: {
                         plan: selectedPlan
@@ -59,10 +53,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.innerText = "Create Account & Continue";
                 submitBtn.disabled = false;
             } else {
-                // Success - Redirecting to backend for auto-login
-                const redirectUrl = `https://tools.nexgenweblab.com/?em=${encodeURIComponent(email)}&pw=${encodeURIComponent(password)}`;
-                window.location.href = redirectUrl;
+                // Success - Check Plan Type
+                if (selectedPlan === 'pro') {
+                    // Hide Step 1, Show Step 2 (Payment Form)
+                    step1Container.classList.add('hidden');
+                    step2Container.classList.remove('hidden');
+                    formTitle.innerText = "Complete Payment";
+                } else {
+                    // Free Plan - Direct Redirect to Tool
+                    const redirectUrl = `https://tools.nexgenweblab.com/?em=${encodeURIComponent(userEmail)}&pw=${encodeURIComponent(userPwd)}`;
+                    window.location.href = redirectUrl;
+                }
             }
+        });
+    }
+
+    // --- STEP 2: DUMMY PAYMENT LOGIC ---
+    if (paymentForm) {
+        paymentForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const payBtn = document.getElementById('pay-btn');
+            
+            payBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+            payBtn.disabled = true;
+
+            // Simulating a 1.5 second payment process
+            setTimeout(() => {
+                alert("Payment Successful! Welcome to Enterprise Pro.");
+                // Redirect to Tool with login credentials
+                const redirectUrl = `https://tools.nexgenweblab.com/?em=${encodeURIComponent(userEmail)}&pw=${encodeURIComponent(userPwd)}`;
+                window.location.href = redirectUrl;
+            }, 1500);
         });
     }
 
@@ -78,10 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 provider: 'google',
                 options: {
                     redirectTo: 'https://tools.nexgenweblab.com',
-                    queryParams: {
-                        // Passing metadata for google signup
-                        plan: selectedPlan
-                    }
+                    queryParams: { plan: selectedPlan }
                 }
             });
 
