@@ -12,13 +12,18 @@ from datetime import datetime, timedelta
 import zipfile
 import io
 
-# Load APIs
+# ==========================================
+# 1. INITIALIZATION & APIs
+# ==========================================
 load_dotenv()
 SPEED_API_KEY = os.getenv("SPEED_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+# Streamlit Page Config (Must be first Streamlit command)
+st.set_page_config(page_title="NexGenWebLab VIP | Enterprise SEO", layout="wide", initial_sidebar_state="expanded")
 
 try:
     if not SUPABASE_URL or not SUPABASE_KEY:
@@ -29,9 +34,9 @@ except Exception as e:
     st.error(f"Database connection failed. Exact Error: {str(e)}")
     st.stop()
 
-st.set_page_config(page_title="NexGenWebLab VIP | Enterprise SEO", layout="wide", initial_sidebar_state="expanded")
-
-# --- AUTHENTICATION GATE ---
+# ==========================================
+# 2. AUTHENTICATION GATE (Login / Auto-fill)
+# ==========================================
 if 'user' not in st.session_state:
     st.session_state.user = None
 
@@ -72,17 +77,26 @@ if st.session_state.user is None:
         """, unsafe_allow_html=True)
     st.stop() 
 
-# --- PLAN & PROFILE LOGIC ---
+# ==========================================
+# 3. SUBSCRIPTION PLAN LOGIC (Read from Metadata)
+# ==========================================
+user_metadata = getattr(st.session_state.user, 'user_metadata', {})
+if user_metadata is None:
+    user_metadata = {}
+
+plan_type = user_metadata.get('plan', 'free')
+user_email = st.session_state.user.email
+
 is_pro = False
 plan_name = "Starter Plan"
-user_email = st.session_state.user.email
-# Any email with these keywords gets PRO access automatically for testing
-if any(keyword in user_email.lower() for keyword in ["pro", "admin", "premium"]):
+
+# Agar frontend se 'pro' metadata aaya ho ya email mein test keyword ho
+if plan_type == 'pro' or any(keyword in user_email.lower() for keyword in ["pro", "admin", "premium"]):
     is_pro = True
     plan_name = "Enterprise Pro"
 
 # ==========================================
-# TOOL CORE FUNCTIONALITY START
+# 4. LOAD MODULES & CSS
 # ==========================================
 try:
     from modules.onpage_scraper import get_basic_onpage
@@ -97,7 +111,6 @@ except ImportError as e:
 st.markdown('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">', unsafe_allow_html=True)
 st.markdown('<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">', unsafe_allow_html=True)
 
-# ... (All CSS Styles same as previous) ...
 st.markdown("""
 <style>
     [data-testid="stHeader"] { background-color: transparent !important; }
@@ -146,17 +159,21 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ... (All Helper functions like render_overview_donut, get_audit_status_vip remain EXACTLY SAME) ...
+# ==========================================
+# 5. HELPER FUNCTIONS
+# ==========================================
 def render_overview_donut(score):
     color = "#ef4444" if score < 50 else "#f59e0b" if score < 90 else "#10b981"
     fig = go.Figure(go.Pie(values=[max(score, 0), max(100-score, 0)], labels=["Score", "Remaining"], hole=.8, marker_colors=[color, "#f1f5f9"], textinfo='none', hoverinfo='none'))
     fig.update_layout(annotations=[dict(text=str(int(score)), x=0.5, y=0.5, font_size=45, font_weight=900, font_color='#0f172a', showarrow=False)], showlegend=False, margin=dict(l=0, r=0, t=0, b=0), height=180, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
     return fig
+
 def render_small_gauge(score):
     color = "#ef4444" if score < 50 else "#f59e0b" if score < 90 else "#10b981"
     fig = go.Figure(go.Pie(values=[max(score, 0), max(100-score, 0)], labels=["Score", "Remaining"], hole=.75, marker_colors=[color, "#f1f5f9"], textinfo='none', hoverinfo='none'))
     fig.update_layout(annotations=[dict(text=str(int(score)), x=0.5, y=0.5, font_size=24, font_weight=800, font_color='#0f172a', showarrow=False)], showlegend=False, margin=dict(l=0, r=0, t=10, b=10), height=110, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
     return fig
+
 def get_audit_status_vip(v, type):
     tips = {
         "title": "Keep title between 30-60 chars.", "meta": "Write description between 150-160 chars.",
@@ -229,10 +246,12 @@ def get_audit_status_vip(v, type):
         else: return ("fa-solid fa-circle-info", "SEO Factor", "info", "N/A", actual)
     except Exception as e:
         return ("fa-solid fa-triangle-exclamation", "Extraction Error", "danger", f"Error: {e}", "N/A")
+
 def render_audit_card_vip(label, data):
     icon, message, status_class, tip, actual_data = data
     html = f"""<div class="audit-item status-{status_class}"><div class="audit-header"><i class="{icon}" style="color:var(--text-color);"></i><div class="audit-item-content"><span class="audit-item-title">{label}</span><span class="audit-item-desc">{message}</span></div></div><div class="actual-data-box">{actual_data}</div><details class="seo-tip"><summary>How to fix</summary><p>{tip}</p></details></div>"""
     return html.replace('\n', '')
+
 def render_speed_metric(label, data_obj):
     score = data_obj.get('score', 0)
     value = data_obj.get('value', 'N/A')
@@ -241,6 +260,7 @@ def render_speed_metric(label, data_obj):
     else: color, icon = "#ef4444", "fa-solid fa-triangle-exclamation"
     html = f"""<div class="speed-metric-card"><div style="display: flex; align-items: center;"><i class="{icon}" style="color: {color}; font-size: 16px; margin-right: 12px; width: 16px;"></i><span style="font-size: 14px; font-weight: 700; color: #334155;">{label}</span></div><span style="font-size: 16px; font-weight: 900; color: {color};">{value}</span></div>"""
     return html.replace('\n', '')
+
 def calculate_ov_vip(onpage, speed):
     critical, warnings, passed = 0, 0, 0
     if not onpage: return 0, 0, 0, 0
@@ -276,6 +296,9 @@ def calculate_ov_vip(onpage, speed):
     final_score = int((max(onpage_score, 0) + ((m_speed + d_speed) / 2)) / 2)
     return final_score, critical, warnings, passed
 
+# ==========================================
+# 6. UI: SIDEBAR
+# ==========================================
 with st.sidebar:
     st.markdown(f"""
     <div style="background-color: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
@@ -293,6 +316,14 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
     
+    # UPGRADE BUTTON FOR FREE USERS
+    if not is_pro:
+        st.markdown("""
+        <a href="https://nexgenweblab.com/pricing.html" target="_blank" style="display:block; text-align:center; background: linear-gradient(135deg, #6D28D9, #DB2777); color: white; padding: 10px; border-radius: 8px; font-weight: bold; text-decoration: none; margin-bottom: 15px; font-size: 13px; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+            <i class="fa-solid fa-bolt"></i> Upgrade to Pro
+        </a>
+        """, unsafe_allow_html=True)
+
     if st.button("Log Out", use_container_width=True):
         try: supabase.auth.sign_out()
         except: pass
@@ -307,12 +338,15 @@ with st.sidebar:
         
     st.markdown("<div style='text-align:center; color:#64748b; font-size:12px; margin-bottom:20px; margin-top: 10px;'>Enterprise SEO Suite v2.0</div>", unsafe_allow_html=True)
     
-    # Notice: Adding a Lock icon next to Bulk Analysis if it's not PRO
     bulk_icon = "file-earmark-spreadsheet" if is_pro else "lock-fill"
     menu_selection = option_menu(menu_title=None, options=["Site Auditor", "Bulk Analysis"], icons=["search", bulk_icon], default_index=0, styles={"container": {"padding": "0!important", "background-color": "transparent"}, "icon": {"color": "#94a3b8", "font-size": "18px"}, "nav-link": {"font-size": "15px", "text-align": "left", "margin":"0px", "color":"#475569", "font-weight":"600", "height":"50px", "border-radius":"10px"}, "nav-link-selected": {"background": "linear-gradient(135deg, rgba(109, 40, 217, 0.07), rgba(219, 39, 119, 0.07))", "color": "#6D28D9", "border-left": "4px solid #DB2777"}})
     st.markdown("<hr style='border-top: 1px dashed #e2e8f0; margin: 20px 0;'>", unsafe_allow_html=True)
     if st.button("Start New Audit", type="secondary", use_container_width=True): st.rerun()
 
+
+# ==========================================
+# 7. UI: MAIN CONTENT
+# ==========================================
 if menu_selection == "Site Auditor":
     st.markdown("""<div class="hero-container"><div class="hero-title">Professional <span>SEO Auditor</span></div><div class="hero-subtitle">Instantly analyze technical roadblocks, optimize on-page elements, and uncover real-time traffic insights for any website.</div></div>""", unsafe_allow_html=True)
     
@@ -452,7 +486,6 @@ if menu_selection == "Site Auditor":
                     st.markdown(render_speed_metric("Cumulative Layout Shift (CLS)", d_metrics.get('cls', {})), unsafe_allow_html=True)
 
         with tab3:
-            # TRAFFIC ANALYTICS LOCK
             if not is_pro:
                 st.markdown("""
                 <div style="text-align: center; padding: 40px 20px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; margin-top: 20px;">
@@ -502,7 +535,6 @@ if menu_selection == "Site Auditor":
 elif menu_selection == "Bulk Analysis":
     st.markdown("""<div class="hero-container"><div class="hero-title">Bulk <span>Outreach</span> Engine</div></div>""", unsafe_allow_html=True)
     
-    # BULK ANALYSIS LOCK
     if not is_pro:
         st.markdown("""
         <div style="text-align: center; padding: 60px 20px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; margin-top: 20px;">
