@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en-US" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Free SEO Audit Tool | Technical Website Checker & White Label Reports</title>
-    <meta name="description" content="NexGenWebLab is a professional technical SEO audit tool. Generate white label SEO reports, check core web vitals, and get AI-driven website analysis for free.">
-    <meta name="keywords" content="free seo audit, technical seo audit, white label seo report, website seo checker, seo report generator, core web vitals test, bulk seo checker">
+    <title>White Label SEO Report Generator | Free Technical SEO Audit Tool</title>
+    <meta name="description" content="Generate professional white label SEO reports instantly. Our technical SEO audit tool analyzes 117+ checkpoints, Core Web Vitals, and provides AI-driven growth strategies.">
+    <meta name="keywords" content="white label seo report, technical seo audit, seo report generator, free seo audit, website seo checker, core web vitals test, bulk seo checker">
     
     <link rel="icon" type="image/png" href="/assets/images/favicon.png?v=2">
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -25,263 +25,287 @@
             }
         }
     </script>
-    
+    <link rel="stylesheet" href="assets/css/style.css">
     <style>
-        .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .hero-gradient { background: radial-gradient(circle at top center, rgba(109, 40, 217, 0.08) 0%, transparent 70%); }
+        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .hero-gradient { background: radial-gradient(circle at top right, rgba(109, 40, 217, 0.08), transparent), radial-gradient(circle at bottom left, rgba(219, 39, 119, 0.05), transparent); }
         details > summary { list-style: none; }
         details > summary::-webkit-details-marker { display: none; }
     </style>
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "How do I run a technical SEO audit?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Simply enter your website URL in our auditor tool. Our engine scans 117+ technical checkpoints including core web vitals, meta structures, and server performance."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I generate white label SEO reports for clients?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes, our Enterprise Pro plan allows you to generate professional PDF and Word reports with your own agency branding and logo."
-          }
-        }
-      ]
-    }
-    </script>
 </head>
-<body class="bg-white text-slate-900 antialiased selection:bg-primary selection:text-white">
+<body class="bg-white text-slate-900 antialiased selection:bg-primary selection:text-white flex flex-col min-h-screen hero-gradient">
 
-    <header class="fixed top-0 w-full z-[100] glass-nav">
+    <header class="sticky top-0 z-[100] backdrop-blur-xl border-b border-slate-100 bg-white/80">
         <div class="max-w-7xl mx-auto flex items-center justify-between h-20 px-4 sm:px-6 lg:px-8">
-            <a href="/" class="flex items-center group transition-transform hover:scale-105">
-                <img src="/assets/images/logo.png" alt="NexGenWebLab Logo" class="h-10 w-auto object-contain">
+            <a href="/" class="flex items-center hover:opacity-90 transition-opacity">
+                <img src="/assets/images/logo.png" alt="NexGenWebLab" class="h-10 w-auto object-contain">
             </a>
-            <nav class="hidden lg:flex items-center gap-10 font-bold text-sm text-slate-500">
+            <nav class="hidden md:flex items-center gap-10 font-bold text-sm text-slate-500">
                 <a href="/" class="text-primary transition-colors">Home</a>
-                <a href="/about" class="hover:text-primary transition-colors">Company</a>
-                <a href="/pricing" class="hover:text-primary transition-colors">Pricing</a>
-                <a href="/contact" class="hover:text-primary transition-colors">Support</a>
+                <a href="/about" class="hover:text-primary transition-colors">About Solution</a>
+                <a href="/pricing" class="hover:text-primary transition-colors">Pricing Plans</a>
+                <a href="/contact" class="hover:text-primary transition-colors">Contact Support</a>
             </nav>
-            <div class="flex items-center gap-6">
-                <a href="https://tools.nexgenweblab.com" class="hidden sm:inline-block text-sm font-black text-slate-700 hover:text-primary transition-colors">Log In</a>
-                <a href="/auth" class="text-sm font-black bg-slate-900 text-white px-8 py-4 rounded-2xl hover:bg-slate-800 transition-all shadow-xl shadow-slate-200">
+            <div class="flex items-center gap-5">
+                <a href="https://tools.nexgenweblab.com" class="hidden sm:inline-block text-sm font-extrabold text-slate-600 hover:text-primary transition-colors">Client Login</a>
+                <a href="/auth" class="text-sm font-black bg-slate-900 text-white px-7 py-3.5 rounded-2xl hover:bg-slate-800 transition-all shadow-xl hover:shadow-primary/20 flex items-center gap-2">
                     Get Started Free
                 </a>
             </div>
         </div>
     </header>
 
-    <section class="relative pt-44 pb-32 hero-gradient overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-            <div data-aos="fade-down" class="inline-flex items-center gap-3 px-6 py-2 rounded-full border border-primary/20 bg-primary/5 text-xs font-black uppercase tracking-widest text-primary mb-10">
-                Automated Technical SEO Intelligence
-            </div>
-            <h1 data-aos="fade-up" class="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.9] text-slate-950">
-                Generate <span class="text-primary">White Label</span> <br> SEO Audit Reports.
+    <section class="relative pt-28 pb-20">
+        <div class="relative z-10 max-w-6xl mx-auto px-4 text-center">
+            <h1 class="text-5xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.95] text-slate-950" data-aos="fade-up" data-aos-duration="800">
+                The Most Powerful <span class="text-primary">SEO Audit Tool</span> for Modern Agencies
             </h1>
-            <p data-aos="fade-up" data-aos-delay="100" class="text-xl md:text-2xl text-slate-500 font-bold mb-16 max-w-4xl mx-auto leading-relaxed">
-                The most advanced technical SEO audit tool for agencies. Check core web vitals, identify server roadblocks, and deliver professional reports instantly.
+            <p class="text-xl md:text-2xl text-slate-500 font-bold mb-14 max-w-3xl mx-auto leading-relaxed" data-aos="fade-up" data-aos-delay="100">
+                Execute deep technical SEO audits, track Core Web Vitals, and generate stunning white label reports in under 30 seconds.
             </p>
             
-            <div data-aos="zoom-in" data-aos-delay="200" class="max-w-4xl mx-auto bg-white p-3 rounded-[2.5rem] shadow-2xl shadow-slate-200 border border-slate-100">
-                <div class="flex flex-col sm:flex-row items-center gap-3">
-                    <div class="flex items-center w-full bg-slate-50 rounded-[2rem] overflow-hidden h-20 border border-slate-200 focus-within:border-primary transition-colors">
-                        <span class="bg-slate-100 text-slate-400 px-8 h-full flex items-center font-black text-base border-r border-slate-200">HTTPS://</span>
-                        <input type="text" placeholder="Enter your website domain" class="w-full h-full bg-transparent px-6 outline-none text-slate-900 font-bold placeholder-slate-300 text-xl">
-                    </div>
-                    <a href="https://tools.nexgenweblab.com" class="w-full sm:w-auto h-20 px-14 rounded-[2rem] bg-slate-900 text-white font-black tracking-wide hover:bg-primary transition-all flex items-center justify-center whitespace-nowrap text-xl shadow-lg">
-                        Analyze Now
-                    </a>
+            <div class="max-w-4xl mx-auto bg-white p-3 rounded-[2.5rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.1)] border border-slate-100 flex flex-col sm:flex-row items-center gap-3" data-aos="zoom-in" data-aos-delay="200">
+                <div class="flex items-center w-full bg-slate-50 rounded-[2rem] overflow-hidden h-20 border border-slate-200">
+                    <span class="bg-slate-200 text-slate-500 px-6 h-full flex items-center font-bold text-base border-r border-slate-300">https://</span>
+                    <input type="text" placeholder="Enter your domain for free analysis" class="w-full h-full bg-transparent px-6 outline-none text-slate-900 font-bold placeholder-slate-400 text-xl">
                 </div>
+                <a href="https://tools.nexgenweblab.com" class="w-full sm:w-auto h-20 px-12 rounded-[2rem] bg-gradient-to-r from-primary to-secondary text-white font-black tracking-wide shadow-lg hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center whitespace-nowrap text-xl">
+                    Analyze Website
+                </a>
             </div>
             
-            <div data-aos="fade-up" data-aos-delay="300" class="mt-14 flex flex-wrap justify-center gap-10 text-xs font-black text-slate-400 uppercase tracking-[0.2em]">
-                <span class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-sm"></i> Free Analysis</span>
-                <span class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-sm"></i> Agency Ready</span>
-                <span class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-sm"></i> Core Web Vitals</span>
+            <div class="mt-12 flex flex-wrap justify-center gap-10 text-sm font-extrabold text-slate-400 uppercase tracking-widest" data-aos="fade-up" data-aos-delay="400">
+                <a href="/auth" class="hover:text-slate-600 transition-colors">Free Analysis</a>
+                <a href="/pricing" class="hover:text-slate-600 transition-colors">Technical Reports</a>
+                <a href="/pricing" class="hover:text-slate-600 transition-colors">White Label Export</a>
+                <a href="/about" class="hover:text-slate-600 transition-colors">AI Driven Insights</a>
             </div>
         </div>
     </section>
 
-    <section class="py-32 bg-white border-y border-slate-50">
+    <section class="py-20 bg-slate-50/50 border-y border-slate-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-16">
-                <div data-aos="fade-up" class="group">
-                    <div class="w-16 h-16 rounded-[1.5rem] bg-primary/5 flex items-center justify-center text-primary text-3xl mb-8 group-hover:bg-primary group-hover:text-white transition-all">
-                        <i class="fa-solid fa-magnifying-glass-chart"></i>
-                    </div>
-                    <h3 class="text-2xl font-black mb-4">Deep Website Crawler</h3>
-                    <p class="text-slate-500 font-bold leading-relaxed text-lg">Our website seo checker analyzes your site structure, identifying duplicate content, broken headers, and indexing issues.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-200 text-center" data-aos="fade-up" data-aos-delay="100">
+                    <div class="text-6xl font-black text-primary mb-3">117+</div>
+                    <div class="text-sm font-black text-slate-400 uppercase tracking-widest">Audit Checkpoints</div>
                 </div>
-                <div data-aos="fade-up" data-aos-delay="100" class="group">
-                    <div class="w-16 h-16 rounded-[1.5rem] bg-secondary/5 flex items-center justify-center text-secondary text-3xl mb-8 group-hover:bg-secondary group-hover:text-white transition-all">
-                        <i class="fa-solid fa-bolt-lightning"></i>
-                    </div>
-                    <h3 class="text-2xl font-black mb-4">Performance Metrics</h3>
-                    <p class="text-slate-500 font-bold leading-relaxed text-lg">Run a real-time core web vitals test to measure page speed, server latency, and cumulative layout shift accuracy.</p>
+                <div class="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-200 text-center" data-aos="fade-up" data-aos-delay="200">
+                    <div class="text-6xl font-black text-secondary mb-3">30s</div>
+                    <div class="text-sm font-black text-slate-400 uppercase tracking-widest">Processing Speed</div>
                 </div>
-                <div data-aos="fade-up" data-aos-delay="200" class="group">
-                    <div class="w-16 h-16 rounded-[1.5rem] bg-blue-50 flex items-center justify-center text-blue-600 text-3xl mb-8 group-hover:bg-blue-600 group-hover:text-white transition-all">
-                        <i class="fa-solid fa-microchip"></i>
-                    </div>
-                    <h3 class="text-2xl font-black mb-4">AI-Driven Action Plan</h3>
-                    <p class="text-slate-500 font-bold leading-relaxed text-lg">Get more than just errors. Our AI translates technical data into step-by-step optimization strategies for your developers.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-32 bg-slate-50 overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-24 items-center">
-                <div data-aos="fade-right">
-                    <span class="text-secondary font-black uppercase tracking-widest text-sm">Professional Exports</span>
-                    <h2 class="text-5xl md:text-7xl font-black tracking-tight mt-6 mb-10 leading-[1.05]">
-                        Branded <span class="text-primary">Agency</span> Reports.
-                    </h2>
-                    <p class="text-xl text-slate-500 font-bold mb-12 leading-relaxed">
-                        Stand out with our professional **seo report generator**. Stop sending ugly screenshots and start providing high-value technical documents to your clients.
-                    </p>
-                    <div class="space-y-8 mb-12">
-                        <div class="flex items-start gap-6">
-                            <div class="mt-1 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary"><i class="fa-solid fa-check text-xs"></i></div>
-                            <div>
-                                <h4 class="font-black text-slate-900 text-lg">Custom Branding</h4>
-                                <p class="text-slate-500 font-bold">Upload your agency logo and use custom colors to match your brand identity perfectly.</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-6">
-                            <div class="mt-1 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary"><i class="fa-solid fa-check text-xs"></i></div>
-                            <div>
-                                <h4 class="font-black text-slate-900 text-lg">Comprehensive Data</h4>
-                                <p class="text-slate-500 font-bold">Include detailed sections on technical SEO, security protocols, and mobile accessibility scores.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <a href="/pricing" class="inline-flex items-center gap-3 bg-slate-900 text-white font-black px-12 py-5 rounded-[2rem] hover:bg-primary transition-all shadow-2xl">
-                        Unlock Pro Reports <i class="fa-solid fa-arrow-right"></i>
-                    </a>
-                </div>
-                <div data-aos="fade-left" class="relative">
-                    <div class="absolute -inset-10 bg-gradient-to-tr from-primary/10 to-secondary/10 blur-[100px] rounded-full"></div>
-                    <div class="relative bg-white p-6 rounded-[3rem] shadow-2xl border border-slate-200">
-                        <div class="bg-slate-900 rounded-3xl p-10 text-white aspect-[4/5] flex flex-col justify-between">
-                            <div>
-                                <div class="w-12 h-12 bg-white/10 rounded-xl mb-6"></div>
-                                <h3 class="text-3xl font-black">Audit Report</h3>
-                                <p class="text-slate-400 mt-2 font-bold">Client: yourdomain.com</p>
-                                <div class="mt-10 space-y-4">
-                                    <div class="h-2 w-full bg-white/10 rounded-full"></div>
-                                    <div class="h-2 w-4/5 bg-white/10 rounded-full"></div>
-                                    <div class="h-2 w-full bg-white/10 rounded-full"></div>
-                                </div>
-                            </div>
-                            <div class="flex justify-between items-end">
-                                <div class="text-4xl font-black text-emerald-400">92/100</div>
-                                <div class="text-xs font-black uppercase tracking-widest text-slate-500">Prepared by Your Agency</div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-200 text-center" data-aos="fade-up" data-aos-delay="300">
+                    <div class="text-6xl font-black text-slate-900 mb-3">10k+</div>
+                    <div class="text-sm font-black text-slate-400 uppercase tracking-widest">Users Worldwide</div>
                 </div>
             </div>
         </div>
     </section>
 
     <section class="py-32 bg-white">
-        <div class="max-w-5xl mx-auto px-4">
-            <div data-aos="fade-up" class="text-center mb-20">
-                <h2 class="text-4xl md:text-6xl font-black text-slate-950 mb-10 leading-tight">Mastering Technical SEO Audits</h2>
-                <div class="prose prose-xl max-w-none text-slate-600 font-bold space-y-10 text-left leading-relaxed">
-                    <p>
-                        A comprehensive **technical seo audit** is the foundation of any successful digital marketing strategy. Without a clean, crawlable site structure, even the best content will fail to rank. Our platform is built to identify the underlying code issues that hinder your performance.
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-24" data-aos="fade-up">
+                <h2 class="text-4xl md:text-6xl font-black tracking-tight text-slate-950 mb-6">Deep Technical SEO Intelligence</h2>
+                <p class="text-xl text-slate-500 max-w-3xl mx-auto font-bold leading-relaxed">
+                    Unlock data that search engines prioritize. Our engine provides a 360-degree technical SEO audit of any domain.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-12">
+                <div class="p-10 rounded-[3rem] bg-slate-50 border border-slate-200 hover:border-primary/20 transition-all group" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-16 h-16 bg-white shadow-md rounded-2xl flex items-center justify-center text-primary text-3xl mb-8 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-code"></i>
+                    </div>
+                    <h3 class="text-2xl font-black mb-5">Website SEO Checker</h3>
+                    <p class="text-slate-600 font-medium leading-relaxed">
+                        Instant analysis of meta structures, header hierarchy, and canonical validity. Ensure your site is 100% crawlable by Googlebots.
                     </p>
-                    <p>
-                        Through our **website seo checker**, we look at critical server-side factors. This includes analyzing SSL certificate validity, directory security, and HTTP response headers. These signals are vital for both user trust and search engine authority.
+                </div>
+                <div class="p-10 rounded-[3rem] bg-slate-50 border border-slate-200 hover:border-secondary/20 transition-all group" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-16 h-16 bg-white shadow-md rounded-2xl flex items-center justify-center text-secondary text-3xl mb-8 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <h3 class="text-2xl font-black mb-5">Core Web Vitals Test</h3>
+                    <p class="text-slate-600 font-medium leading-relaxed">
+                        Identify performance bottlenecks. Real-time monitoring of LCP, CLS, and TBT based on latest Lighthouse standards.
                     </p>
-                    <p>
-                        Furthermore, our **bulk seo checker** allows professional marketers to monitor entire portfolios. Managing hundreds of URLs becomes seamless when you have automated data at your fingertips. By identifying patterns across multiple domains, agencies can implement broader, more effective strategies.
+                </div>
+                <div class="p-10 rounded-[3rem] bg-slate-50 border border-slate-200 hover:border-blue-400 transition-all group" data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-16 h-16 bg-white shadow-md rounded-2xl flex items-center justify-center text-blue-500 text-3xl mb-8 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <h3 class="text-2xl font-black mb-5">AI SEO Insights</h3>
+                    <p class="text-slate-600 font-medium leading-relaxed">
+                        Automated AI Action Plans that translate complex SEO data into clear, step-by-step optimization instructions.
                     </p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="py-32 bg-slate-50 border-t border-slate-100">
+    <section class="py-32 bg-slate-950 text-white overflow-hidden relative">
+        <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px]"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid md:grid-cols-2 gap-20 items-center">
+                <div data-aos="fade-right">
+                    <span class="text-primary font-black uppercase tracking-widest text-sm">Enterprise Dashboard</span>
+                    <h2 class="text-4xl md:text-6xl font-black tracking-tight mt-6 mb-8 leading-tight">
+                        Your Agency's New <br><span class="text-secondary">Secret Weapon</span>
+                    </h2>
+                    <p class="text-xl text-slate-400 font-medium mb-12 leading-relaxed">
+                        Stop manual reporting. Our <b>white label SEO report generator</b> creates professional, brand-aligned documents for your clients in seconds.
+                    </p>
+                    <ul class="space-y-6 mb-12">
+                        <li class="flex items-center gap-5 text-lg font-bold"><i class="fa-solid fa-check text-primary"></i> Custom Branding & Logo Integration</li>
+                        <li class="flex items-center gap-5 text-lg font-bold"><i class="fa-solid fa-check text-primary"></i> Bulk Analysis for 100+ URLs</li>
+                        <li class="flex items-center gap-5 text-lg font-bold"><i class="fa-solid fa-check text-primary"></i> Competitor Traffic Comparisons</li>
+                    </ul>
+                    <a href="/pricing" class="inline-block bg-white text-slate-950 font-black px-12 py-5 rounded-[2rem] hover:bg-slate-200 transition-all shadow-2xl text-lg hover:scale-105 active:scale-95">
+                        Explore Pro Features
+                    </a>
+                </div>
+                
+                <div class="relative" data-aos="fade-left">
+                    <div class="bg-gradient-to-br from-white/10 to-white/5 p-4 md:p-8 rounded-[3rem] border border-white/10 backdrop-blur-sm relative shadow-2xl">
+                        <div class="bg-slate-900 rounded-2xl overflow-hidden border border-white/5 aspect-[4/3] flex flex-col p-6">
+                            <div class="flex items-center justify-between mb-8 border-b border-white/10 pb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded bg-primary/20"></div>
+                                    <div class="h-4 w-32 bg-white/10 rounded"></div>
+                                </div>
+                                <div class="h-8 w-8 rounded-full bg-white/10"></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 mb-8">
+                                <div class="h-24 rounded-xl bg-white/5 border border-white/5 p-4">
+                                    <div class="h-3 w-1/2 bg-white/20 rounded mb-4"></div>
+                                    <div class="h-8 w-3/4 bg-primary/40 rounded"></div>
+                                </div>
+                                <div class="h-24 rounded-xl bg-white/5 border border-white/5 p-4">
+                                    <div class="h-3 w-1/2 bg-white/20 rounded mb-4"></div>
+                                    <div class="h-8 w-3/4 bg-secondary/40 rounded"></div>
+                                </div>
+                            </div>
+                            <div class="space-y-4 flex-grow">
+                                <div class="h-4 w-full bg-white/10 rounded"></div>
+                                <div class="h-4 w-5/6 bg-white/10 rounded"></div>
+                                <div class="h-4 w-4/6 bg-white/10 rounded"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="absolute -top-6 -right-6 glass-card p-5 rounded-2xl shadow-2xl border border-white/20 hidden lg:block" data-aos="fade-down" data-aos-delay="600">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-black">89</div>
+                                <div class="text-xs font-black text-slate-200 uppercase">Health Score</div>
+                            </div>
+                        </div>
+                        <div class="absolute -bottom-6 -left-6 bg-secondary p-5 rounded-2xl shadow-2xl hidden lg:block" data-aos="fade-up" data-aos-delay="800">
+                            <div class="flex items-center gap-3">
+                                <i class="fa-solid fa-file-pdf text-white text-xl"></i>
+                                <div class="text-xs font-black text-white uppercase tracking-wider">Report Ready</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-32 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-20 items-center">
+                <div class="order-2 md:order-1" data-aos="fade-right">
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="p-8 bg-white rounded-3xl shadow-sm border border-slate-200">
+                            <h4 class="font-black text-slate-950 mb-3 uppercase text-xs tracking-widest text-primary">Efficiency</h4>
+                            <p class="text-sm font-medium text-slate-500 leading-relaxed">Save 20+ hours per week on manual website audits and report formatting.</p>
+                        </div>
+                        <div class="p-8 bg-white rounded-3xl shadow-sm border border-slate-200 mt-8">
+                            <h4 class="font-black text-slate-950 mb-3 uppercase text-xs tracking-widest text-secondary">Accuracy</h4>
+                            <p class="text-sm font-medium text-slate-500 leading-relaxed">Data-driven insights powered by enterprise-level SEO scraping engines.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-1 md:order-2" data-aos="fade-left">
+                    <h2 class="text-4xl md:text-5xl font-black text-slate-950 mb-8 leading-tight">Scale Your Agency with AI SEO Insights</h2>
+                    <p class="text-lg font-medium text-slate-600 mb-10 leading-relaxed">
+                        NexGenWebLab is not just an <b>seo analyzer</b>. It is an end-to-end growth platform. Our AI models analyze your technical profile and compare it with high-ranking competitors to give you a roadmap for ranking success.
+                    </p>
+                    <a href="/pricing" class="font-black text-primary hover:text-secondary transition-colors flex items-center gap-2 group">
+                        Compare Enterprise Plans <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-32 bg-white border-t border-slate-100">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div data-aos="fade-up" class="text-center mb-20">
-                <h2 class="text-4xl md:text-6xl font-black tracking-tight text-slate-950 mb-6">Common Questions</h2>
-                <p class="text-xl text-slate-500 font-bold">Understanding Technical SEO & Reporting.</p>
+            <div class="text-center mb-20" data-aos="fade-up">
+                <h2 class="text-4xl md:text-5xl font-black tracking-tight text-slate-950 mb-4">SEO Audit Insights & FAQs</h2>
+                <p class="text-lg text-slate-500 font-bold">Frequently asked questions about Technical SEO and Reporting.</p>
             </div>
-            <div class="space-y-6">
-                <details data-aos="fade-up" class="group bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-                    <summary class="flex cursor-pointer items-center justify-between gap-4 p-8 text-slate-950 font-black text-xl select-none outline-none">
-                        How often should I run an SEO audit?
+            
+            <div class="space-y-4">
+                <details class="group bg-slate-50 rounded-3xl border border-slate-200 overflow-hidden" data-aos="fade-up" data-aos-delay="100">
+                    <summary class="flex cursor-pointer items-center justify-between gap-1.5 p-8 text-slate-900 font-black text-xl select-none outline-none">
+                        What is included in a Technical SEO Audit?
                         <i class="fa-solid fa-plus shrink-0 transition-transform duration-300 group-open:rotate-45 text-primary"></i>
                     </summary>
-                    <div class="px-8 pb-8 text-slate-500 font-bold text-lg leading-relaxed border-t border-slate-50 pt-6">
-                        We recommend running a technical SEO audit at least once a month. However, if you are frequently pushing new code or content updates, a weekly scan ensures that no new errors are introduced that could hurt your rankings.
+                    <div class="px-8 pb-8 text-slate-600 font-medium text-lg leading-relaxed border-t border-slate-200/50 pt-6">
+                        A technical SEO audit includes a comprehensive check of your website's health. NexGenWebLab analyzes meta tags, header hierarchy (H1-H6), SSL security, XML sitemaps, canonical tags, server response times, and content-to-code ratios to ensure your site is perfectly optimized for search engines.
                     </div>
                 </details>
-                <details data-aos="fade-up" data-aos-delay="100" class="group bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-                    <summary class="flex cursor-pointer items-center justify-between gap-4 p-8 text-slate-950 font-black text-xl select-none outline-none">
-                        What makes your technical SEO audit different?
+                <details class="group bg-slate-50 rounded-3xl border border-slate-200 overflow-hidden" data-aos="fade-up" data-aos-delay="200">
+                    <summary class="flex cursor-pointer items-center justify-between gap-1.5 p-8 text-slate-900 font-black text-xl select-none outline-none">
+                        How does the White Label SEO Report Generator work?
                         <i class="fa-solid fa-plus shrink-0 transition-transform duration-300 group-open:rotate-45 text-primary"></i>
                     </summary>
-                    <div class="px-8 pb-8 text-slate-500 font-bold text-lg leading-relaxed border-t border-slate-50 pt-6">
-                        Unlike basic analyzers, NexGenWebLab combines traditional crawling data with real-time Google Lighthouse speed tests and AI-powered logic. We don't just find meta tag errors; we identify deep-rooted performance bottlenecks.
+                    <div class="px-8 pb-8 text-slate-600 font-medium text-lg leading-relaxed border-t border-slate-200/50 pt-6">
+                        Available in our Enterprise Pro plan, this tool allows agencies to remove NexGenWebLab branding and replace it with their own logo, colors, and company information. The <b>seo report generator</b> then creates a professional PDF or Word document that you can present directly to your clients.
                     </div>
                 </details>
-                <details data-aos="fade-up" data-aos-delay="200" class="group bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-                    <summary class="flex cursor-pointer items-center justify-between gap-4 p-8 text-slate-950 font-black text-xl select-none outline-none">
-                        Are the reports white-labeled?
+                <details class="group bg-slate-50 rounded-3xl border border-slate-200 overflow-hidden" data-aos="fade-up" data-aos-delay="300">
+                    <summary class="flex cursor-pointer items-center justify-between gap-1.5 p-8 text-slate-900 font-black text-xl select-none outline-none">
+                        Why are Core Web Vitals critical for ranking?
                         <i class="fa-solid fa-plus shrink-0 transition-transform duration-300 group-open:rotate-45 text-primary"></i>
                     </summary>
-                    <div class="px-8 pb-8 text-slate-500 font-bold text-lg leading-relaxed border-t border-slate-50 pt-6">
-                        Yes. On the Enterprise Pro plan, all PDF and Word exports are fully white-labeled. You can remove all NexGenWebLab branding and replace it with your agency's logo, contact info, and brand colors.
+                    <div class="px-8 pb-8 text-slate-600 font-medium text-lg leading-relaxed border-t border-slate-200/50 pt-6">
+                        Core Web Vitals are a set of metrics that Google uses to measure user experience (speed, responsiveness, and visual stability). A poor <b>core web vitals test</b> score can lead to lower rankings. Our tool provides specific AI-driven advice on how to improve your LCP, CLS, and TBT scores.
                     </div>
                 </details>
             </div>
         </div>
     </section>
 
-    <footer class="bg-slate-950 text-slate-500 border-t border-white/5">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+    <footer class="bg-slate-950 text-slate-400 border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-20">
-                <div data-aos="fade-up">
-                    <img src="/assets/images/logo.png" alt="NexGenWebLab" class="h-10 w-auto mb-10 brightness-0 invert">
-                    <p class="text-base font-bold leading-relaxed max-w-xs">
-                        NexGenWebLab provides professional SEO auditing tools and AI growth strategies for modern digital agencies and brands.
+                <div>
+                    <img src="/assets/images/logo.png" alt="NexGenWebLab" class="h-10 w-auto mb-8 brightness-0 invert">
+                    <p class="text-sm font-medium leading-relaxed max-w-xs">
+                        NexGenWebLab provides professional SEO auditing tools and AI-driven growth strategies for modern digital brands.
                     </p>
                 </div>
-                <div data-aos="fade-up" data-aos-delay="100">
-                    <h4 class="text-white font-black uppercase tracking-[0.2em] text-xs mb-10">Resources</h4>
-                    <ul class="space-y-6 text-sm font-black">
-                        <li><a href="/" class="hover:text-primary transition-colors">Home Dashboard</a></li>
-                        <li><a href="/about" class="hover:text-primary transition-colors">About Company</a></li>
-                        <li><a href="/pricing" class="hover:text-primary transition-colors">Pricing Plans</a></li>
+                <div>
+                    <h4 class="text-white font-black uppercase tracking-widest text-xs mb-8">Quick Navigation</h4>
+                    <ul class="space-y-4 text-sm font-bold">
+                        <li><a href="/" class="hover:text-primary transition-colors">Home Page</a></li>
+                        <li><a href="/about" class="hover:text-primary transition-colors">Our Mission</a></li>
+                        <li><a href="/pricing" class="hover:text-primary transition-colors">Pricing & Plans</a></li>
                         <li><a href="/contact" class="hover:text-primary transition-colors">Technical Support</a></li>
                     </ul>
                 </div>
-                <div data-aos="fade-up" data-aos-delay="200">
-                    <h4 class="text-white font-black uppercase tracking-[0.2em] text-xs mb-10">SEO Engine</h4>
-                    <ul class="space-y-6 text-sm font-black">
-                        <li><a href="https://tools.nexgenweblab.com" class="hover:text-secondary transition-colors">Site Auditor</a></li>
-                        <li><a href="https://tools.nexgenweblab.com" class="hover:text-secondary transition-colors">Bulk Analysis</a></li>
+                <div>
+                    <h4 class="text-white font-black uppercase tracking-widest text-xs mb-8">Technical Tools</h4>
+                    <ul class="space-y-4 text-sm font-bold">
+                        <li><a href="https://tools.nexgenweblab.com" class="hover:text-secondary transition-colors">SEO Site Auditor</a></li>
+                        <li><a href="https://tools.nexgenweblab.com" class="hover:text-secondary transition-colors">Bulk Checker</a></li>
                         <li><a href="https://tools.nexgenweblab.com" class="hover:text-secondary transition-colors">Traffic API</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="mt-24 pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 text-[10px] font-black uppercase tracking-[0.3em]">
-                <p>&copy; 2026 NexGenWebLab. All rights reserved.</p>
+            <div class="mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-xs font-black uppercase tracking-[0.3em]">
+                <p>&copy; 2026 NexGenWebLab. High-Performance SEO Suite.</p>
                 <div class="flex gap-10">
                     <a href="#" class="hover:text-white transition-colors">Twitter</a>
                     <a href="#" class="hover:text-white transition-colors">LinkedIn</a>
@@ -293,12 +317,8 @@
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        AOS.init({
-            duration: 1000,
-            once: true,
-            offset: 100
-        });
+        AOS.init({ once: true, offset: 50 });
     </script>
-    <script src="/assets/js/main.js"></script>
+    <script src="assets/js/main.js"></script>
 </body>
 </html>
