@@ -386,7 +386,7 @@ if menu_selection == "Site Auditor":
         
         st.markdown("<h3 style='text-align: center; color: #0f172a; margin-bottom: 25px; font-weight: 800;'>Audit Overview</h3>", unsafe_allow_html=True)
         ov_col1, ov_col2 = st.columns([1, 2], gap="large")
-        with ov_col1: st.plotly_chart(render_overview_donut(ov_score), use_container_width=True, config={'displayModeBar': False})
+        with ov_col1: st.plotly_chart(render_overview_donut(ov_score), use_container_width=True, config={'displayModeBar': False}, key="main_donut")
         with ov_col2:
             ic1, ic2, ic3 = st.columns(3)
             with ic1: st.markdown(f"""<div class="issue-card" style="border-top: 4px solid #ef4444;"><span class="issue-count" style="color:#ef4444;">{crit_count}</span><span class="issue-label">Critical</span></div>""", unsafe_allow_html=True)
@@ -422,16 +422,16 @@ if menu_selection == "Site Auditor":
                 st.markdown("<h4 style='color: #0f172a; margin-bottom: 25px; text-align: center;'>Mobile Device Analysis</h4>", unsafe_allow_html=True)
                 m_gauges = st.columns(4)
                 with m_gauges[0]: 
-                    st.plotly_chart(render_small_gauge(speed_data['mobile'].get('performance', 0)), use_container_width=True, config={'displayModeBar': False})
+                    st.plotly_chart(render_small_gauge(speed_data['mobile'].get('performance', 0)), use_container_width=True, config={'displayModeBar': False}, key="m_perf")
                     st.markdown("<div style='text-align:center; font-size:14px; font-weight:700; color:#475569; margin-top:-15px;'>Performance</div>", unsafe_allow_html=True)
                 with m_gauges[1]: 
-                    st.plotly_chart(render_small_gauge(speed_data['mobile'].get('accessibility', 0)), use_container_width=True, config={'displayModeBar': False})
+                    st.plotly_chart(render_small_gauge(speed_data['mobile'].get('accessibility', 0)), use_container_width=True, config={'displayModeBar': False}, key="m_acc")
                     st.markdown("<div style='text-align:center; font-size:14px; font-weight:700; color:#475569; margin-top:-15px;'>Accessibility</div>", unsafe_allow_html=True)
                 with m_gauges[2]: 
-                    st.plotly_chart(render_small_gauge(speed_data['mobile'].get('best-practices', 0)), use_container_width=True, config={'displayModeBar': False})
+                    st.plotly_chart(render_small_gauge(speed_data['mobile'].get('best-practices', 0)), use_container_width=True, config={'displayModeBar': False}, key="m_bp")
                     st.markdown("<div style='text-align:center; font-size:14px; font-weight:700; color:#475569; margin-top:-15px;'>Best Practices</div>", unsafe_allow_html=True)
                 with m_gauges[3]: 
-                    st.plotly_chart(render_small_gauge(speed_data['mobile'].get('seo', 0)), use_container_width=True, config={'displayModeBar': False})
+                    st.plotly_chart(render_small_gauge(speed_data['mobile'].get('seo', 0)), use_container_width=True, config={'displayModeBar': False}, key="m_seo")
                     st.markdown("<div style='text-align:center; font-size:14px; font-weight:700; color:#475569; margin-top:-15px;'>SEO Score</div>", unsafe_allow_html=True)
                 
                 st.markdown("<div style='margin-top: 35px;'></div>", unsafe_allow_html=True)
@@ -450,16 +450,16 @@ if menu_selection == "Site Auditor":
                 st.markdown("<h4 style='color: #0f172a; margin-bottom: 25px; text-align: center;'>Desktop Device Analysis</h4>", unsafe_allow_html=True)
                 d_gauges = st.columns(4)
                 with d_gauges[0]: 
-                    st.plotly_chart(render_small_gauge(speed_data['desktop'].get('performance', 0)), use_container_width=True, config={'displayModeBar': False})
+                    st.plotly_chart(render_small_gauge(speed_data['desktop'].get('performance', 0)), use_container_width=True, config={'displayModeBar': False}, key="d_perf")
                     st.markdown("<div style='text-align:center; font-size:14px; font-weight:700; color:#475569; margin-top:-15px;'>Performance</div>", unsafe_allow_html=True)
                 with d_gauges[1]: 
-                    st.plotly_chart(render_small_gauge(speed_data['desktop'].get('accessibility', 0)), use_container_width=True, config={'displayModeBar': False})
+                    st.plotly_chart(render_small_gauge(speed_data['desktop'].get('accessibility', 0)), use_container_width=True, config={'displayModeBar': False}, key="d_acc")
                     st.markdown("<div style='text-align:center; font-size:14px; font-weight:700; color:#475569; margin-top:-15px;'>Accessibility</div>", unsafe_allow_html=True)
                 with d_gauges[2]: 
-                    st.plotly_chart(render_small_gauge(speed_data['desktop'].get('best-practices', 0)), use_container_width=True, config={'displayModeBar': False})
+                    st.plotly_chart(render_small_gauge(speed_data['desktop'].get('best-practices', 0)), use_container_width=True, config={'displayModeBar': False}, key="d_bp")
                     st.markdown("<div style='text-align:center; font-size:14px; font-weight:700; color:#475569; margin-top:-15px;'>Best Practices</div>", unsafe_allow_html=True)
                 with d_gauges[3]: 
-                    st.plotly_chart(render_small_gauge(speed_data['desktop'].get('seo', 0)), use_container_width=True, config={'displayModeBar': False})
+                    st.plotly_chart(render_small_gauge(speed_data['desktop'].get('seo', 0)), use_container_width=True, config={'displayModeBar': False}, key="d_seo")
                     st.markdown("<div style='text-align:center; font-size:14px; font-weight:700; color:#475569; margin-top:-15px;'>SEO Score</div>", unsafe_allow_html=True)
                 
                 st.markdown("<div style='margin-top: 35px;'></div>", unsafe_allow_html=True)
@@ -494,13 +494,13 @@ if menu_selection == "Site Auditor":
                         sim_data = [int(visits_num * (0.9 + 0.02*i)) for i in range(6)]
                         fig_trend = px.line(x=dates, y=sim_data, labels={'x':'Month', 'y':'Visits'})
                         fig_trend.update_layout(margin=dict(l=20, r=20, t=20, b=20), height=250)
-                        st.plotly_chart(fig_trend, use_container_width=True)
+                        st.plotly_chart(fig_trend, use_container_width=True, key="t_trend")
                     with graph_col2:
                         st.markdown("<p style='text-align:center; font-weight:700;'>Traffic Sources</p>", unsafe_allow_html=True)
                         sources = raw_sim.get("Traffic", {}).get("Sources", {})
                         fig_source = px.pie(values=[sources.get("Search", 1), sources.get("Direct", 1), sources.get("Social", 1)], names=['Search', 'Direct', 'Social'], hole=0.5)
                         fig_source.update_layout(margin=dict(l=10, r=10, t=10, b=10), height=250)
-                        st.plotly_chart(fig_source, use_container_width=True)
+                        st.plotly_chart(fig_source, use_container_width=True, key="t_source")
                 else:
                     st.warning("Traffic data not available for this domain.")
 
