@@ -64,7 +64,7 @@ if st.session_state['user'] is None:
                 except Exception as e:
                     st.error("⚠️ Invalid email or password.")
                     
-        st.markdown("<hr style='border-top: 1px dashed #e2e8f0; margin: 20px 0;'><div style='text-align: center;'><p style='color: #475569; font-size: 14px;'>Don't have an account?</p><a href='[https://nexgenweblab.com/auth](https://nexgenweblab.com/auth)' style='text-decoration: none; color: #6D28D9; font-weight: 700;'>&larr; Sign up here</a></div>", unsafe_allow_html=True)
+        st.markdown("<hr style='border-top: 1px dashed #e2e8f0; margin: 20px 0;'><div style='text-align: center;'><p style='color: #475569; font-size: 14px;'>Don't have an account?</p><a href='https://nexgenweblab.com/auth' style='text-decoration: none; color: #6D28D9; font-weight: 700;'>&larr; Sign up here</a></div>", unsafe_allow_html=True)
     st.stop() 
 
 # ==========================================
@@ -91,8 +91,8 @@ except ImportError as e:
     st.error(f"Missing modules. {e}")
     st.stop()
 
-st.markdown('<link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)">', unsafe_allow_html=True)
-st.markdown('<link href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap)" rel="stylesheet">', unsafe_allow_html=True)
+st.markdown('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">', unsafe_allow_html=True)
+st.markdown('<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">', unsafe_allow_html=True)
 
 st.markdown("""
 <style>
@@ -303,7 +303,7 @@ with st.sidebar:
     
     if not is_pro:
         st.markdown("""
-        <a href="[https://nexgenweblab.com/upgrade](https://nexgenweblab.com/upgrade)" target="_blank" style="display:block; text-align:center; background: linear-gradient(135deg, #6D28D9, #DB2777); color: white; padding: 10px; border-radius: 8px; font-weight: bold; text-decoration: none; margin-bottom: 15px; font-size: 13px; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+        <a href="https://nexgenweblab.com/upgrade" target="_blank" style="display:block; text-align:center; background: linear-gradient(135deg, #6D28D9, #DB2777); color: white; padding: 10px; border-radius: 8px; font-weight: bold; text-decoration: none; margin-bottom: 15px; font-size: 13px; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
             <i class="fa-solid fa-bolt"></i> Upgrade to Pro
         </a>
         """, unsafe_allow_html=True)
@@ -342,7 +342,6 @@ if menu_selection == "Site Auditor":
         clean_domain = domain_input.strip().replace("https://", "").replace("http://", "").replace("www.", "").strip('/')
         target_url = f"https://{clean_domain}"
         
-        # Save results in session state so we don't re-run on export button click
         st.session_state['last_audit_url'] = target_url
         st.session_state['last_clean_domain'] = clean_domain
 
@@ -481,7 +480,7 @@ if menu_selection == "Site Auditor":
                     <i class="fa-solid fa-lock" style="font-size: 48px; color: #DB2777; margin-bottom: 20px;"></i>
                     <h3 style="color: #0f172a; font-weight: 800; margin-bottom: 10px;">Traffic Analytics is a Pro Feature</h3>
                     <p style="color: #64748b; margin-bottom: 25px; max-width: 500px; margin-left: auto; margin-right: auto;">Unlock live traffic estimates, competitor analysis, and traffic sources by upgrading to the Enterprise Pro plan.</p>
-                    <a href="[https://nexgenweblab.com/upgrade](https://nexgenweblab.com/upgrade)" target="_blank" style="background: linear-gradient(135deg, #6D28D9, #DB2777); color: white; padding: 12px 25px; border-radius: 8px; font-weight: bold; text-decoration: none; display: inline-block;">Upgrade to Pro ($9.99/mo)</a>
+                    <a href="https://nexgenweblab.com/upgrade" target="_blank" style="background: linear-gradient(135deg, #6D28D9, #DB2777); color: white; padding: 12px 25px; border-radius: 8px; font-weight: bold; text-decoration: none; display: inline-block;">Upgrade to Pro ($9.99/mo)</a>
                 </div>
                 """, unsafe_allow_html=True)
             else:
@@ -526,7 +525,6 @@ if menu_selection == "Site Auditor":
             
             st.markdown("<br>", unsafe_allow_html=True)
             
-            # Button for generating the final file
             word_file = generate_word_report(st.session_state['last_audit_url'], onpage_data, speed_data, ai_suggestions, agency_name, client_name, author_name)
             
             st.download_button(
@@ -547,7 +545,7 @@ elif menu_selection == "Bulk Analysis":
             <i class="fa-solid fa-file-earmark-lock" style="font-size: 60px; color: #DB2777; margin-bottom: 20px;"></i>
             <h2 style="color: #0f172a; font-weight: 800; margin-bottom: 10px;">Bulk Engine Locked</h2>
             <p style="color: #64748b; margin-bottom: 30px; font-size: 18px; max-width: 600px; margin-left: auto; margin-right: auto;">The Bulk Analysis Engine is exclusively available for Enterprise Pro users. Audit hundreds of URLs at once and generate bulk reports automatically.</p>
-            <a href="https://nexgenweblab.com/upgrade" target="_blank" style="background: linear-gradient(135deg, #6D28D9, #DB2777); color: white; padding: 15px 30px; border-radius: 8px; font-weight: bold; text-decoration: none; font-size: 16px; display: inline-block;">Unlock Enterprise Pro</a>
+            <a href="[https://nexgenweblab.com/upgrade](https://nexgenweblab.com/upgrade)" target="_blank" style="background: linear-gradient(135deg, #6D28D9, #DB2777); color: white; padding: 15px 30px; border-radius: 8px; font-weight: bold; text-decoration: none; font-size: 16px; display: inline-block;">Unlock Enterprise Pro</a>
         </div>
         """, unsafe_allow_html=True)
     else:
