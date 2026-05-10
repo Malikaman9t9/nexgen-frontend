@@ -9,8 +9,6 @@ from urllib.parse import urlparse
 import plotly.graph_objects as go
 import plotly.express as px
 from datetime import datetime, timedelta
-import zipfile
-import io
 
 # ==========================================
 # 1. INITIALIZATION & APIs
@@ -34,7 +32,7 @@ except Exception as e:
     st.stop()
 
 # ==========================================
-# 2. AUTHENTICATION GATE (STRICT LOCK)
+# 2. AUTHENTICATION GATE
 # ==========================================
 if 'user' not in st.session_state:
     st.session_state['user'] = None
@@ -66,17 +64,11 @@ if st.session_state['user'] is None:
                 except Exception as e:
                     st.error("⚠️ Invalid email or password.")
                     
-        st.markdown("<hr style='border-top: 1px dashed #e2e8f0; margin: 20px 0;'>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="text-align: center;">
-            <p style="color: #475569; font-size: 14px;">Don't have an account?</p>
-            <a href="https://nexgenweblab.com/auth" style="text-decoration: none; color: #6D28D9; font-weight: 700;">&larr; Sign up here</a>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown("<hr style='border-top: 1px dashed #e2e8f0; margin: 20px 0;'><div style='text-align: center;'><p style='color: #475569; font-size: 14px;'>Don't have an account?</p><a href='[https://nexgenweblab.com/auth](https://nexgenweblab.com/auth)' style='text-decoration: none; color: #6D28D9; font-weight: 700;'>&larr; Sign up here</a></div>", unsafe_allow_html=True)
     st.stop() 
 
 # ==========================================
-# 3. METADATA LOGIC (SAFE LOAD)
+# 3. METADATA LOGIC
 # ==========================================
 current_user = st.session_state['user']
 user_metadata = getattr(current_user, 'user_metadata', {}) or {}
@@ -87,7 +79,7 @@ is_pro = True if plan_type == 'pro' or any(kw in user_email.lower() for kw in ["
 plan_name = "Enterprise Pro" if is_pro else "Starter Plan"
 
 # ==========================================
-# 4. LOAD MODULES
+# 4. LOAD MODULES & CSS
 # ==========================================
 try:
     from modules.onpage_scraper import get_basic_onpage
@@ -99,104 +91,53 @@ except ImportError as e:
     st.error(f"Missing modules. {e}")
     st.stop()
 
-st.markdown('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">', unsafe_allow_html=True)
-st.markdown('<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">', unsafe_allow_html=True)
+st.markdown('<link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)">', unsafe_allow_html=True)
+st.markdown('<link href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap)" rel="stylesheet">', unsafe_allow_html=True)
 
-# ==========================================
-# FULL ORIGINAL CSS RESTORED (NOT MINIFIED)
-# ==========================================
 st.markdown("""
 <style>
     [data-testid="stHeader"] { background-color: transparent !important; }
     [data-testid="stToolbarActions"] { display: none !important; }
     .stAppDeployButton { display: none !important; }
     footer { visibility: hidden !important; }
-    
     * { font-family: 'Inter', sans-serif; }
     .block-container { padding-top: 1rem; padding-bottom: 2rem; max-width: 1300px; }
     body { background-color: #f8fafc; }
-    
     [data-testid="stSidebar"] { background-color: #ffffff; border-right: 1px solid #e2e8f0; }
-    
     .hero-container { text-align: center; padding: 30px 10px; }
     .hero-title { font-size: 46px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 15px; }
     .hero-title span { background: linear-gradient(135deg, #6D28D9, #DB2777); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .hero-subtitle { font-size: 18px; color: #64748b; max-width: 600px; margin: 0 auto 30px auto; }
-    
-    [data-testid="stForm"] div[data-testid="stHorizontalBlock"] { 
-        gap: 0px !important; align-items: center !important; padding: 0 !important;
-    }
-    [data-testid="stForm"] div[data-testid="column"] {
-        padding: 0px !important; margin: 0px !important; display: flex !important; flex-direction: column !important; justify-content: center !important;
-    }
-    [data-testid="stForm"] .element-container { margin: 0px !important; padding: 0px !important; }
-    [data-testid="stForm"] [data-testid="stMarkdownContainer"] p { margin: 0px !important; padding: 0px !important; width: 100% !important; }
-    
-    .url-prefix {
-        height: 38px !important; min-height: 38px !important; line-height: 38px !important; display: flex !important;
-        align-items: center !important; justify-content: center !important; background-color: #e2e8f0 !important;
-        color: #0f172a !important; font-size: 16px !important; font-weight: 700 !important; border: 2px solid #e2e8f0 !important;
-        border-right: none !important; border-radius: 20px 0 0 20px !important; margin: 0 !important; width: 100% !important;
-        box-sizing: border-box !important; margin-top: -16px !important; margin-bottom: 0px !important;
-    }
-    
-    [data-testid="stForm"] .stTextInput { margin: 0px !important; padding: 0px !important; }
-    [data-testid="stForm"] .stTextInput input { 
-        height: 50px !important; line-height: 50px !important; font-size: 16px !important; text-align: left !important; 
-        padding-left: 10px !important; margin: 0px !important; font-weight: 500 !important; color: #0f172a !important;
-        box-sizing: border-box !important; border-radius: 0px !important; 
-    }
-    [data-testid="stForm"] .stTextInput div[data-baseweb="base-input"]:focus-within { 
-        border-top-color: #6D28D9 !important; border-bottom-color: #6D28D9 !important; box-shadow: none !important; background-color: #ffffff !important;
-    }
-    
-    div.stButton { margin: 0px !important; padding: 0px !important; }
-    [data-testid="stForm"] button[kind="primary"] { 
-        height: 54px !important; min-height: 54px !important; border-radius: 0 30px 30px 0 !important; 
-        font-size: 16px !important; font-weight: 800 !important; background: linear-gradient(135deg, #6D28D9, #DB2777) !important; 
-        color: white !important; border: none !important; width: 100% !important; text-transform: none !important; margin: 0 !important;
-        display: flex !important; align-items: center !important; justify-content: center !important; padding: 0 20px !important; transition: all 0.3s ease;
-    }
-    [data-testid="stForm"] button[kind="primary"]:hover { filter: brightness(1.1); transform: none !important; }
-    
-    div.stButton > button[kind="secondary"] {
-        border-radius: 8px !important; font-weight: 700 !important; border: 1px solid #e2e8f0 !important; color: #475569 !important; background-color: #f8fafc !important;
-    }
-    div.stButton > button[kind="secondary"]:hover {
-        border-color: #6D28D9 !important; color: #6D28D9 !important; background-color: #f3f0ff !important;
-    }
-    
+    [data-testid="stForm"] div[data-testid="stHorizontalBlock"] { gap: 0px !important; align-items: center !important; padding: 0 !important; }
+    [data-testid="stForm"] div[data-testid="column"] { padding: 0px !important; margin: 0px !important; display: flex !important; flex-direction: column !important; justify-content: center !important; }
+    .url-prefix { height: 38px !important; min-height: 38px !important; line-height: 38px !important; display: flex !important; align-items: center !important; justify-content: center !important; background-color: #e2e8f0 !important; color: #0f172a !important; font-size: 16px !important; font-weight: 700 !important; border: 2px solid #e2e8f0 !important; border-right: none !important; border-radius: 20px 0 0 20px !important; margin: 0 !important; width: 100% !important; box-sizing: border-box !important; margin-top: -16px !important; margin-bottom: 0px !important; }
+    [data-testid="stForm"] .stTextInput input { height: 50px !important; line-height: 50px !important; font-size: 16px !important; text-align: left !important; padding-left: 10px !important; margin: 0px !important; font-weight: 500 !important; color: #0f172a !important; box-sizing: border-box !important; border-radius: 0px !important; }
+    [data-testid="stForm"] button[kind="primary"] { height: 54px !important; min-height: 54px !important; border-radius: 0 30px 30px 0 !important; font-size: 16px !important; font-weight: 800 !important; background: linear-gradient(135deg, #6D28D9, #DB2777) !important; color: white !important; border: none !important; width: 100% !important; text-transform: none !important; margin: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; padding: 0 20px !important; }
+    div.stButton > button[kind="secondary"] { border-radius: 8px !important; font-weight: 700 !important; border: 1px solid #e2e8f0 !important; color: #475569 !important; background-color: #f8fafc !important; }
     .score-container { background: #ffffff; border-radius: 16px; padding: 30px; border: 1px solid #e2e8f0; margin-bottom: 30px;}
     .issue-card { border-radius: 12px; padding: 25px; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: center; height: 100%;}
     .issue-count { font-size: 48px; font-weight: 900; line-height: 1; margin-bottom: 5px; }
     .issue-label { font-size: 14px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
-    
     .stTabs [data-baseweb="tab-list"] { gap: 10px; border-bottom: none; margin-bottom: 25px; background: #e2e8f0; padding: 8px; border-radius: 14px; }
     .stTabs [data-baseweb="tab"] { height: 45px; font-size: 15px; font-weight: 700; color: #475569; background-color: transparent; border-radius: 10px; border: none; padding: 0 20px; }
     .stTabs [aria-selected="true"] { background: linear-gradient(135deg, #6D28D9, #DB2777) !important; color: white !important; }
-
-    div[data-testid="column"] > div { height: 100%; }
     .audit-item { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 15px; position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 220px; }
     .audit-item::before { content:''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; }
     .status-danger::before { background-color: #ef4444; }
     .status-warning::before { background-color: #f59e0b; }
     .status-success::before { background-color: #10b981; }
     .status-info::before { background-color: #3b82f6; }
-
     .audit-header { display: flex; align-items: center; width: 100%; }
     .audit-header i { font-size: 20px; margin-right: 18px; width: 26px; text-align: center; } 
     .audit-item-content { display: flex; flex-direction: column; flex-grow: 1; }
     .audit-item-title { font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 2px;}
     .audit-item-desc { font-size: 13px; color: #475569; line-height: 1.4; }
-    
     .actual-data-box { margin-top: 15px; margin-bottom: 5px; margin-left: 44px; padding: 12px 14px; background-color: #f8fafc; border-radius: 8px; font-size: 13px; color: #334155; word-break: break-word; border: 1px solid #e2e8f0; font-family: monospace; flex-grow: 1; }
-    
     details.seo-tip { margin-top: 10px; margin-left: 44px; border-top: 1px dashed #e2e8f0; padding-top: 10px; }
     details.seo-tip summary { font-size: 12px; font-weight: 600; color: #6D28D9; cursor: pointer; outline: none; list-style: none;}
     details.seo-tip summary::after { content: ' +'; }
     details.seo-tip[open] summary::after { content: ' -'; }
     details.seo-tip p { margin: 8px 0 0 0; font-size: 12px; color: #475569; background: #f1f5f9; padding: 10px; border-left: 3px solid #6D28D9; border-radius: 4px; }
-    
     .speed-metric-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.02); height: 60px; }
 </style>
 """, unsafe_allow_html=True)
@@ -242,9 +183,7 @@ def get_audit_status_vip(v, type):
         elif type in ["minified_css", "minified_js"]: actual = f"{int(v)} unminified files detected." if v and int(v) > 0 else "Files minified."
         elif type == "dir_listing": actual = "Secured." if str(v) == "Yes" else "Exposed!"
         elif type in ["canonical", "meta_robots", "lang", "og", "internal_links", "external_links"]: actual = str(v) if v else "Missing/0"
-        
         if len(actual) > 90: actual = actual[:87] + "..."
-
         if type == "title": 
             if isinstance(v, dict) and "Missing" not in v.get('title', 'Missing'): return ("fa-solid fa-heading", f"Title Tag ({v.get('title_count', 0)} chars)", "success", tips['title'], actual)
             return ("fa-solid fa-heading", "Missing Title Tag", "danger", tips['title'], actual)
@@ -362,10 +301,9 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
     
-    # UPGRADE BUTTON FOR FREE USERS
     if not is_pro:
         st.markdown("""
-        <a href="https://nexgenweblab.com/upgrade" target="_blank" style="display:block; text-align:center; background: linear-gradient(135deg, #6D28D9, #DB2777); color: white; padding: 10px; border-radius: 8px; font-weight: bold; text-decoration: none; margin-bottom: 15px; font-size: 13px; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+        <a href="[https://nexgenweblab.com/upgrade](https://nexgenweblab.com/upgrade)" target="_blank" style="display:block; text-align:center; background: linear-gradient(135deg, #6D28D9, #DB2777); color: white; padding: 10px; border-radius: 8px; font-weight: bold; text-decoration: none; margin-bottom: 15px; font-size: 13px; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
             <i class="fa-solid fa-bolt"></i> Upgrade to Pro
         </a>
         """, unsafe_allow_html=True)
@@ -379,16 +317,12 @@ with st.sidebar:
         
     st.markdown("<hr style='border-top: 1px dashed #e2e8f0; margin: 20px 0;'>", unsafe_allow_html=True)
     if os.path.exists("logo.png"): st.image("logo.png", use_container_width=True)
-    elif os.path.exists("logo.jpg"): st.image("logo.jpg", use_container_width=True)
-    else: st.markdown('<div class="sidebar-brand" style="font-size:24px; font-weight:900; text-align:center;">NexGen<span style="color:#DB2777;">WebLab</span></div>', unsafe_allow_html=True)
-        
     st.markdown("<div style='text-align:center; color:#64748b; font-size:12px; margin-bottom:20px; margin-top: 10px;'>Enterprise SEO Suite v2.0</div>", unsafe_allow_html=True)
     
     bulk_icon = "file-earmark-spreadsheet" if is_pro else "lock-fill"
     menu_selection = option_menu(menu_title=None, options=["Site Auditor", "Bulk Analysis"], icons=["search", bulk_icon], default_index=0, styles={"container": {"padding": "0!important", "background-color": "transparent"}, "icon": {"color": "#94a3b8", "font-size": "18px"}, "nav-link": {"font-size": "15px", "text-align": "left", "margin":"0px", "color":"#475569", "font-weight":"600", "height":"50px", "border-radius":"10px"}, "nav-link-selected": {"background": "linear-gradient(135deg, rgba(109, 40, 217, 0.07), rgba(219, 39, 119, 0.07))", "color": "#6D28D9", "border-left": "4px solid #DB2777"}})
     st.markdown("<hr style='border-top: 1px dashed #e2e8f0; margin: 20px 0;'>", unsafe_allow_html=True)
     if st.button("Start New Audit", type="secondary", use_container_width=True): st.rerun()
-
 
 # ==========================================
 # 7. UI: MAIN CONTENT
@@ -407,13 +341,17 @@ if menu_selection == "Site Auditor":
     if run_button and domain_input:
         clean_domain = domain_input.strip().replace("https://", "").replace("http://", "").replace("www.", "").strip('/')
         target_url = f"https://{clean_domain}"
+        
+        # Save results in session state so we don't re-run on export button click
+        st.session_state['last_audit_url'] = target_url
+        st.session_state['last_clean_domain'] = clean_domain
+
         progress_bar = st.progress(0, text="Initializing Audit Engine...")
         
         progress_bar.progress(15, text="Scraping SEO Architecture...")
-        onpage_data = get_basic_onpage(target_url)
-        if not onpage_data:
-            st.warning("⚠️ The website blocked our On-Page Scraper. Speed and Traffic metrics will still be analyzed.")
-            onpage_data = {
+        st.session_state['onpage_data'] = get_basic_onpage(target_url)
+        if not st.session_state['onpage_data']:
+            st.session_state['onpage_data'] = {
                 'title': 'Data Blocked', 'title_count': 0, 'description': 'Data Blocked', 'desc_count': 0,
                 'h1': ['Blocked'], 'missing_alt': 0, 'word_count': 0, 'schema': 'Blocked',
                 'is_https': 'Yes' if target_url.startswith('https') else 'No', 'html_size_kb': 0, 'response_time': 0, 
@@ -421,30 +359,35 @@ if menu_selection == "Site Auditor":
             }
 
         progress_bar.progress(45, text="Fetching Core Web Vitals...")
-        speed_data = check_speed(target_url, SPEED_API_KEY)
+        st.session_state['speed_data'] = check_speed(target_url, SPEED_API_KEY)
         
         if is_pro:
             progress_bar.progress(70, text="Connecting Traffic API...")
-            traffic_data = get_traffic_data(target_url, RAPIDAPI_KEY)
+            st.session_state['traffic_data'] = get_traffic_data(target_url, RAPIDAPI_KEY)
         else:
             progress_bar.progress(70, text="Skipping Traffic (Free Plan)...")
-            traffic_data = None
+            st.session_state['traffic_data'] = None
         
         progress_bar.progress(85, text="Syncing AI Recommendations...")
-        m_perf = speed_data['mobile'].get('performance', 0) if speed_data else 0
-        d_perf = speed_data['desktop'].get('performance', 0) if speed_data else 0
-        ai_suggestions = get_ai_suggestions({**onpage_data, 'mobile_speed': m_perf, 'desktop_speed': d_perf}, GEMINI_API_KEY)
-        
-        progress_bar.progress(95, text="Finalizing Dashboard...")
-        ov_score, crit_count, warn_count, pass_count = calculate_ov_vip(onpage_data, speed_data)
+        m_perf = st.session_state['speed_data']['mobile'].get('performance', 0) if st.session_state['speed_data'] else 0
+        d_perf = st.session_state['speed_data']['desktop'].get('performance', 0) if st.session_state['speed_data'] else 0
+        st.session_state['ai_suggestions'] = get_ai_suggestions({**st.session_state['onpage_data'], 'mobile_speed': m_perf, 'desktop_speed': d_perf}, GEMINI_API_KEY)
         
         progress_bar.progress(100, text="Complete.")
         time.sleep(0.3) 
         progress_bar.empty()
+
+    if 'onpage_data' in st.session_state and st.session_state['onpage_data']:
+        onpage_data = st.session_state['onpage_data']
+        speed_data = st.session_state['speed_data']
+        traffic_data = st.session_state['traffic_data']
+        ai_suggestions = st.session_state['ai_suggestions']
+        
+        ov_score, crit_count, warn_count, pass_count = calculate_ov_vip(onpage_data, speed_data)
         
         st.markdown("<h3 style='text-align: center; color: #0f172a; margin-bottom: 25px; font-weight: 800;'>Audit Overview</h3>", unsafe_allow_html=True)
         ov_col1, ov_col2 = st.columns([1, 2], gap="large")
-        with ov_col1: st.plotly_chart(render_overview_donut(ov_score), use_container_width=True, config={'displayModeBar': False}, key="main_donut")
+        with ov_col1: st.plotly_chart(render_overview_donut(ov_score), use_container_width=True, config={'displayModeBar': False})
         with ov_col2:
             ic1, ic2, ic3 = st.columns(3)
             with ic1: st.markdown(f"""<div class="issue-card" style="border-top: 4px solid #ef4444;"><span class="issue-count" style="color:#ef4444;">{crit_count}</span><span class="issue-label">Critical</span></div>""", unsafe_allow_html=True)
@@ -480,16 +423,16 @@ if menu_selection == "Site Auditor":
                 st.markdown("<h4 style='color: #0f172a; margin-bottom: 25px; text-align: center;'>Mobile Device Analysis</h4>", unsafe_allow_html=True)
                 m_gauges = st.columns(4)
                 with m_gauges[0]: 
-                    st.plotly_chart(render_small_gauge(speed_data['mobile'].get('performance', 0)), use_container_width=True, config={'displayModeBar': False}, key="m_g1")
+                    st.plotly_chart(render_small_gauge(speed_data['mobile'].get('performance', 0)), use_container_width=True, config={'displayModeBar': False})
                     st.markdown("<div style='text-align:center; font-size:14px; font-weight:700; color:#475569; margin-top:-15px;'>Performance</div>", unsafe_allow_html=True)
                 with m_gauges[1]: 
-                    st.plotly_chart(render_small_gauge(speed_data['mobile'].get('accessibility', 0)), use_container_width=True, config={'displayModeBar': False}, key="m_g2")
+                    st.plotly_chart(render_small_gauge(speed_data['mobile'].get('accessibility', 0)), use_container_width=True, config={'displayModeBar': False})
                     st.markdown("<div style='text-align:center; font-size:14px; font-weight:700; color:#475569; margin-top:-15px;'>Accessibility</div>", unsafe_allow_html=True)
                 with m_gauges[2]: 
-                    st.plotly_chart(render_small_gauge(speed_data['mobile'].get('best-practices', 0)), use_container_width=True, config={'displayModeBar': False}, key="m_g3")
+                    st.plotly_chart(render_small_gauge(speed_data['mobile'].get('best-practices', 0)), use_container_width=True, config={'displayModeBar': False})
                     st.markdown("<div style='text-align:center; font-size:14px; font-weight:700; color:#475569; margin-top:-15px;'>Best Practices</div>", unsafe_allow_html=True)
                 with m_gauges[3]: 
-                    st.plotly_chart(render_small_gauge(speed_data['mobile'].get('seo', 0)), use_container_width=True, config={'displayModeBar': False}, key="m_g4")
+                    st.plotly_chart(render_small_gauge(speed_data['mobile'].get('seo', 0)), use_container_width=True, config={'displayModeBar': False})
                     st.markdown("<div style='text-align:center; font-size:14px; font-weight:700; color:#475569; margin-top:-15px;'>SEO Score</div>", unsafe_allow_html=True)
                 
                 st.markdown("<div style='margin-top: 35px;'></div>", unsafe_allow_html=True)
@@ -508,16 +451,16 @@ if menu_selection == "Site Auditor":
                 st.markdown("<h4 style='color: #0f172a; margin-bottom: 25px; text-align: center;'>Desktop Device Analysis</h4>", unsafe_allow_html=True)
                 d_gauges = st.columns(4)
                 with d_gauges[0]: 
-                    st.plotly_chart(render_small_gauge(speed_data['desktop'].get('performance', 0)), use_container_width=True, config={'displayModeBar': False}, key="d_g1")
+                    st.plotly_chart(render_small_gauge(speed_data['desktop'].get('performance', 0)), use_container_width=True, config={'displayModeBar': False})
                     st.markdown("<div style='text-align:center; font-size:14px; font-weight:700; color:#475569; margin-top:-15px;'>Performance</div>", unsafe_allow_html=True)
                 with d_gauges[1]: 
-                    st.plotly_chart(render_small_gauge(speed_data['desktop'].get('accessibility', 0)), use_container_width=True, config={'displayModeBar': False}, key="d_g2")
+                    st.plotly_chart(render_small_gauge(speed_data['desktop'].get('accessibility', 0)), use_container_width=True, config={'displayModeBar': False})
                     st.markdown("<div style='text-align:center; font-size:14px; font-weight:700; color:#475569; margin-top:-15px;'>Accessibility</div>", unsafe_allow_html=True)
                 with d_gauges[2]: 
-                    st.plotly_chart(render_small_gauge(speed_data['desktop'].get('best-practices', 0)), use_container_width=True, config={'displayModeBar': False}, key="d_g3")
+                    st.plotly_chart(render_small_gauge(speed_data['desktop'].get('best-practices', 0)), use_container_width=True, config={'displayModeBar': False})
                     st.markdown("<div style='text-align:center; font-size:14px; font-weight:700; color:#475569; margin-top:-15px;'>Best Practices</div>", unsafe_allow_html=True)
                 with d_gauges[3]: 
-                    st.plotly_chart(render_small_gauge(speed_data['desktop'].get('seo', 0)), use_container_width=True, config={'displayModeBar': False}, key="d_g4")
+                    st.plotly_chart(render_small_gauge(speed_data['desktop'].get('seo', 0)), use_container_width=True, config={'displayModeBar': False})
                     st.markdown("<div style='text-align:center; font-size:14px; font-weight:700; color:#475569; margin-top:-15px;'>SEO Score</div>", unsafe_allow_html=True)
                 
                 st.markdown("<div style='margin-top: 35px;'></div>", unsafe_allow_html=True)
@@ -538,12 +481,12 @@ if menu_selection == "Site Auditor":
                     <i class="fa-solid fa-lock" style="font-size: 48px; color: #DB2777; margin-bottom: 20px;"></i>
                     <h3 style="color: #0f172a; font-weight: 800; margin-bottom: 10px;">Traffic Analytics is a Pro Feature</h3>
                     <p style="color: #64748b; margin-bottom: 25px; max-width: 500px; margin-left: auto; margin-right: auto;">Unlock live traffic estimates, competitor analysis, and traffic sources by upgrading to the Enterprise Pro plan.</p>
-                    <a href="https://nexgenweblab.com/upgrade" target="_blank" style="background: linear-gradient(135deg, #6D28D9, #DB2777); color: white; padding: 12px 25px; border-radius: 8px; font-weight: bold; text-decoration: none; display: inline-block;">Upgrade to Pro ($9.99/mo)</a>
+                    <a href="[https://nexgenweblab.com/upgrade](https://nexgenweblab.com/upgrade)" target="_blank" style="background: linear-gradient(135deg, #6D28D9, #DB2777); color: white; padding: 12px 25px; border-radius: 8px; font-weight: bold; text-decoration: none; display: inline-block;">Upgrade to Pro ($9.99/mo)</a>
                 </div>
                 """, unsafe_allow_html=True)
             else:
-                if traffic_data and traffic_data['status'] == "Live Data":
-                    raw_sim = traffic_data['raw_data']
+                if traffic_data and traffic_data.get('status') == "Live Data":
+                    raw_sim = traffic_data.get('raw_data', {})
                     graph_col1, graph_col2 = st.columns(2)
                     with graph_col1:
                         st.markdown("<p style='text-align:center; font-weight:700;'>Visits Trend (Simulated)</p>", unsafe_allow_html=True)
@@ -552,15 +495,15 @@ if menu_selection == "Site Auditor":
                         sim_data = [int(visits_num * (0.9 + 0.02*i)) for i in range(6)]
                         fig_trend = px.line(x=dates, y=sim_data, labels={'x':'Month', 'y':'Visits'})
                         fig_trend.update_layout(margin=dict(l=20, r=20, t=20, b=20), height=250)
-                        st.plotly_chart(fig_trend, use_container_width=True, key="t_trend")
+                        st.plotly_chart(fig_trend, use_container_width=True)
                     with graph_col2:
                         st.markdown("<p style='text-align:center; font-weight:700;'>Traffic Sources</p>", unsafe_allow_html=True)
                         sources = raw_sim.get("Traffic", {}).get("Sources", {})
                         fig_source = px.pie(values=[sources.get("Search", 1), sources.get("Direct", 1), sources.get("Social", 1)], names=['Search', 'Direct', 'Social'], hole=0.5)
                         fig_source.update_layout(margin=dict(l=10, r=10, t=10, b=10), height=250)
-                        st.plotly_chart(fig_source, use_container_width=True, key="t_source")
+                        st.plotly_chart(fig_source, use_container_width=True)
                 else:
-                    st.warning("Traffic data not available.")
+                    st.warning("Traffic data not available for this domain.")
 
         with tab4:
             st.markdown("<h4 style='color: #0f172a; margin-bottom: 20px;'>AI Action Plan</h4>", unsafe_allow_html=True)
@@ -572,11 +515,28 @@ if menu_selection == "Site Auditor":
                 st.error("AI recommendations failed.")
 
         with tab5:
-            st.markdown("### Export Full Report")
-            st.write("Download a beautifully formatted, agency-ready Microsoft Word (.DOCX) report.")
-            if run_button and onpage_data:
-                word_file = generate_word_report(target_url, onpage_data, speed_data, ai_suggestions)
-                st.download_button(label="Download Professional Audit Report (.DOCX)", data=word_file, file_name=f"NexGenWebLab_Audit.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document", type="primary", use_container_width=True)
+            st.markdown("### ⚙️ White Label Report Customization")
+            st.markdown("<p style='color: #64748b; font-size: 14px; margin-bottom: 20px;'>Fill in the details below to generate a professional, agency-ready document.</p>", unsafe_allow_html=True)
+            
+            w_col1, w_col2 = st.columns(2)
+            agency_name = w_col1.text_input("Agency / Company Name", value="NexGenWebLab Pro")
+            author_name = w_col2.text_input("Prepared By (Author)", value="SEO Team")
+            client_name = st.text_input("Client / Project Name", value=st.session_state['last_clean_domain'].upper())
+            export_format = st.selectbox("Export Format", ["Microsoft Word (.DOCX)"])
+            
+            st.markdown("<br>", unsafe_allow_html=True)
+            
+            # Button for generating the final file
+            word_file = generate_word_report(st.session_state['last_audit_url'], onpage_data, speed_data, ai_suggestions, agency_name, client_name, author_name)
+            
+            st.download_button(
+                label=f"📥 Download {export_format}",
+                data=word_file,
+                file_name=f"{st.session_state['last_clean_domain']}_SEO_Report.docx",
+                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                type="primary",
+                use_container_width=True
+            )
 
 elif menu_selection == "Bulk Analysis":
     st.markdown("""<div class="hero-container"><div class="hero-title">Bulk <span>Outreach</span> Engine</div></div>""", unsafe_allow_html=True)
@@ -587,7 +547,7 @@ elif menu_selection == "Bulk Analysis":
             <i class="fa-solid fa-file-earmark-lock" style="font-size: 60px; color: #DB2777; margin-bottom: 20px;"></i>
             <h2 style="color: #0f172a; font-weight: 800; margin-bottom: 10px;">Bulk Engine Locked</h2>
             <p style="color: #64748b; margin-bottom: 30px; font-size: 18px; max-width: 600px; margin-left: auto; margin-right: auto;">The Bulk Analysis Engine is exclusively available for Enterprise Pro users. Audit hundreds of URLs at once and generate bulk reports automatically.</p>
-            <a href="[https://nexgenweblab.com/upgrade](https://nexgenweblab.com/upgrade)" target="_blank" style="background: linear-gradient(135deg, #6D28D9, #DB2777); color: white; padding: 15px 30px; border-radius: 8px; font-weight: bold; text-decoration: none; font-size: 16px; display: inline-block;">Unlock Enterprise Pro</a>
+            <a href="https://nexgenweblab.com/upgrade" target="_blank" style="background: linear-gradient(135deg, #6D28D9, #DB2777); color: white; padding: 15px 30px; border-radius: 8px; font-weight: bold; text-decoration: none; font-size: 16px; display: inline-block;">Unlock Enterprise Pro</a>
         </div>
         """, unsafe_allow_html=True)
     else:
