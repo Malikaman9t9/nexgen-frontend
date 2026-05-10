@@ -1,5 +1,5 @@
 import requests
-import concurrent.futures
+import time
 
 def fetch_strategy_data(url, strategy, api_key):
     base_url = "https://www.googleapis.com/pagespeedonline/v5/runPagespeed"
@@ -7,11 +7,14 @@ def fetch_strategy_data(url, strategy, api_key):
     params = {
         'url': url,
         'strategy': strategy,
-        'key': api_key,
         'category': ['performance', 'accessibility', 'best-practices', 'seo']
     }
     
-    # Default fallback data structure
+    # Agar API key theek hai toh hi add karein, warna Google free quota use hoga
+    if api_key and len(api_key) > 5:
+        params['key'] = api_key
+        
+    # Default fallback data (agar Google block kare)
     fallback_data = {
         'performance': 0, 'accessibility': 0, 'best-practices': 0, 'seo': 0,
         'metrics': {
@@ -22,7 +25,10 @@ def fetch_strategy_data(url, strategy, api_key):
     }
     
     try:
+        print(f"[*] Calling PageSpeed API for {strategy}...")
+        # 60 sec timeout kyunke PageSpeed analyze karne mein time leta hai
         response = requests.get(base_url, params=params, timeout=60)
+        
         if response.status_code == 200:
             data = response.json()
             cats = data.get('lighthouseResult', {}).get('categories', {})
@@ -48,25 +54,25 @@ def fetch_strategy_data(url, strategy, api_key):
                 }
             }
         else:
-            print(f"[-] Speed API Error ({strategy}): {response.status_code} - {response.text}")
+            print(f"[-] Google API Error ({strategy}): {response.status_code} - {response.text}")
             return strategy, fallback_data
     except Exception as e:
         print(f"[-] Speed Exception Error for {strategy}: {e}")
         return strategy, fallback_data
 
 def check_speed(url, api_key):
-    print(f"[*] Running PageSpeed API for {url}...")
+    print(f"[*] Running PageSpeed Engine for {url}...")
     results = {}
     
-    # Run Desktop and Mobile checks concurrently to save time
-    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-        future_mobile = executor.submit(fetch_strategy_data, url, 'mobile', api_key)
-        future_desktop = executor.submit(fetch_strategy_data, url, 'desktop', api_key)
-        
-        strat_m, data_m = future_mobile.result()
-        strat_d, data_d = future_desktop.result()
-        
-        results[strat_m] = data_m
-        results[strat_d] = data_d
+    # Run Sequentially (Ek ke baad ek) taake Google Rate Limit na lagaye
+    strat_m, data_m = fetch_strategy_data(url, 'mobile', api_key)
+    results[strat_m] = data_m
+    
+    # 2 second ka gap taake Google server ko saans mil jaye
+    print("[*] Waiting 2 seconds before Desktop check...")
+    time.sleep(2)
+    
+    strat_d, data_d = fetch_strategy_data(url, 'desktop', api_key)
+    results[strat_d] = data_d
 
     return results
