@@ -1,120 +1,146 @@
-// ============================================================
-// NexGenWebLab — Universal Site Components
-// ============================================================
+(function () {
+    "use strict";
 
-const SITE = {
-  page: '',
+    var SITE_NAME = "NexGenWebLab";
+    var BASE_URL = "https://nexgenweblab.com";
+    var TOOLS_URL = "https://tools.nexgenweblab.com";
 
-  headerHTML() {
-    const p = this.page;
-    const a = (href, label, cls = '') =>
-      `<a href="${href}" class="${cls}${p === href || (href !== '/' && p.startsWith(href)) ? ' text-primary' : ' text-slate-500 hover:text-primary'} transition-colors font-bold text-sm">${label}</a>`;
+    var isActive = function (path) {
+        var p = window.location.pathname.replace(/\/$/, "");
+        if (path === "/" && (p === "" || p === "/index.html")) return true;
+        if (path !== "/" && p.startsWith(path)) return true;
+        return false;
+    };
 
-    return `
-    <header class="sticky top-0 z-[100] backdrop-blur-xl border-b border-slate-100 bg-white/80">
-      <div class="max-w-7xl mx-auto flex items-center justify-between h-20 px-4 sm:px-6 lg:px-8 relative">
-        <a href="/" class="flex items-center hover:opacity-90 transition-opacity">
-          <img src="/assets/images/logo.png" alt="NexGenWebLab - SEO Audit Tool" class="h-8 md:h-10 w-auto object-contain">
-        </a>
-        <nav class="hidden lg:flex items-center gap-10" itemscope itemtype="https://schema.org/SiteNavigationElement">
-          ${a('/', 'Home')}
-          ${a('/about', 'About Solution')}
-          ${a('/pricing', 'Pricing Plans')}
-          ${a('/contact', 'Contact Support')}
-        </nav>
-        <div class="hidden lg:flex items-center gap-5">
-          <a href="https://tools.nexgenweblab.com" class="text-sm font-extrabold text-slate-600 hover:text-primary transition-colors">Client Login</a>
-          <a href="/auth" class="text-sm font-black bg-slate-900 text-white px-7 py-3.5 rounded-2xl hover:bg-slate-800 transition-all shadow-xl hover:shadow-primary/20 flex items-center gap-2">
-            Get Started Free
-          </a>
-        </div>
-        <button id="mobile-menu-btn" class="lg:hidden text-slate-600 hover:text-primary focus:outline-none text-2xl">
-          <i class="fa-solid fa-bars"></i>
-        </button>
-      </div>
-      <div id="mobile-menu" class="hidden lg:hidden bg-white border-t border-slate-100 absolute top-20 left-0 w-full shadow-2xl">
-        <div class="flex flex-col px-6 py-6 space-y-4">
-          ${a('/', 'Home', 'text-lg')}
-          ${a('/about', 'About Solution', 'text-lg')}
-          ${a('/pricing', 'Pricing Plans', 'text-lg')}
-          ${a('/contact', 'Contact Support', 'text-lg')}
-          <hr class="border-slate-100">
-          <a href="https://tools.nexgenweblab.com" class="text-lg font-bold text-slate-600 hover:text-primary transition-colors">Client Login</a>
-          <a href="/auth" class="text-center font-black bg-slate-900 text-white px-6 py-4 rounded-xl hover:bg-slate-800 transition-all shadow-md mt-2">Get Started Free</a>
-        </div>
-      </div>
-    </header>`;
-  },
+    var navLink = function (href, label, className) {
+        className = className || "text-slate-600 hover:text-slate-900 font-semibold text-sm transition-colors";
+        var a = document.createElement("a");
+        a.href = href;
+        a.className = className;
+        if (isActive(href)) a.classList.add("text-primary", "font-bold");
+        a.textContent = label;
+        return a;
+    };
 
-  footerHTML() {
-    return `
-    <footer class="bg-slate-950 text-slate-400 border-t border-white/5">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-20">
-          <div>
-            <img src="/assets/images/logo.png" alt="NexGenWebLab" class="h-8 lg:h-10 w-auto mb-6 lg:mb-8 brightness-0 invert">
-            <p class="text-xs lg:text-sm font-medium leading-relaxed max-w-xs">NexGenWebLab provides professional SEO auditing tools and AI-driven growth strategies for modern digital brands.</p>
-          </div>
-          <div>
-            <h4 class="text-white font-black uppercase tracking-widest text-[10px] lg:text-xs mb-6 lg:mb-8">Quick Navigation</h4>
-            <ul class="space-y-3 lg:space-y-4 text-xs lg:text-sm font-bold">
-              <li><a href="/" class="hover:text-primary transition-colors">Home Page</a></li>
-              <li><a href="/about" class="hover:text-primary transition-colors">Our Mission</a></li>
-              <li><a href="/pricing" class="hover:text-primary transition-colors">Pricing & Plans</a></li>
-              <li><a href="/contact" class="hover:text-primary transition-colors">Technical Support</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 class="text-white font-black uppercase tracking-widest text-[10px] lg:text-xs mb-6 lg:mb-8">Technical Tools</h4>
-            <ul class="space-y-3 lg:space-y-4 text-xs lg:text-sm font-bold">
-              <li><a href="https://tools.nexgenweblab.com" class="hover:text-secondary transition-colors">SEO Site Auditor</a></li>
-              <li><a href="https://tools.nexgenweblab.com" class="hover:text-secondary transition-colors">Bulk Checker</a></li>
-              <li><a href="https://tools.nexgenweblab.com" class="hover:text-secondary transition-colors">Traffic API</a></li>
-            </ul>
-          </div>
-        </div>
-        <div class="mt-16 lg:mt-20 pt-6 lg:pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 lg:gap-6 text-[10px] lg:text-xs font-black uppercase tracking-[0.2em] lg:tracking-[0.3em] text-center md:text-left">
-          <p>&copy; 2026 NexGenWebLab. High-Performance SEO Suite.</p>
-          <div class="flex gap-6 lg:gap-10">
-            <a href="#" class="hover:text-white transition-colors">Twitter</a>
-            <a href="#" class="hover:text-white transition-colors">LinkedIn</a>
-            <a href="#" class="hover:text-white transition-colors">GitHub</a>
-          </div>
-        </div>
-      </div>
-    </footer>`;
-  },
+    function injectHeader() {
+        if (document.getElementById("global-header")) return;
 
-  inject() {
-    const h = document.getElementById('site-header');
-    const f = document.getElementById('site-footer');
-    if (h) h.innerHTML = this.headerHTML();
-    if (f) f.innerHTML = this.footerHTML();
-  },
+        var isHome = window.location.pathname === "/" || window.location.pathname === "/index.html";
 
-  mobileMenu() {
-    const btn = document.getElementById('mobile-menu-btn');
-    const menu = document.getElementById('mobile-menu');
-    if (btn && menu) {
-      btn.addEventListener('click', () => {
-        menu.classList.toggle('hidden');
-        const icon = btn.querySelector('i');
-        if (icon) {
-          icon.classList.toggle('fa-bars');
-          icon.classList.toggle('fa-xmark');
+        var header = document.createElement("header");
+        header.id = "global-header";
+        header.className = "bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50";
+
+        header.innerHTML =
+            '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">' +
+            '  <div class="flex justify-between items-center h-16 lg:h-20">' +
+            '    <a href="' + BASE_URL + '/" class="flex items-center gap-2 shrink-0" aria-label="' + SITE_NAME + ' home">' +
+            '      <img src="' + BASE_URL + '/assets/images/logo.png" alt="' + SITE_NAME + '" class="h-7 w-auto">' +
+            '      <span class="font-black text-lg tracking-tight hidden sm:block">' + SITE_NAME + '</span>' +
+            '    </a>' +
+            '    <nav class="hidden md:flex items-center gap-8" aria-label="Main navigation">' +
+            navLink(BASE_URL + "/", "Home").outerHTML +
+            navLink(BASE_URL + "/about", "About").outerHTML +
+            navLink(BASE_URL + "/pricing", "Pricing").outerHTML +
+            navLink(BASE_URL + "/contact", "Contact").outerHTML +
+            '      <a href="' + TOOLS_URL + '" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-slate-900 text-white hover:bg-slate-800 transition-colors shadow-md">' +
+            '        <i class="fa-solid fa-gauge-high"></i> Dashboard' +
+            '      </a>' +
+            '    </nav>' +
+            '    <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-slate-100 transition-colors" aria-label="Toggle menu" aria-expanded="false">' +
+            '      <i class="fa-solid fa-bars text-xl text-slate-700"></i>' +
+            '    </button>' +
+            '  </div>' +
+            '  <div id="mobile-menu" class="md:hidden hidden pb-6 border-t border-slate-100 pt-4 space-y-3" role="menu">' +
+            '    <a href="' + BASE_URL + '/" class="block px-4 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors" role="menuitem">Home</a>' +
+            '    <a href="' + BASE_URL + '/about" class="block px-4 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors" role="menuitem">About</a>' +
+            '    <a href="' + BASE_URL + '/pricing" class="block px-4 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors" role="menuitem">Pricing</a>' +
+            '    <a href="' + BASE_URL + '/contact" class="block px-4 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors" role="menuitem">Contact</a>' +
+            '    <a href="' + TOOLS_URL + '" class="block px-4 py-3 rounded-xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 transition-colors text-center" role="menuitem">Dashboard</a>' +
+            '  </div>' +
+            '</div>';
+
+        document.body.prepend(header);
+
+        var btn = document.getElementById("mobile-menu-btn");
+        var menu = document.getElementById("mobile-menu");
+        if (btn && menu) {
+            btn.addEventListener("click", function () {
+                var expanded = btn.getAttribute("aria-expanded") === "true";
+                btn.setAttribute("aria-expanded", !expanded);
+                menu.classList.toggle("hidden");
+                var icon = btn.querySelector("i");
+                if (icon) {
+                    icon.className = expanded
+                        ? "fa-solid fa-bars text-xl text-slate-700"
+                        : "fa-solid fa-xmark text-xl text-slate-700";
+                }
+            });
         }
-      });
     }
-  },
 
-  init() {
-    this.page = window.location.pathname.replace(/\/+$/, '') || '/';
-    this.inject();
-    this.mobileMenu();
-    if (typeof AOS !== 'undefined') {
-      AOS.init({ once: true, offset: 50, duration: 800 });
+    function injectFooter() {
+        if (document.getElementById("global-footer")) return;
+        var footer = document.createElement("footer");
+        footer.id = "global-footer";
+        footer.className = "bg-slate-900 text-slate-300 border-t border-slate-800 mt-auto";
+        footer.innerHTML =
+            '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">' +
+            '  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">' +
+            '    <div>' +
+            '      <img src="' + BASE_URL + '/assets/images/logo.png" alt="' + SITE_NAME + '" class="h-7 mb-3 brightness-0 invert">' +
+            '      <p class="text-xs text-slate-500 font-medium leading-relaxed">' +
+            '        ' + SITE_NAME + ' provides free technical SEO audits with AI-powered insights,<br>' +
+            '        traffic analytics, and white-label reporting for modern web teams.' +
+            '      </p>' +
+            '    </div>' +
+            '    <div>' +
+            '      <h4 class="text-sm font-bold text-white mb-3">Quick Links</h4>' +
+            '      <ul class="space-y-1.5 text-xs font-medium text-slate-500">' +
+            '        <li><a href="' + BASE_URL + '/about" class="hover:text-white transition-colors">About</a></li>' +
+            '        <li><a href="' + BASE_URL + '/pricing" class="hover:text-white transition-colors">Pricing</a></li>' +
+            '        <li><a href="' + BASE_URL + '/contact" class="hover:text-white transition-colors">Contact</a></li>' +
+            '        <li><a href="' + TOOLS_URL + '" class="hover:text-white transition-colors">Dashboard</a></li>' +
+            '      </ul>' +
+            '    </div>' +
+            '    <div>' +
+            '      <h4 class="text-sm font-bold text-white mb-3">Legal</h4>' +
+            '      <ul class="space-y-1.5 text-xs font-medium text-slate-500">' +
+            '        <li><a href="' + BASE_URL + '/privacy" class="hover:text-white transition-colors">Privacy Policy</a></li>' +
+            '        <li><a href="' + BASE_URL + '/terms" class="hover:text-white transition-colors">Terms of Service</a></li>' +
+            '      </ul>' +
+            '    </div>' +
+            '  </div>' +
+            '  <div class="border-t border-slate-800 pt-6 flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-slate-500 font-medium">' +
+            '    <p>&copy; ' + new Date().getFullYear() + ' ' + SITE_NAME + '. All rights reserved.</p>' +
+            '    <p class="flex items-center gap-4">Made with <i class="fa-solid fa-heart text-secondary"></i> for the open web</p>' +
+            '  </div>' +
+            '</div>';
+        document.body.appendChild(footer);
     }
-  }
-};
 
-document.addEventListener('DOMContentLoaded', () => SITE.init());
+    function detectPlanFromUrl() {
+        var params = new URLSearchParams(window.location.search);
+        var plan = params.get("plan");
+        if (plan === "pro" || plan === "free") {
+            var radio = document.getElementById("plan-" + plan);
+            if (radio) radio.checked = true;
+            try { sessionStorage.setItem("selectedPlan", plan); } catch (e) {}
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        injectHeader();
+        injectFooter();
+        detectPlanFromUrl();
+
+        if (typeof AOS !== "undefined") {
+            AOS.init({
+                duration: 800,
+                easing: "ease-out-cubic",
+                once: true,
+                offset: 80,
+            });
+        }
+    });
+})();

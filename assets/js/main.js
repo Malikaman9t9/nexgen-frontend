@@ -1,1 +1,1 @@
-console.log("Main JS Loaded - NexGenWebLab Frontend Ready!");
+/* main.js — reserved for future use */
