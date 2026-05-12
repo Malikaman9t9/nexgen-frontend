@@ -2,12 +2,35 @@ const SUPABASE_URL = 'https://ubnvjmvobwzsystdktpk.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Fj_rv9LPpfh5nDouVW-bSw_hdfpn4-v';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const authForm = document.getElementById('auth-form');
     const googleBtn = document.getElementById('google-login-btn');
-    
-    // Auto-select plan from Pricing page link (e.g. /auth?plan=pro)
     const urlParams = new URLSearchParams(window.location.search);
+    
+    // Restore session from URL tokens (flow: auth → tools/upgrade)
+    const accessToken = urlParams.get('access_token');
+    const refreshToken = urlParams.get('refresh_token');
+    if (accessToken && refreshToken) {
+        try {
+            await supabaseClient.auth.setSession({
+                access_token: accessToken,
+                refresh_token: refreshToken
+            });
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (user) {
+                const plan = urlParams.get('plan') || 'free';
+                if (plan === 'pro') {
+                    window.location.href = `/upgrade`;
+                } else {
+                    window.location.href = `https://tools.nexgenweblab.com`;
+                }
+                return;
+            }
+        } catch (e) {
+        }
+    }
+
+    // Auto-select plan from URL (e.g. /auth?plan=pro)
     const planParam = urlParams.get('plan');
     if (planParam === 'pro' && document.getElementById('plan-pro')) {
         document.getElementById('plan-pro').checked = true;
@@ -36,13 +59,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.innerText = "Create Account";
                 submitBtn.disabled = false;
             } else {
-                // REDIRECT LOGIC
+                const session = data.session;
+                const accessToken = session?.access_token || '';
+                const refreshToken = session?.refresh_token || '';
                 if (selectedPlan === 'pro') {
-                    // Send to Upgrade page with details for auto-login after payment
-                    window.location.href = `/upgrade?em=${encodeURIComponent(email)}&pw=${encodeURIComponent(password)}`;
+                    window.location.href = `/upgrade?access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
                 } else {
-                    // Send directly to Tool
-                    window.location.href = `https://tools.nexgenweblab.com/?em=${encodeURIComponent(email)}&pw=${encodeURIComponent(password)}`;
+                    window.location.href = `https://tools.nexgenweblab.com/?access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
                 }
             }
         });
@@ -59,7 +82,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const { data, error } = await supabaseClient.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: selectedPlan === 'pro' ? 'https://nexgenweblab.com/upgrade' : 'https://tools.nexgenweblab.com',
+                    redirectTo: selectedPlan === 'pro'
+                        ? 'https://nexgenweblab.com/upgrade'
+                        : 'https://tools.nexgenweblab.com',
                     queryParams: { plan: selectedPlan }
                 }
             });

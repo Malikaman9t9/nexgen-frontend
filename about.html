@@ -39,6 +39,9 @@
                 <a href="/about" class="text-primary">About Solution</a>
                 <a href="/pricing" class="text-slate-600">Pricing Plans</a>
                 <a href="/contact" class="text-slate-600">Contact Support</a>
+                <hr class="border-slate-100">
+                <a href="https://tools.nexgenweblab.com" class="text-slate-600">Client Login</a>
+                <a href="/auth" class="text-center font-black bg-slate-900 text-white px-6 py-4 rounded-xl hover:bg-slate-800 transition-all">Get Started Free</a>
             </div>
         </div>
     </header>
@@ -91,7 +94,13 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init({ once: true });
-        document.getElementById('mobile-menu-btn').addEventListener('click', function() { document.getElementById('mobile-menu').classList.toggle('hidden'); });
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = this.querySelector('i');
+            menu.classList.toggle('hidden');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-xmark');
+        });
     </script>
 </body>
 </html>
