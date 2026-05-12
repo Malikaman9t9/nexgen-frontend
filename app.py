@@ -468,7 +468,15 @@ if menu_selection == "Site Auditor":
 
         with tab2:
             if speed_data:
-                st.markdown("<h4 style='color: #0f172a; margin-bottom: 25px; text-align: center;'>Mobile Device Analysis</h4>", unsafe_allow_html=True)
+                is_estimated = speed_data.get('mobile', {}).get('performance', 0) == 0 and speed_data.get('desktop', {}).get('performance', 0) == 0
+                source_badge = '<span style="font-size:11px;background:#f1f5f9;color:#64748b;padding:4px 12px;border-radius:20px;font-weight:600;">Estimated from HTTP data</span>' if is_estimated else '<span style="font-size:11px;background:#ecfdf5;color:#059669;padding:4px 12px;border-radius:20px;font-weight:600;"><i class="fa-solid fa-check-circle"></i> Google PageSpeed API</span>'
+                st.markdown(f"""
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+                    <h4 style="color:#0f172a;font-weight:800;font-size:18px;margin:0;">Core Web Vitals</h4>
+                    {source_badge}
+                </div>
+                """, unsafe_allow_html=True)
+                st.markdown("<h5 style='color:#0f172a;margin-bottom:20px;font-size:15px;font-weight:700;'>Mobile Device Analysis</h5>", unsafe_allow_html=True)
                 m_gauges = st.columns(4)
                 with m_gauges[0]: 
                     st.plotly_chart(render_small_gauge(speed_data['mobile'].get('performance', 0)), use_container_width=True, config={'displayModeBar': False}, key="m_perf")
@@ -494,9 +502,9 @@ if menu_selection == "Site Auditor":
                     st.markdown(render_speed_metric("Largest Contentful Paint (LCP)", m_metrics.get('lcp', {})), unsafe_allow_html=True)
                     st.markdown(render_speed_metric("Cumulative Layout Shift (CLS)", m_metrics.get('cls', {})), unsafe_allow_html=True)
 
-                st.markdown("<hr style='border-top: 1px dashed #cbd5e1; margin: 50px 0;'>", unsafe_allow_html=True)
+                st.markdown("<hr style='border-top: 1px solid #e2e8f0; margin: 40px 0;'>", unsafe_allow_html=True)
 
-                st.markdown("<h4 style='color: #0f172a; margin-bottom: 25px; text-align: center;'>Desktop Device Analysis</h4>", unsafe_allow_html=True)
+                st.markdown("<h5 style='color:#0f172a;margin-bottom:20px;font-size:15px;font-weight:700;'>Desktop Device Analysis</h5>", unsafe_allow_html=True)
                 d_gauges = st.columns(4)
                 with d_gauges[0]: 
                     st.plotly_chart(render_small_gauge(speed_data['desktop'].get('performance', 0)), use_container_width=True, config={'displayModeBar': False}, key="d_perf")
