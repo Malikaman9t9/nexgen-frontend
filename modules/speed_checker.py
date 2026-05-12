@@ -78,9 +78,9 @@ def check_speed(url, api_key):
     strat_m, data_m = fetch_strategy_data(url, 'mobile', api_key)
     results[strat_m] = data_m
     
-    # 2. Strong Delay: Mobile check hone ke baad 5 second ka wait taake Google IP block na kare
-    print("[*] Waiting 5 seconds before Desktop check to avoid Google Rate Limits...")
-    time.sleep(5)
+    # Delay to avoid Google API rate limits
+    print("[*] Waiting 2 seconds before Desktop check to avoid Google Rate Limits...")
+    time.sleep(2)
     
     # 3. Check Desktop Speed
     strat_d, data_d = fetch_strategy_data(url, 'desktop', api_key)

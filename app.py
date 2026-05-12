@@ -38,23 +38,39 @@ if 'user' not in st.session_state:
     st.session_state['user'] = None
 
 if st.session_state['user'] is None:
+    url_access_token = st.query_params.get("access_token", "")
+    url_refresh_token = st.query_params.get("refresh_token", "")
+
+    if url_access_token and url_refresh_token:
+        try:
+            supabase.auth.set_session(url_access_token, url_refresh_token)
+            user_res = supabase.auth.get_user()
+            if user_res and user_res.user:
+                st.session_state['user'] = user_res.user
+                st.query_params.clear()
+                st.rerun()
+        except Exception:
+            pass
+
+if st.session_state['user'] is None:
     st.markdown("""
-    <div style="text-align: center; margin-top: 50px;">
-        <i class="fa-solid fa-lock" style="font-size: 40px; color: #DB2777; margin-bottom: 20px;"></i>
-        <h2 style="color: #0f172a; font-weight: 800;">NexGenWebLab Secure Portal</h2>
-        <p style="color: #64748b; margin-bottom: 30px;">Please log in to access the Enterprise SEO Engine.</p>
-    </div>
+    <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f8fafc;padding:20px;">
+    <div style="background:#fff;border-radius:32px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.15);padding:48px 40px;max-width:420px;width:100%;border:1px solid #e2e8f0;">
+        <div style="text-align:center;margin-bottom:32px;">
+            <div style="width:56px;height:56px;background:linear-gradient(135deg,#6D28D9,#DB2777);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;color:#fff;box-shadow:0 8px 16px -4px rgba(109,40,217,0.25);">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h2 style="font-size:24px;font-weight:800;color:#0f172a;margin:0 0 4px;">Welcome Back</h2>
+            <p style="color:#64748b;font-size:14px;font-weight:500;margin:0;">Sign in to your Enterprise SEO dashboard</p>
+        </div>
     """, unsafe_allow_html=True)
-    
-    url_email = st.query_params.get("em", "")
-    url_pwd = st.query_params.get("pw", "")
     
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        with st.form("login_form"):
-            login_email = st.text_input("Email Address", value=url_email)
-            login_password = st.text_input("Password", type="password", value=url_pwd)
-            submitted = st.form_submit_button("Log In to Dashboard", type="primary", use_container_width=True)
+        with st.form("login_form", border=False):
+            login_email = st.text_input("Email Address", placeholder="you@agency.com")
+            login_password = st.text_input("Password", type="password", placeholder="••••••••")
+            submitted = st.form_submit_button("Sign In →", type="primary", use_container_width=True)
             if submitted:
                 try:
                     response = supabase.auth.sign_in_with_password({"email": login_email, "password": login_password})
@@ -62,9 +78,15 @@ if st.session_state['user'] is None:
                     st.query_params.clear()
                     st.rerun()
                 except Exception as e:
-                    st.error("⚠️ Invalid email or password.")
+                    st.error("Invalid email or password. Please try again.")
                     
-        st.markdown("<hr style='border-top: 1px dashed #e2e8f0; margin: 20px 0;'><div style='text-align: center;'><p style='color: #475569; font-size: 14px;'>Don't have an account?</p><a href='https://nexgenweblab.com/auth' style='text-decoration: none; color: #6D28D9; font-weight: 700;'>&larr; Sign up here</a></div>", unsafe_allow_html=True)
+        st.markdown("""
+        <div style="text-align:center;margin-top:24px;padding-top:24px;border-top:1px solid #e2e8f0;">
+            <p style="color:#475569;font-size:14px;font-weight:500;margin:0 0 4px;">Don't have an account?</p>
+            <a href="https://nexgenweblab.com/auth" style="color:#6D28D9;font-weight:700;text-decoration:none;font-size:14px;">Create free account →</a>
+        </div>
+    </div></div>
+        """, unsafe_allow_html=True)
     st.stop() 
 
 # ==========================================
@@ -100,45 +122,67 @@ st.markdown("""
     [data-testid="stToolbarActions"] { display: none !important; }
     .stAppDeployButton { display: none !important; }
     footer { visibility: hidden !important; }
+    #MainMenu { visibility: hidden !important; }
     * { font-family: 'Inter', sans-serif; }
-    .block-container { padding-top: 1rem; padding-bottom: 2rem; max-width: 1300px; }
+    .block-container { padding-top: 0.5rem !important; padding-bottom: 2rem; max-width: 1320px; }
     body { background-color: #f8fafc; }
-    [data-testid="stSidebar"] { background-color: #ffffff; border-right: 1px solid #e2e8f0; }
-    .hero-container { text-align: center; padding: 30px 10px; }
-    .hero-title { font-size: 46px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 15px; }
+    .stApp { background-color: #f8fafc; }
+
+    [data-testid="stSidebar"] { background-color: #ffffff; border-right: 1px solid #e2e8f0; padding-top: 1rem; }
+    [data-testid="stSidebar"] .stImage { padding: 0 20px; }
+
+    .hero-container { text-align: center; padding: 40px 10px 20px; }
+    .hero-title { font-size: 42px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 12px; letter-spacing: -0.02em; }
     .hero-title span { background: linear-gradient(135deg, #6D28D9, #DB2777); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .hero-subtitle { font-size: 18px; color: #64748b; max-width: 600px; margin: 0 auto 30px auto; }
+    .hero-subtitle { font-size: 16px; color: #64748b; max-width: 560px; margin: 0 auto 28px; font-weight: 500; line-height: 1.6; }
+
     [data-testid="stForm"] div[data-testid="stHorizontalBlock"] { gap: 0px !important; align-items: center !important; padding: 0 !important; }
-    [data-testid="stForm"] div[data-testid="column"] { padding: 0px !important; margin: 0px !important; display: flex !important; flex-direction: column !important; justify-content: center !important; }
-    .url-prefix { height: 38px !important; min-height: 38px !important; line-height: 38px !important; display: flex !important; align-items: center !important; justify-content: center !important; background-color: #e2e8f0 !important; color: #0f172a !important; font-size: 16px !important; font-weight: 700 !important; border: 2px solid #e2e8f0 !important; border-right: none !important; border-radius: 20px 0 0 20px !important; margin: 0 !important; width: 100% !important; box-sizing: border-box !important; margin-top: -16px !important; margin-bottom: 0px !important; }
-    [data-testid="stForm"] .stTextInput input { height: 50px !important; line-height: 50px !important; font-size: 16px !important; text-align: left !important; padding-left: 10px !important; margin: 0px !important; font-weight: 500 !important; color: #0f172a !important; box-sizing: border-box !important; border-radius: 0px !important; }
-    [data-testid="stForm"] button[kind="primary"] { height: 54px !important; min-height: 54px !important; border-radius: 0 30px 30px 0 !important; font-size: 16px !important; font-weight: 800 !important; background: linear-gradient(135deg, #6D28D9, #DB2777) !important; color: white !important; border: none !important; width: 100% !important; text-transform: none !important; margin: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; padding: 0 20px !important; }
-    div.stButton > button[kind="secondary"] { border-radius: 8px !important; font-weight: 700 !important; border: 1px solid #e2e8f0 !important; color: #475569 !important; background-color: #f8fafc !important; }
-    .score-container { background: #ffffff; border-radius: 16px; padding: 30px; border: 1px solid #e2e8f0; margin-bottom: 30px;}
-    .issue-card { border-radius: 12px; padding: 25px; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: center; height: 100%;}
-    .issue-count { font-size: 48px; font-weight: 900; line-height: 1; margin-bottom: 5px; }
-    .issue-label { font-size: 14px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
-    .stTabs [data-baseweb="tab-list"] { gap: 10px; border-bottom: none; margin-bottom: 25px; background: #e2e8f0; padding: 8px; border-radius: 14px; }
-    .stTabs [data-baseweb="tab"] { height: 45px; font-size: 15px; font-weight: 700; color: #475569; background-color: transparent; border-radius: 10px; border: none; padding: 0 20px; }
-    .stTabs [aria-selected="true"] { background: linear-gradient(135deg, #6D28D9, #DB2777) !important; color: white !important; }
-    .audit-item { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 15px; position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 220px; }
-    .audit-item::before { content:''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; }
-    .status-danger::before { background-color: #ef4444; }
-    .status-warning::before { background-color: #f59e0b; }
-    .status-success::before { background-color: #10b981; }
-    .status-info::before { background-color: #3b82f6; }
-    .audit-header { display: flex; align-items: center; width: 100%; }
-    .audit-header i { font-size: 20px; margin-right: 18px; width: 26px; text-align: center; } 
+    [data-testid="stForm"] div[data-testid="column"] { padding: 0px !important; margin: 0px !important; }
+    .url-prefix { height: 52px !important; min-height: 52px !important; line-height: 52px !important; display: flex !important; align-items: center !important; justify-content: center !important; background: #fff !important; color: #0f172a !important; font-size: 15px !important; font-weight: 600 !important; border: 2px solid #e2e8f0 !important; border-right: none !important; border-radius: 16px 0 0 16px !important; margin: 0 !important; width: 100% !important; margin-top: -16px !important; }
+    [data-testid="stForm"] .stTextInput input { height: 52px !important; line-height: 52px !important; font-size: 15px !important; padding-left: 14px !important; margin: 0px !important; font-weight: 500 !important; color: #0f172a !important; border-radius: 0 !important; border: 2px solid #e2e8f0 !important; border-left: none !important; background: #fff !important; }
+    [data-testid="stForm"] button[kind="primary"] { height: 52px !important; min-height: 52px !important; border-radius: 0 16px 16px 0 !important; font-size: 15px !important; font-weight: 700 !important; background: linear-gradient(135deg, #6D28D9, #DB2777) !important; color: white !important; border: none !important; width: 100% !important; margin: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; padding: 0 24px !important; letter-spacing: -0.01em; gap: 8px; }
+
+    div.stButton > button[kind="secondary"] { border-radius: 10px !important; font-weight: 600 !important; border: 1px solid #e2e8f0 !important; color: #475569 !important; background-color: #fff !important; font-size: 14px !important; height: 44px !important; }
+    div.stButton > button[kind="secondary"]:hover { border-color: #6D28D9 !important; color: #6D28D9 !important; }
+
+    .score-container { background: #ffffff; border-radius: 20px; padding: 32px; border: 1px solid #e2e8f0; margin-bottom: 28px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    .issue-card { border-radius: 16px; padding: 24px; background: linear-gradient(135deg, #f8fafc, #fff); border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: center; height: 100%; transition: all 0.2s; }
+    .issue-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .issue-count { font-size: 44px; font-weight: 900; line-height: 1; margin-bottom: 6px; letter-spacing: -0.03em; }
+    .issue-label { font-size: 13px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; }
+
+    .stTabs [data-baseweb="tab-list"] { gap: 8px; border-bottom: none; margin-bottom: 24px; background: #f1f5f9; padding: 6px; border-radius: 14px; }
+    .stTabs [data-baseweb="tab"] { height: 42px; font-size: 14px; font-weight: 600; color: #64748b; background-color: transparent; border-radius: 10px; border: none; padding: 0 18px; transition: all 0.2s; }
+    .stTabs [aria-selected="true"] { background: linear-gradient(135deg, #6D28D9, #DB2777) !important; color: white !important; box-shadow: 0 2px 8px rgba(109,40,217,0.2); }
+
+    .audit-item { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; margin-bottom: 14px; position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 210px; transition: all 0.2s; }
+    .audit-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+    .audit-item::before { content:''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; border-radius: 0 2px 2px 0; }
+    .status-danger::before { background: linear-gradient(180deg, #ef4444, #dc2626); }
+    .status-warning::before { background: linear-gradient(180deg, #f59e0b, #d97706); }
+    .status-success::before { background: linear-gradient(180deg, #10b981, #059669); }
+    .status-info::before { background: linear-gradient(180deg, #3b82f6, #2563eb); }
+    .audit-header { display: flex; align-items: flex-start; width: 100%; }
+    .audit-header i { font-size: 18px; margin-right: 14px; width: 22px; text-align: center; margin-top: 2px; }
     .audit-item-content { display: flex; flex-direction: column; flex-grow: 1; }
-    .audit-item-title { font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 2px;}
-    .audit-item-desc { font-size: 13px; color: #475569; line-height: 1.4; }
-    .actual-data-box { margin-top: 15px; margin-bottom: 5px; margin-left: 44px; padding: 12px 14px; background-color: #f8fafc; border-radius: 8px; font-size: 13px; color: #334155; word-break: break-word; border: 1px solid #e2e8f0; font-family: monospace; flex-grow: 1; }
-    details.seo-tip { margin-top: 10px; margin-left: 44px; border-top: 1px dashed #e2e8f0; padding-top: 10px; }
-    details.seo-tip summary { font-size: 12px; font-weight: 600; color: #6D28D9; cursor: pointer; outline: none; list-style: none;}
-    details.seo-tip summary::after { content: ' +'; }
+    .audit-item-title { font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 2px; }
+    .audit-item-desc { font-size: 13px; color: #64748b; line-height: 1.4; font-weight: 500; }
+    .actual-data-box { margin-top: 14px; margin-bottom: 4px; margin-left: 36px; padding: 10px 14px; background: #f8fafc; border-radius: 8px; font-size: 12px; color: #334155; word-break: break-word; border: 1px solid #e2e8f0; font-family: 'SF Mono', 'Fira Code', monospace; line-height: 1.5; flex-grow: 1; }
+    details.seo-tip { margin-top: 10px; margin-left: 36px; border-top: 1px dashed #e2e8f0; padding-top: 10px; }
+    details.seo-tip summary { font-size: 12px; font-weight: 600; color: #6D28D9; cursor: pointer; outline: none; list-style: none; opacity: 0.8; transition: opacity 0.2s; }
+    details.seo-tip summary:hover { opacity: 1; }
+    details.seo-tip summary::after { content: ' +'; font-weight: 700; }
     details.seo-tip[open] summary::after { content: ' -'; }
-    details.seo-tip p { margin: 8px 0 0 0; font-size: 12px; color: #475569; background: #f1f5f9; padding: 10px; border-left: 3px solid #6D28D9; border-radius: 4px; }
-    .speed-metric-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.02); height: 60px; }
+    details.seo-tip p { margin: 8px 0 0 0; font-size: 12px; color: #475569; background: #f1f5f9; padding: 10px 14px; border-left: 3px solid #6D28D9; border-radius: 6px; line-height: 1.5; }
+
+    .speed-metric-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px 18px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; height: 52px; transition: all 0.2s; }
+    .speed-metric-card:hover { border-color: #cbd5e1; }
+    .speed-metric-card i { font-size: 14px !important; }
+
+    .stProgress > div > div > div > div { background: linear-gradient(90deg, #6D28D9, #DB2777) !important; }
+    .st-emotion-cache-1v7f65l { background-color: transparent !important; }
+
+    h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif !important; letter-spacing: -0.02em !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -285,15 +329,17 @@ def calculate_ov_vip(onpage, speed):
 # 6. UI: SIDEBAR
 # ==========================================
 with st.sidebar:
+    if os.path.exists("logo.png"): st.image("logo.png", use_container_width=True)
+    
     st.markdown(f"""
-    <div style="background-color: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+    <div style="background: linear-gradient(135deg, #f8fafc, #fff); padding: 16px; border-radius: 14px; border: 1px solid #e2e8f0; margin-bottom: 16px;">
         <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #6D28D9, #DB2777); color: white; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+            <div style="width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, #6D28D9, #DB2777); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; box-shadow: 0 4px 8px rgba(109,40,217,0.2);">
                 {user_email[0].upper()}
             </div>
             <div style="overflow: hidden; flex: 1;">
-                <div style="font-size: 13px; font-weight: 800; color: #0f172a; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;" title="{user_email}">{user_email}</div>
-                <div style="font-size: 11px; color: {'#10b981' if is_pro else '#64748b'}; font-weight: 700; margin-top: 2px;">
+                <div style="font-size: 13px; font-weight: 700; color: #0f172a; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;" title="{user_email}">{user_email}</div>
+                <div style="font-size: 11px; color: {'#10b981' if is_pro else '#94a3b8'}; font-weight: 600; margin-top: 3px; display: flex; align-items: center; gap: 4px;">
                     <i class="fa-solid fa-{'crown' if is_pro else 'user'}"></i> {plan_name}
                 </div>
             </div>
@@ -303,21 +349,19 @@ with st.sidebar:
     
     if not is_pro:
         st.markdown("""
-        <a href="https://nexgenweblab.com/upgrade" target="_blank" style="display:block; text-align:center; background: linear-gradient(135deg, #6D28D9, #DB2777); color: white; padding: 10px; border-radius: 8px; font-weight: bold; text-decoration: none; margin-bottom: 15px; font-size: 13px; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+        <a href="https://nexgenweblab.com/upgrade" target="_blank" style="display:block; text-align:center; background: linear-gradient(135deg, #6D28D9, #DB2777); color: white; padding: 11px; border-radius: 10px; font-weight: 700; text-decoration: none; margin-bottom: 14px; font-size: 13px; transition: all 0.2s; box-shadow: 0 4px 12px rgba(109,40,217,0.2);" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
             <i class="fa-solid fa-bolt"></i> Upgrade to Pro
         </a>
         """, unsafe_allow_html=True)
 
-    if st.button("Log Out", use_container_width=True):
+    if st.button("Log Out", use_container_width=True, type="secondary"):
         try: supabase.auth.sign_out()
         except: pass
         st.session_state['user'] = None
         st.query_params.clear()
         st.rerun()
         
-    st.markdown("<hr style='border-top: 1px dashed #e2e8f0; margin: 20px 0;'>", unsafe_allow_html=True)
-    if os.path.exists("logo.png"): st.image("logo.png", use_container_width=True)
-    st.markdown("<div style='text-align:center; color:#64748b; font-size:12px; margin-bottom:20px; margin-top: 10px;'>Enterprise SEO Suite v2.0</div>", unsafe_allow_html=True)
+    st.markdown("<hr style='border-top: 1px solid #e2e8f0; margin: 20px 0;'>", unsafe_allow_html=True)
     
     bulk_icon = "file-earmark-spreadsheet" if is_pro else "lock-fill"
     menu_selection = option_menu(menu_title=None, options=["Site Auditor", "Bulk Analysis"], icons=["search", bulk_icon], default_index=0, styles={"container": {"padding": "0!important", "background-color": "transparent"}, "icon": {"color": "#94a3b8", "font-size": "18px"}, "nav-link": {"font-size": "15px", "text-align": "left", "margin":"0px", "color":"#475569", "font-weight":"600", "height":"50px", "border-radius":"10px"}, "nav-link-selected": {"background": "linear-gradient(135deg, rgba(109, 40, 217, 0.07), rgba(219, 39, 119, 0.07))", "color": "#6D28D9", "border-left": "4px solid #DB2777"}})
@@ -328,13 +372,13 @@ with st.sidebar:
 # 7. UI: MAIN CONTENT
 # ==========================================
 if menu_selection == "Site Auditor":
-    st.markdown("""<div class="hero-container"><div class="hero-title">Professional <span>SEO Auditor</span></div><div class="hero-subtitle">Instantly analyze technical roadblocks, optimize on-page elements, and uncover real-time traffic insights for any website.</div></div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="hero-container"><div class="hero-title">Professional <span>SEO Auditor</span></div><div class="hero-subtitle">Analyze technical roadblocks, measure Core Web Vitals, and get AI-driven growth strategies for any website in seconds.</div></div>""", unsafe_allow_html=True)
     
     with st.form("audit_form", border=False):
         col_prefix, col_domain, col_btn = st.columns([1.2, 6.3, 2.5])
         with col_prefix: st.markdown('<div class="url-prefix">https://</div>', unsafe_allow_html=True)
-        with col_domain: domain_input = st.text_input("Domain", value="", placeholder="paste url here", label_visibility="collapsed")
-        with col_btn: run_button = st.form_submit_button("Analyze Now  →", type="primary", use_container_width=True)
+        with col_domain: domain_input = st.text_input("Domain", value="", placeholder="Enter domain (e.g. example.com)", label_visibility="collapsed")
+        with col_btn: run_button = st.form_submit_button("Analyze Now →", type="primary", use_container_width=True)
     
     st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
 
@@ -345,9 +389,9 @@ if menu_selection == "Site Auditor":
         st.session_state['last_audit_url'] = target_url
         st.session_state['last_clean_domain'] = clean_domain
 
-        progress_bar = st.progress(0, text="Initializing Audit Engine...")
+        progress_bar = st.progress(0, text="⚡ Initializing audit engine...")
         
-        progress_bar.progress(15, text="Scraping SEO Architecture...")
+        progress_bar.progress(15, text="🔍 Crawling page architecture...")
         st.session_state['onpage_data'] = get_basic_onpage(target_url)
         if not st.session_state['onpage_data']:
             st.session_state['onpage_data'] = {
@@ -357,17 +401,17 @@ if menu_selection == "Site Auditor":
                 'unminified_css': 0, 'unminified_js': 0, 'dir_listing_secured': 'Unknown'
             }
 
-        progress_bar.progress(45, text="Fetching Core Web Vitals...")
+        progress_bar.progress(45, text="📊 Running Core Web Vitals test...")
         st.session_state['speed_data'] = check_speed(target_url, SPEED_API_KEY)
         
         if is_pro:
-            progress_bar.progress(70, text="Connecting Traffic API...")
+            progress_bar.progress(70, text="📈 Fetching traffic intelligence...")
             st.session_state['traffic_data'] = get_traffic_data(target_url, RAPIDAPI_KEY)
         else:
-            progress_bar.progress(70, text="Skipping Traffic (Free Plan)...")
+            progress_bar.progress(70, text="⏭️ Traffic analytics (Pro feature)")
             st.session_state['traffic_data'] = None
         
-        progress_bar.progress(85, text="Syncing AI Recommendations...")
+        progress_bar.progress(85, text="🤖 Generating AI recommendations...")
         m_perf = st.session_state['speed_data']['mobile'].get('performance', 0) if st.session_state['speed_data'] else 0
         d_perf = st.session_state['speed_data']['desktop'].get('performance', 0) if st.session_state['speed_data'] else 0
         st.session_state['ai_suggestions'] = get_ai_suggestions({**st.session_state['onpage_data'], 'mobile_speed': m_perf, 'desktop_speed': d_perf}, GEMINI_API_KEY)
@@ -384,8 +428,13 @@ if menu_selection == "Site Auditor":
         
         ov_score, crit_count, warn_count, pass_count = calculate_ov_vip(onpage_data, speed_data)
         
-        st.markdown("<h3 style='text-align: center; color: #0f172a; margin-bottom: 25px; font-weight: 800;'>Audit Overview</h3>", unsafe_allow_html=True)
-        ov_col1, ov_col2 = st.columns([1, 2], gap="large")
+        st.markdown("""
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+            <h3 style="color:#0f172a;font-weight:800;font-size:20px;margin:0;">Audit Overview</h3>
+            <span style="font-size:13px;color:#64748b;font-weight:500;">Comprehensive technical analysis</span>
+        </div>
+        """, unsafe_allow_html=True)
+        ov_col1, ov_col2 = st.columns([1, 2.2], gap="large")
         with ov_col1: st.plotly_chart(render_overview_donut(ov_score), use_container_width=True, config={'displayModeBar': False}, key="main_donut")
         with ov_col2:
             ic1, ic2, ic3 = st.columns(3)
@@ -505,22 +554,32 @@ if menu_selection == "Site Auditor":
                     st.warning("Traffic data not available for this domain.")
 
         with tab4:
-            st.markdown("<h4 style='color: #0f172a; margin-bottom: 20px;'>AI Action Plan</h4>", unsafe_allow_html=True)
+            st.markdown("""
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+                <h4 style="color:#0f172a;font-weight:800;font-size:18px;margin:0;">AI Action Plan</h4>
+                <span style="font-size:12px;color:#64748b;font-weight:500;">Powered by Google Gemini</span>
+            </div>
+            """, unsafe_allow_html=True)
             if ai_suggestions and isinstance(ai_suggestions, list):
                 for item in ai_suggestions:
                     clean_text = str(item.get("text", "")).replace("```json", "").replace("```html", "").replace("```", "").strip()
-                    st.markdown(f"""<div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 15px; border-left: 4px solid #6D28D9; box-shadow: 0 2px 4px rgba(0,0,0,0.02);"><h5 style="color: #0f172a; margin-top: 0; margin-bottom: 10px; font-size: 16px;"><i class="{item.get('icon', 'fa-solid fa-lightbulb')}" style="color: #DB2777; margin-right: 10px;"></i>{item.get('title', 'Recommendation')}</h5><div style='color: #475569; font-size: 14px;'>{clean_text}</div></div>""", unsafe_allow_html=True)
+                    st.markdown(f"""<div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px;margin-bottom:12px;border-left:4px solid #6D28D9;transition:all 0.2s;"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><div style="width:32px;height:32px;background:linear-gradient(135deg,rgba(109,40,217,0.1),rgba(219,39,119,0.1));border-radius:8px;display:flex;align-items:center;justify-content:center;"><i class="{item.get('icon', 'fa-solid fa-lightbulb')}" style="color:#DB2777;font-size:14px;"></i></div><h5 style="color:#0f172a;font-weight:700;font-size:15px;margin:0;">{item.get('title', 'Recommendation')}</h5></div><div style="color:#475569;font-size:14px;line-height:1.6;padding-left:42px;">{clean_text}</div></div>""", unsafe_allow_html=True)
             else:
-                st.error("AI recommendations failed.")
+                st.info("AI recommendations are being generated. Please run an audit first.")
 
         with tab5:
-            st.markdown("### ⚙️ White Label Report Customization")
-            st.markdown("<p style='color: #64748b; font-size: 14px; margin-bottom: 20px;'>Fill in the details below to generate a professional, agency-ready document.</p>", unsafe_allow_html=True)
+            st.markdown("""
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <h4 style="color:#0f172a;font-weight:800;font-size:18px;margin:0;">White Label Report</h4>
+                <span style="font-size:12px;color:#64748b;font-weight:500;">Custom branding supported</span>
+            </div>
+            """, unsafe_allow_html=True)
+            st.markdown("<p style='color:#64748b;font-size:14px;margin-bottom:24px;'>Generate a professional, agency-ready SEO audit document with your own branding.</p>", unsafe_allow_html=True)
             
             w_col1, w_col2 = st.columns(2)
             agency_name = w_col1.text_input("Agency / Company Name", value="NexGenWebLab Pro")
             author_name = w_col2.text_input("Prepared By (Author)", value="SEO Team")
-            client_name = st.text_input("Client / Project Name", value=st.session_state['last_clean_domain'].upper())
+            client_name = st.text_input("Client / Project Name", value=st.session_state.get('last_clean_domain', 'client-domain').upper())
             export_format = st.selectbox("Export Format", ["Microsoft Word (.DOCX)"])
             
             st.markdown("<br>", unsafe_allow_html=True)
@@ -530,7 +589,7 @@ if menu_selection == "Site Auditor":
             st.download_button(
                 label=f"📥 Download {export_format}",
                 data=word_file,
-                file_name=f"{st.session_state['last_clean_domain']}_SEO_Report.docx",
+                file_name=f"{st.session_state.get('last_clean_domain', 'client')}_SEO_Report.docx",
                 mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 type="primary",
                 use_container_width=True
@@ -545,7 +604,7 @@ elif menu_selection == "Bulk Analysis":
             <i class="fa-solid fa-file-earmark-lock" style="font-size: 60px; color: #DB2777; margin-bottom: 20px;"></i>
             <h2 style="color: #0f172a; font-weight: 800; margin-bottom: 10px;">Bulk Engine Locked</h2>
             <p style="color: #64748b; margin-bottom: 30px; font-size: 18px; max-width: 600px; margin-left: auto; margin-right: auto;">The Bulk Analysis Engine is exclusively available for Enterprise Pro users. Audit hundreds of URLs at once and generate bulk reports automatically.</p>
-            <a href="[https://nexgenweblab.com/upgrade](https://nexgenweblab.com/upgrade)" target="_blank" style="background: linear-gradient(135deg, #6D28D9, #DB2777); color: white; padding: 15px 30px; border-radius: 8px; font-weight: bold; text-decoration: none; font-size: 16px; display: inline-block;">Unlock Enterprise Pro</a>
+            <a href="https://nexgenweblab.com/upgrade" target="_blank" style="background: linear-gradient(135deg, #6D28D9, #DB2777); color: white; padding: 15px 30px; border-radius: 8px; font-weight: bold; text-decoration: none; font-size: 16px; display: inline-block;">Unlock Enterprise Pro</a>
         </div>
         """, unsafe_allow_html=True)
     else:
