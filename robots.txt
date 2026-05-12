@@ -1,0 +1,8 @@
+# NexGenWebLab — Robots.txt
+User-agent: *
+Allow: /
+Disallow: /assets/
+Disallow: /pages/auth
+Disallow: /pages/upgrade
+
+Sitemap: https://nexgenweblab.com/sitemap.xml
