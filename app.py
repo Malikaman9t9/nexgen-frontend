@@ -412,7 +412,7 @@ def calculate_scores(onpage, speed):
 # ==============================================================================
 with st.sidebar:
     if os.path.exists("logo.png"):
-        st.image("logo.png", use_container_width=True)
+        st.image("logo.png", width=250)
 
     st.markdown(f"""
     <div style="background:linear-gradient(135deg,#f8fafc,#fff);padding:16px;border-radius:14px;border:1px solid #e2e8f0;margin-bottom:16px;">
