@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /assets/
-Disallow: /pages/auth
-Disallow: /pages/upgrade
+Disallow: /auth
+Disallow: /upgrade
 
 Sitemap: https://nexgenweblab.com/sitemap.xml

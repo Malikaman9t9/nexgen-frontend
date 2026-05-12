@@ -36,7 +36,6 @@
             '  <div class="flex justify-between items-center h-16 lg:h-20">' +
             '    <a href="' + BASE_URL + '/" class="flex items-center gap-2 shrink-0" aria-label="' + SITE_NAME + ' home">' +
             '      <img src="' + BASE_URL + '/assets/images/logo.png" alt="' + SITE_NAME + '" class="h-7 w-auto">' +
-            '      <span class="font-black text-lg tracking-tight hidden sm:block">' + SITE_NAME + '</span>' +
             '    </a>' +
             '    <nav class="hidden md:flex items-center gap-8" aria-label="Main navigation">' +
             navLink(BASE_URL + "/", "Home").outerHTML +
