@@ -35,13 +35,13 @@ st.set_page_config(
 
 # --- Supabase client ---
 if not SUPABASE_URL or not SUPABASE_KEY:
-    st.error("Server configuration error: missing database credentials.")
+    st.error("Database not configured. Set SUPABASE_URL and SUPABASE_KEY in your environment variables (e.g., Render dashboard → Environment).")
     st.stop()
 
 try:
     supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 except Exception as e:
-    st.error(f"Database connection failed: {e}")
+    st.error(f"Database connection failed: {e}. Check that your SUPABASE_URL and SUPABASE_KEY are correct.")
     st.stop()
 
 # ==============================================================================
