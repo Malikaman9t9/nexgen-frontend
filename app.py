@@ -33,16 +33,25 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# --- Supabase client ---
-if not SUPABASE_URL or not SUPABASE_KEY:
-    st.error("Database not configured. Set SUPABASE_URL and SUPABASE_KEY in your environment variables (e.g., Render dashboard → Environment).")
-    st.stop()
+# --- Supabase client (optional — app works without it) ---
+supabase = None
 
-try:
-    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-except Exception as e:
-    st.error(f"Database connection failed: {e}. Check that your SUPABASE_URL and SUPABASE_KEY are correct.")
-    st.stop()
+if SUPABASE_URL and SUPABASE_KEY:
+    try:
+        supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+        # Verify the connection is live
+        supabase.auth.get_session()
+    except Exception as e:
+        st.warning(
+            f"Database unavailable — running in demo mode. "
+            f"Log-in and plan features are disabled."
+        )
+        supabase = None
+else:
+    st.warning(
+        "Supabase credentials not configured — running in demo mode. "
+        "Set SUPABASE_URL and SUPABASE_KEY in your environment to enable authentication."
+    )
 
 # ==============================================================================
 # 2. AUTHENTICATION GATE
@@ -50,7 +59,7 @@ except Exception as e:
 if "user" not in st.session_state:
     st.session_state["user"] = None
 
-if st.session_state["user"] is None:
+if supabase and st.session_state["user"] is None:
     access_token = st.query_params.get("access_token", "")
     refresh_token = st.query_params.get("refresh_token", "")
 
@@ -65,7 +74,7 @@ if st.session_state["user"] is None:
         except Exception:
             pass
 
-if st.session_state["user"] is None:
+if supabase and st.session_state["user"] is None:
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         with st.form("login_form", border=False):
@@ -97,6 +106,13 @@ if st.session_state["user"] is None:
             </div>
         """, unsafe_allow_html=True)
     st.stop()
+
+# If running without Supabase, create a demo user session
+if st.session_state["user"] is None:
+    class DemoUser:
+        email = "demo@nexgenweblab.com"
+        user_metadata = {"plan": "free"}
+    st.session_state["user"] = DemoUser()
 
 # ==============================================================================
 # 3. USER & PLAN
@@ -418,10 +434,11 @@ with st.sidebar:
         st.markdown('<a href="https://nexgenweblab.com/upgrade" target="_blank" class="upgrade-banner"><i class="fa-solid fa-bolt"></i> Upgrade to Pro</a>', unsafe_allow_html=True)
 
     if st.button("Log Out", use_container_width=True, type="secondary"):
-        try:
-            supabase.auth.sign_out()
-        except Exception:
-            pass
+        if supabase:
+            try:
+                supabase.auth.sign_out()
+            except Exception:
+                pass
         st.session_state["user"] = None
         st.query_params.clear()
         st.rerun()
