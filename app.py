@@ -146,10 +146,18 @@ st.markdown("""
     .hero-title span { background: linear-gradient(135deg, #6D28D9, #DB2777); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .hero-subtitle { font-size: 16px; color: #64748b; max-width: 560px; margin: 0 auto 28px; font-weight: 500; line-height: 1.6; }
 
-    [data-testid="stForm"] div[data-testid="stHorizontalBlock"] { gap: 0 !important; align-items: center !important; padding: 0 !important; }
-    .url-prefix { height: 52px !important; line-height: 52px !important; display: flex !important; align-items: center !important; justify-content: center !important; background: #fff !important; color: #0f172a !important; font-size: 15px !important; font-weight: 600 !important; border: 2px solid #e2e8f0 !important; border-right: none !important; border-radius: 16px 0 0 16px !important; }
-    [data-testid="stForm"] .stTextInput input { height: 52px !important; font-size: 15px !important; padding-left: 14px !important; font-weight: 500 !important; color: #0f172a !important; border-radius: 0 !important; border: 2px solid #e2e8f0 !important; border-left: none !important; background: #fff !important; }
-    [data-testid="stForm"] button[kind="primary"] { height: 52px !important; border-radius: 0 16px 16px 0 !important; font-size: 15px !important; font-weight: 700 !important; background: linear-gradient(135deg, #6D28D9, #DB2777) !important; color: white !important; border: none !important; width: 100% !important; }
+    .url-bar-wrapper { background: #fff; border: 1px solid #e2e8f0; border-radius: 24px; padding: 8px; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.08); margin-bottom: 8px; }
+    [data-testid="stForm"] div[data-testid="stHorizontalBlock"] { gap: 0 !important; align-items: stretch !important; padding: 0 !important; }
+    .url-prefix { height: 64px !important; line-height: 64px !important; display: flex !important; align-items: center !important; justify-content: center !important; background: #f1f5f9 !important; color: #64748b !important; font-size: 15px !important; font-weight: 700 !important; border: 2px solid #e2e8f0 !important; border-right: none !important; border-radius: 16px 0 0 16px !important; padding: 0 24px !important; white-space: nowrap; }
+    [data-testid="stForm"] .stTextInput input { height: 64px !important; font-size: 18px !important; padding-left: 20px !important; font-weight: 700 !important; color: #0f172a !important; border-radius: 0 !important; border: 2px solid #e2e8f0 !important; border-left: none !important; background: #f8fafc !important; }
+    [data-testid="stForm"] .stTextInput input:focus { background: #fff !important; border-color: #6D28D9 !important; }
+    [data-testid="stForm"] button[kind="primary"] { height: 64px !important; border-radius: 0 16px 16px 0 !important; font-size: 16px !important; font-weight: 800 !important; background: linear-gradient(135deg, #6D28D9, #DB2777) !important; color: white !important; border: none !important; width: 100% !important; letter-spacing: 0.02em !important; }
+    [data-testid="stForm"] button[kind="primary"]:hover { transform: scale(1.02) !important; transition: transform 0.2s !important; box-shadow: 0 8px 20px rgba(109,40,217,0.25) !important; }
+    @media (min-width: 768px) {
+        .url-prefix { height: 80px !important; line-height: 80px !important; font-size: 16px !important; padding: 0 28px !important; }
+        [data-testid="stForm"] .stTextInput input { height: 80px !important; font-size: 20px !important; }
+        [data-testid="stForm"] button[kind="primary"] { height: 80px !important; font-size: 18px !important; }
+    }
 
     div.stButton > button[kind="secondary"] { border-radius: 10px !important; font-weight: 600 !important; border: 1px solid #e2e8f0 !important; color: #475569 !important; background-color: #fff !important; font-size: 14px !important; height: 44px !important; }
     div.stButton > button[kind="secondary"]:hover { border-color: #6D28D9 !important; color: #6D28D9 !important; }
@@ -474,14 +482,16 @@ with st.sidebar:
 if menu == "Site Auditor":
     st.markdown("""<div class="hero-container"><div class="hero-title">Professional <span>SEO Auditor</span></div><div class="hero-subtitle">Analyze technical roadblocks, measure Core Web Vitals, and get AI-driven growth strategies for any website.</div></div>""", unsafe_allow_html=True)
 
+    st.markdown('<div class="url-bar-wrapper">', unsafe_allow_html=True)
     with st.form("audit_form", border=False):
         col_p, col_d, col_b = st.columns([1.2, 6.3, 2.5])
         with col_p:
             st.markdown('<div class="url-prefix">https://</div>', unsafe_allow_html=True)
         with col_d:
-            domain_input = st.text_input("Domain", placeholder="example.com", label_visibility="collapsed")
+            domain_input = st.text_input("Domain", placeholder="yourdomain.com", label_visibility="collapsed")
         with col_b:
             run_btn = st.form_submit_button("Analyze Now", type="primary", use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
     if run_btn and domain_input:
         clean = domain_input.strip().replace("https://", "").replace("http://", "").replace("www.", "").strip("/")
