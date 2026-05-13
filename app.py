@@ -528,9 +528,10 @@ if menu == "Site Auditor":
         bar.progress(85, text="Generating AI recommendations...")
         m_p = st.session_state["speed_data"]["mobile"].get("performance", 0)
         d_p = st.session_state["speed_data"]["desktop"].get("performance", 0)
-        st.session_state["ai_data"] = get_ai_suggestions(
+        ai_result = get_ai_suggestions(
             {**onpage, "mobile_speed": m_p, "desktop_speed": d_p}, GEMINI_API_KEY
         )
+        st.session_state["ai_data"] = ai_result
 
         bar.progress(100, text="Audit complete.")
         time.sleep(0.3)
@@ -540,7 +541,9 @@ if menu == "Site Auditor":
         onpage = st.session_state["onpage_data"]
         speed = st.session_state["speed_data"]
         traffic = st.session_state["traffic_data"]
-        ai = st.session_state["ai_data"]
+        ai_data_full = st.session_state["ai_data"]
+        ai_recommendations = ai_data_full.get("recommendations", []) if isinstance(ai_data_full, dict) else []
+        ai_status = ai_data_full.get("status", "") if isinstance(ai_data_full, dict) else ""
 
         ov_score, crit, warn, passed = calculate_scores(onpage, speed)
 
@@ -643,6 +646,8 @@ if menu == "Site Auditor":
                         )
                         fig2.update_layout(margin=dict(l=10, r=10, t=10, b=10), height=250)
                         st.plotly_chart(fig2, use_container_width=True, key="traffic_source")
+                elif is_pro and traffic and traffic.get("status") == "API Key Missing":
+                    st.warning("Traffic analytics not available: RAPIDAPI_KEY is not configured. Please set the API key in your environment.")
                 elif not is_pro:
                     st.markdown("""
                     <div style="text-align:center;padding:40px 20px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;margin-top:20px;">
@@ -663,11 +668,15 @@ if menu == "Site Auditor":
             </div>
             """, unsafe_allow_html=True)
 
-            if ai and isinstance(ai, list):
-                for item in ai:
+            if ai_status == "no_api_key":
+                st.info("AI recommendations are not available because GEMINI_API_KEY is not configured. Please set the API key in your environment.")
+            elif ai_recommendations:
+                for item in ai_recommendations:
                     text = str(item.get("text", "")).replace("```json", "").replace("```html", "").replace("```", "").strip()
                     st.markdown(f"""<div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px;margin-bottom:12px;border-left:4px solid #6D28D9;"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><div style="width:32px;height:32px;background:linear-gradient(135deg,rgba(109,40,217,0.1),rgba(219,39,119,0.1));border-radius:8px;display:flex;align-items:center;justify-content:center;"><i class="{item.get("icon", "fa-solid fa-lightbulb")}" style="color:#DB2777;font-size:14px;"></i></div><h5 style="color:#0f172a;font-weight:700;font-size:15px;margin:0;">{item.get("title", "Recommendation")}</h5></div><div style="color:#475569;font-size:14px;line-height:1.6;padding-left:42px;">{text}</div></div>""", unsafe_allow_html=True)
-            else:
+            elif ai_status == "error":
+                st.error("Failed to generate AI recommendations. Please try again later.")
+            elif not ai_recommendations and not ai_status:
                 st.info("Run an audit to generate AI recommendations.")
 
         with t4:
@@ -684,9 +693,9 @@ if menu == "Site Auditor":
             author = wc2.text_input("Prepared by", value="SEO Team")
             client = st.text_input("Client / Project", value=st.session_state.get("last_domain", "client-domain").upper())
 
-            doc_bytes = generate_word_report(
-                st.session_state["last_url"], onpage, speed, ai, agency, client, author,
-            )
+                doc_bytes = generate_word_report(
+                    st.session_state["last_url"], onpage, speed, ai_recommendations, agency, client, author,
+                )
 
             st.download_button(
                 label="Download DOCX Report",
@@ -725,7 +734,7 @@ elif menu == "Bulk Analysis":
                             urls.append(cell)
 
                 if not urls:
-                    st.error("No valid URLs (starting with http/https) found.")
+                    st.error("No valid URLs (starting with http/https) found. Please ensure your Excel file contains URLs in any column, each starting with 'http' or 'https'.")
                 else:
                     st.success(f"Found {len(urls)} unique URL(s).")
 
@@ -744,7 +753,9 @@ elif menu == "Bulk Analysis":
                             if onpage:
                                 m_p = speed.get("mobile", {}).get("performance", 0) if speed else 0
                                 d_p = speed.get("desktop", {}).get("performance", 0) if speed else 0
-                                ai = get_ai_suggestions({**onpage, "mobile_speed": m_p, "desktop_speed": d_p}, GEMINI_API_KEY)
+                                ai_result = get_ai_suggestions({**onpage, "mobile_speed": m_p, "desktop_speed": d_p}, GEMINI_API_KEY)
+                                ai_recommendations = ai_result.get("recommendations", []) if isinstance(ai_result, dict) else []
+                                ai_status = ai_result.get("status", "") if isinstance(ai_result, dict) else ""
                             else:
                                 ai = []
 
@@ -752,7 +763,8 @@ elif menu == "Bulk Analysis":
                                 "url": url,
                                 "onpage": onpage,
                                 "speed": speed,
-                                "ai": ai,
+                                "ai_recommendations": ai_recommendations,
+                                "ai_status": ai_status,
                             })
 
                         progress.empty()
@@ -767,7 +779,7 @@ elif menu == "Bulk Analysis":
                                     r["url"],
                                     r["onpage"],
                                     r["speed"],
-                                    r["ai"],
+                                    r["ai_recommendations"],
                                     "NexGenWebLab Pro",
                                     domain.upper(),
                                     "SEO Team",

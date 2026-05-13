@@ -19,8 +19,8 @@ def get_traffic_data(url, api_key):
     print(f"[*] Fetching traffic insights for: {url}")
 
     if not api_key or api_key == "" or api_key == "YOUR_RAPIDAPI_KEY":
-        print("[-] Traffic API key not configured")
-        return FALLBACK
+        print("[-] Traffic API key not configured or is a placeholder.")
+        return {**FALLBACK, "status": "API Key Missing"}
 
     parsed = urlparse(url)
     domain = (parsed.netloc or parsed.path).replace("www.", "").strip("/")

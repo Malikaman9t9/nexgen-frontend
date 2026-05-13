@@ -13,7 +13,7 @@ def get_ai_suggestions(seo_data, api_key):
     print("[*] Generating AI Strategic Recommendations...")
     if not api_key or api_key == "":
         print("[-] No API key provided, using fallback data.")
-        return FALLBACK_RECOMMENDATIONS
+        return {"status": "no_api_key", "recommendations": FALLBACK_RECOMMENDATIONS}
 
     try:
         genai.configure(api_key=api_key)
@@ -39,4 +39,4 @@ def get_ai_suggestions(seo_data, api_key):
 
     except Exception as e:
         print(f"[-] AI Generation Failed: {e}")
-        return FALLBACK_RECOMMENDATIONS
+        return {"status": "error", "recommendations": FALLBACK_RECOMMENDATIONS}
