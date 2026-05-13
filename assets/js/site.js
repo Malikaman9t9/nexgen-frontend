@@ -2,7 +2,7 @@
     "use strict";
 
     var SITE_NAME = "NexGenWebLab";
-    var BASE_URL = "https://nexgenweblab.com";
+    var BASE_URL = window.location.origin;
     var TOOLS_URL = "https://tools.nexgenweblab.com";
 
     var isActive = function (path) {
@@ -74,6 +74,19 @@
                         ? "fa-solid fa-bars text-xl text-slate-700"
                         : "fa-solid fa-xmark text-xl text-slate-700";
                 }
+            });
+            
+            // Close menu when clicking on a link
+            var menuLinks = menu.querySelectorAll("a");
+            menuLinks.forEach(function(link) {
+                link.addEventListener("click", function() {
+                    btn.setAttribute("aria-expanded", "false");
+                    menu.classList.add("hidden");
+                    var icon = btn.querySelector("i");
+                    if (icon) {
+                        icon.className = "fa-solid fa-bars text-xl text-slate-700";
+                    }
+                });
             });
         }
     }

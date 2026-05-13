@@ -103,13 +103,21 @@
                     status.className = 'text-center text-sm font-bold text-emerald-600';
                     status.textContent = 'Message sent! We will get back to you within 2-4 hours.';
                     form.reset();
+                } else if (resp.status === 400) {
+                    throw new Error('Please fill in all required fields correctly.');
+                } else if (resp.status === 429) {
+                    throw new Error('Too many requests. Please try again in a few minutes.');
+                } else if (resp.status >= 500) {
+                    throw new Error('Server error. Please try again later or email support@nexgenweblab.com');
                 } else {
-                    throw new Error('Server responded with ' + resp.status);
+                    throw new Error('Server responded with status ' + resp.status);
                 }
             } catch (err) {
                 status.classList.remove('hidden');
                 status.className = 'text-center text-sm font-bold text-red-500';
-                status.textContent = 'Failed to send. Please email us directly at support@nexgenweblab.com.';
+                const errorMsg = err.message || 'Network error';
+                status.textContent = 'Failed to send: ' + errorMsg + '. Email us at support@nexgenweblab.com.';
+                console.error('Contact form error:', err);
             }
 
             btn.innerHTML = 'Send Message <i class="fa-solid fa-arrow-right"></i>';
