@@ -11,8 +11,10 @@ FALLBACK_RECOMMENDATIONS = [
 
 def get_ai_suggestions(seo_data, api_key):
     print("[*] Generating AI Strategic Recommendations...")
-    if not api_key or api_key == "":
-        print("[-] No API key provided, using fallback data.")
+    
+    # Validate API key
+    if not api_key or api_key == "" or "your_" in api_key.lower() or api_key == "YOUR_GEMINI_API_KEY":
+        print("[-] No valid API key provided, using fallback data.")
         return {"status": "no_api_key", "recommendations": FALLBACK_RECOMMENDATIONS}
 
     try:
@@ -34,8 +36,12 @@ def get_ai_suggestions(seo_data, api_key):
         match = re.search(r'\[.*\]', text, re.DOTALL)
         if match:
             parsed = json.loads(match.group(0))
-            return parsed if isinstance(parsed, list) else FALLBACK_RECOMMENDATIONS
-        return FALLBACK_RECOMMENDATIONS
+            # Ensure we return proper structure
+            if isinstance(parsed, list):
+                return {"status": "success", "recommendations": parsed}
+            else:
+                return {"status": "error", "recommendations": FALLBACK_RECOMMENDATIONS}
+        return {"status": "error", "recommendations": FALLBACK_RECOMMENDATIONS}
 
     except Exception as e:
         print(f"[-] AI Generation Failed: {e}")

@@ -72,7 +72,9 @@ def generate_word_report(url, onpage_data, speed_data, ai_suggestions, agency_na
         try:
             gauge_img = create_gauge_image(score)
             doc.add_picture(gauge_img, width=Inches(1.5))
-        except: pass
+        except Exception as e:
+            print(f"[-] Gauge image creation failed: {e}")
+            # Continue without gauge image instead of silent failure
         
         raw_metrics = device_data.get('metrics', {})
         doc.add_paragraph(f"First Contentful Paint (FCP): {raw_metrics.get('fcp', {}).get('value', 'N/A')}", style='List Bullet')

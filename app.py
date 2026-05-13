@@ -137,63 +137,63 @@ st.markdown("""
     footer { visibility: hidden !important; }
     #MainMenu { visibility: hidden !important; }
     * { font-family: 'Inter', sans-serif; }
-    .block-container { padding-top: 0.5rem !important; padding-bottom: 2rem; max-width: 1320px; }
+    .block-container { padding-top: 1rem !important; padding-bottom: 2.5rem; max-width: 1320px; }
     body, .stApp { background-color: #f8fafc; }
     [data-testid="stSidebar"] { background-color: #fff; border-right: 1px solid #e2e8f0; padding-top: 1rem; }
 
-    .hero-container { text-align: center; padding: 40px 10px 20px; }
-    .hero-title { font-size: 42px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 12px; letter-spacing: -0.02em; }
+    .hero-container { text-align: center; padding: 30px 10px 15px; }
+    .hero-title { font-size: 38px; font-weight: 900; color: #0f172a; line-height: 1.1; margin-bottom: 10px; letter-spacing: -0.02em; }
     .hero-title span { background: linear-gradient(135deg, #6D28D9, #DB2777); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .hero-subtitle { font-size: 16px; color: #64748b; max-width: 560px; margin: 0 auto 28px; font-weight: 500; line-height: 1.6; }
+    .hero-subtitle { font-size: 15px; color: #64748b; max-width: 520px; margin: 0 auto 24px; font-weight: 500; line-height: 1.6; }
 
-    .url-bar-wrapper { background: #fff; border: 1px solid #e2e8f0; border-radius: 24px; padding: 8px; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.08); margin-bottom: 8px; }
+    .url-bar-wrapper { background: #fff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 6px; box-shadow: 0 15px 40px -10px rgba(0,0,0,0.06); margin-bottom: 8px; }
     [data-testid="stForm"] div[data-testid="stHorizontalBlock"] { gap: 0 !important; align-items: stretch !important; padding: 0 !important; }
-    .url-prefix { height: 64px !important; line-height: 64px !important; display: flex !important; align-items: center !important; justify-content: center !important; background: #f1f5f9 !important; color: #64748b !important; font-size: 15px !important; font-weight: 700 !important; border: 2px solid #e2e8f0 !important; border-right: none !important; border-radius: 16px 0 0 16px !important; padding: 0 24px !important; white-space: nowrap; }
-    [data-testid="stForm"] .stTextInput input { height: 64px !important; font-size: 18px !important; padding-left: 20px !important; font-weight: 700 !important; color: #0f172a !important; border-radius: 0 !important; border: 2px solid #e2e8f0 !important; border-left: none !important; background: #f8fafc !important; }
+    .url-prefix { height: 58px !important; line-height: 58px !important; display: flex !important; align-items: center !important; justify-content: center !important; background: #f1f5f9 !important; color: #64748b !important; font-size: 14px !important; font-weight: 700 !important; border: 2px solid #e2e8f0 !important; border-right: none !important; border-radius: 14px 0 0 14px !important; padding: 0 20px !important; white-space: nowrap; }
+    [data-testid="stForm"] .stTextInput input { height: 58px !important; font-size: 16px !important; padding-left: 18px !important; font-weight: 700 !important; color: #0f172a !important; border-radius: 0 !important; border: 2px solid #e2e8f0 !important; border-left: none !important; background: #f8fafc !important; }
     [data-testid="stForm"] .stTextInput input:focus { background: #fff !important; border-color: #6D28D9 !important; }
-    [data-testid="stForm"] button[kind="primary"] { height: 64px !important; border-radius: 0 16px 16px 0 !important; font-size: 16px !important; font-weight: 800 !important; background: linear-gradient(135deg, #6D28D9, #DB2777) !important; color: white !important; border: none !important; width: 100% !important; letter-spacing: 0.02em !important; }
-    [data-testid="stForm"] button[kind="primary"]:hover { transform: scale(1.02) !important; transition: transform 0.2s !important; box-shadow: 0 8px 20px rgba(109,40,217,0.25) !important; }
+    [data-testid="stForm"] button[kind="primary"] { height: 58px !important; border-radius: 0 14px 14px 0 !important; font-size: 15px !important; font-weight: 800 !important; background: linear-gradient(135deg, #6D28D9, #DB2777) !important; color: white !important; border: none !important; width: 100% !important; letter-spacing: 0.02em !important; }
+    [data-testid="stForm"] button[kind="primary"]:hover { transform: scale(1.01) !important; transition: transform 0.2s !important; box-shadow: 0 6px 15px rgba(109,40,217,0.2) !important; }
     @media (min-width: 768px) {
-        .url-prefix { height: 80px !important; line-height: 80px !important; font-size: 16px !important; padding: 0 28px !important; }
-        [data-testid="stForm"] .stTextInput input { height: 80px !important; font-size: 20px !important; }
-        [data-testid="stForm"] button[kind="primary"] { height: 80px !important; font-size: 18px !important; }
+        .url-prefix { height: 70px !important; line-height: 70px !important; font-size: 15px !important; padding: 0 24px !important; }
+        [data-testid="stForm"] .stTextInput input { height: 70px !important; font-size: 18px !important; }
+        [data-testid="stForm"] button[kind="primary"] { height: 70px !important; font-size: 16px !important; }
     }
 
-    div.stButton > button[kind="secondary"] { border-radius: 10px !important; font-weight: 600 !important; border: 1px solid #e2e8f0 !important; color: #475569 !important; background-color: #fff !important; font-size: 14px !important; height: 44px !important; }
+    div.stButton > button[kind="secondary"] { border-radius: 8px !important; font-weight: 600 !important; border: 1px solid #e2e8f0 !important; color: #475569 !important; background-color: #fff !important; font-size: 13px !important; height: 40px !important; }
     div.stButton > button[kind="secondary"]:hover { border-color: #6D28D9 !important; color: #6D28D9 !important; }
 
-    .score-container { background: #fff; border-radius: 20px; padding: 32px; border: 1px solid #e2e8f0; margin-bottom: 28px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-    .issue-card { border-radius: 16px; padding: 24px; background: linear-gradient(135deg, #f8fafc, #fff); border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: center; height: 100%; }
-    .issue-count { font-size: 44px; font-weight: 900; line-height: 1; margin-bottom: 6px; letter-spacing: -0.03em; }
-    .issue-label { font-size: 13px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; }
+    .score-container { background: #fff; border-radius: 18px; padding: 28px; border: 1px solid #e2e8f0; margin-bottom: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+    .issue-card { border-radius: 14px; padding: 20px; background: linear-gradient(135deg, #f8fafc, #fff); border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: center; height: 100%; }
+    .issue-count { font-size: 40px; font-weight: 900; line-height: 1; margin-bottom: 5px; letter-spacing: -0.02em; }
+    .issue-label { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.7px; }
 
-    .stTabs [data-baseweb="tab-list"] { gap: 8px; border-bottom: none; margin-bottom: 24px; background: #f1f5f9; padding: 6px; border-radius: 14px; }
-    .stTabs [data-baseweb="tab"] { height: 42px; font-size: 14px; font-weight: 600; color: #64748b; background: transparent; border-radius: 10px; border: none; padding: 0 18px; }
-    .stTabs [aria-selected="true"] { background: linear-gradient(135deg, #6D28D9, #DB2777) !important; color: white !important; box-shadow: 0 2px 8px rgba(109,40,217,0.2); }
+    .stTabs [data-baseweb="tab-list"] { gap: 6px; border-bottom: none; margin-bottom: 20px; background: #f1f5f9; padding: 5px; border-radius: 12px; }
+    .stTabs [data-baseweb="tab"] { height: 38px; font-size: 13px; font-weight: 600; color: #64748b; background: transparent; border-radius: 8px; border: none; padding: 0 16px; }
+    .stTabs [aria-selected="true"] { background: linear-gradient(135deg, #6D28D9, #DB2777) !important; color: white !important; box-shadow: 0 2px 6px rgba(109,40,217,0.15); }
 
-    .audit-item { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; margin-bottom: 14px; position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 210px; }
-    .audit-item::before { content:''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; border-radius: 0 2px 2px 0; }
+    .audit-item { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; margin-bottom: 12px; position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 190px; }
+    .audit-item::before { content:''; position: absolute; left: 0; top: 0; height: 100%; width: 3px; border-radius: 0 2px 2px 0; }
     .status-danger::before { background: linear-gradient(180deg, #ef4444, #dc2626); }
     .status-warning::before { background: linear-gradient(180deg, #f59e0b, #d97706); }
     .status-success::before { background: linear-gradient(180deg, #10b981, #059669); }
     .status-info::before { background: linear-gradient(180deg, #3b82f6, #2563eb); }
     .audit-header { display: flex; align-items: flex-start; }
-    .audit-header i { font-size: 18px; margin-right: 14px; width: 22px; text-align: center; margin-top: 2px; }
-    .audit-item-title { font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 2px; }
-    .audit-item-desc { font-size: 13px; color: #64748b; font-weight: 500; }
-    .actual-data-box { margin-top: 14px; margin-bottom: 4px; margin-left: 36px; padding: 10px 14px; background: #f8fafc; border-radius: 8px; font-size: 12px; color: #334155; word-break: break-word; border: 1px solid #e2e8f0; font-family: 'SF Mono', 'Fira Code', monospace; flex-grow: 1; }
-    details.seo-tip { margin-top: 10px; margin-left: 36px; border-top: 1px dashed #e2e8f0; padding-top: 10px; }
-    details.seo-tip summary { font-size: 12px; font-weight: 600; color: #6D28D9; cursor: pointer; outline: none; list-style: none; }
+    .audit-header i { font-size: 16px; margin-right: 12px; width: 20px; text-align: center; margin-top: 1px; }
+    .audit-item-title { font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 1px; }
+    .audit-item-desc { font-size: 12px; color: #64748b; font-weight: 500; }
+    .actual-data-box { margin-top: 12px; margin-bottom: 3px; margin-left: 32px; padding: 9px 12px; background: #f8fafc; border-radius: 7px; font-size: 11px; color: #334155; word-break: break-word; border: 1px solid #e2e8f0; font-family: 'SF Mono', 'Fira Code', monospace; flex-grow: 1; }
+    details.seo-tip { margin-top: 8px; margin-left: 32px; border-top: 1px dashed #e2e8f0; padding-top: 8px; }
+    details.seo-tip summary { font-size: 11px; font-weight: 600; color: #6D28D9; cursor: pointer; outline: none; list-style: none; }
     details.seo-tip summary::after { content: ' +'; font-weight: 700; }
     details.seo-tip[open] summary::after { content: ' -'; }
-    details.seo-tip p { margin: 8px 0 0 0; font-size: 12px; color: #475569; background: #f1f5f9; padding: 10px 14px; border-left: 3px solid #6D28D9; border-radius: 6px; }
+    details.seo-tip p { margin: 7px 0 0 0; font-size: 11px; color: #475569; background: #f1f5f9; padding: 9px 12px; border-left: 3px solid #6D28D9; border-radius: 5px; }
 
-    .speed-metric-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px 18px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; height: 52px; }
+    .speed-metric-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; height: 48px; }
     .speed-metric-card:hover { border-color: #cbd5e1; }
 
     .stProgress > div > div > div > div { background: linear-gradient(90deg, #6D28D9, #DB2777) !important; }
 
-    .upgrade-banner { display: block; text-align: center; background: linear-gradient(135deg, #6D28D9, #DB2777); color: white; padding: 11px; border-radius: 10px; font-weight: 700; text-decoration: none; margin-bottom: 14px; font-size: 13px; box-shadow: 0 4px 12px rgba(109,40,217,0.2); }
+    .upgrade-banner { display: block; text-align: center; background: linear-gradient(135deg, #6D28D9, #DB2777); color: white; padding: 10px; border-radius: 8px; font-weight: 700; text-decoration: none; margin-bottom: 12px; font-size: 12px; box-shadow: 0 3px 10px rgba(109,40,217,0.15); }
 </style>
 """, unsafe_allow_html=True)
 
@@ -423,14 +423,14 @@ with st.sidebar:
         st.image("logo.png", width=250)
 
     st.markdown(f"""
-    <div style="background:linear-gradient(135deg,#f8fafc,#fff);padding:16px;border-radius:14px;border:1px solid #e2e8f0;margin-bottom:16px;">
-        <div style="display:flex;align-items:center;gap:12px;">
-            <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#6D28D9,#DB2777);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;box-shadow:0 4px 8px rgba(109,40,217,0.2);">
+    <div style="background:linear-gradient(135deg,#f8fafc,#fff);padding:14px;border-radius:12px;border:1px solid #e2e8f0;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#6D28D9,#DB2777);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;box-shadow:0 3px 8px rgba(109,40,217,0.15);">
                 {user_email[0].upper()}
             </div>
             <div style="overflow:hidden;flex:1;">
-                <div style="font-size:13px;font-weight:700;color:#0f172a;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;">{user_email}</div>
-                <div style="font-size:11px;color:{'#10b981' if is_pro else '#94a3b8'};font-weight:600;margin-top:3px;display:flex;align-items:center;gap:4px;">
+                <div style="font-size:12px;font-weight:700;color:#0f172a;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;">{user_email}</div>
+                <div style="font-size:10px;color:{'#10b981' if is_pro else '#94a3b8'};font-weight:600;margin-top:2px;display:flex;align-items:center;gap:3px;">
                     <i class="fa-solid fa-{'crown' if is_pro else 'user'}"></i> {plan_label}
                 </div>
             </div>
@@ -493,9 +493,43 @@ if menu == "Site Auditor":
             run_btn = st.form_submit_button("Analyze Now", type="primary", use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    if run_btn and domain_input:
-        clean = domain_input.strip().replace("https://", "").replace("http://", "").replace("www.", "").strip("/")
-        target = f"https://{clean}"
+    if run_btn:
+        if not domain_input:
+            st.error("Please enter a URL to analyze.")
+            st.stop()
+
+        try:
+            parsed_url = urlparse(domain_input.strip())
+            if not parsed_url.scheme:
+                # Assume https if no scheme is provided
+                target_url = f"https://{domain_input.strip()}"
+            else:
+                target_url = domain_input.strip()
+            
+            # Validate URL structure
+            netloc = urlparse(target_url).netloc
+            if not (target_url.startswith("http://") or target_url.startswith("https://")) or not netloc or "." not in netloc:
+                st.error("Invalid URL format. Please enter a valid domain (e.g., example.com or https://example.com).")
+                st.stop()
+            
+            # Prevent auditing localhost, private IPs, and invalid domains
+            hostname = netloc.split("@")[-1].split(":")[0]  # Remove credentials and port
+            invalid_hosts = ['localhost', '127.0.0.1', '0.0.0.0', '192.168', '10.', '172.']
+            if any(hostname.startswith(x) for x in invalid_hosts):
+                st.error("Cannot audit local or private addresses. Please enter a public domain.")
+                st.stop()
+            
+            # Basic TLD validation (must have at least one dot)
+            if netloc.count('.') < 1 or netloc.endswith('.'):
+                st.error("Please enter a valid domain with a proper extension (e.g., example.com).")
+                st.stop()
+
+            clean = netloc.replace("www.", "").strip("/")
+            target = target_url
+
+        except Exception as e:
+            st.error(f"Invalid URL format: {str(e)}. Please enter a valid domain (e.g., example.com or https://example.com).")
+            st.stop()
 
         st.session_state["last_url"] = target
         st.session_state["last_domain"] = clean
@@ -693,18 +727,23 @@ if menu == "Site Auditor":
             author = wc2.text_input("Prepared by", value="SEO Team")
             client = st.text_input("Client / Project", value=st.session_state.get("last_domain", "client-domain").upper())
 
-                doc_bytes = generate_word_report(
-                    st.session_state["last_url"], onpage, speed, ai_recommendations, agency, client, author,
-                )
-
-            st.download_button(
-                label="Download DOCX Report",
-                data=doc_bytes,
-                file_name=f"{st.session_state.get('last_domain', 'client')}_SEO_Report.docx",
-                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                type="primary",
-                use_container_width=True,
-            )
+            if onpage and speed:
+                try:
+                    doc_bytes = generate_word_report(
+                        st.session_state["last_url"], onpage, speed, ai_recommendations, agency, client, author,
+                    )
+                    st.download_button(
+                        label="Download DOCX Report",
+                        data=doc_bytes,
+                        file_name=f"{st.session_state.get('last_domain', 'client')}_SEO_Report.docx",
+                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        type="primary",
+                        use_container_width=True,
+                    )
+                except Exception as e:
+                    st.error(f"Failed to generate report: {str(e)}. Please try again.")
+            else:
+                st.info("Run an audit first to generate a report.")
 
 elif menu == "Bulk Analysis":
     st.markdown("""<div class="hero-container"><div class="hero-title">Bulk <span>Outreach</span> Engine</div></div>""", unsafe_allow_html=True)
@@ -750,14 +789,15 @@ elif menu == "Bulk Analysis":
                             onpage = get_basic_onpage(url)
                             speed = check_speed(url, SPEED_API_KEY)
 
-                            if onpage:
-                                m_p = speed.get("mobile", {}).get("performance", 0) if speed else 0
-                                d_p = speed.get("desktop", {}).get("performance", 0) if speed else 0
-                                ai_result = get_ai_suggestions({**onpage, "mobile_speed": m_p, "desktop_speed": d_p}, GEMINI_API_KEY)
-                                ai_recommendations = ai_result.get("recommendations", []) if isinstance(ai_result, dict) else []
-                                ai_status = ai_result.get("status", "") if isinstance(ai_result, dict) else ""
-                            else:
-                                ai = []
+                             if onpage:
+                                 m_p = speed.get("mobile", {}).get("performance", 0) if speed else 0
+                                 d_p = speed.get("desktop", {}).get("performance", 0) if speed else 0
+                                 ai_result = get_ai_suggestions({**onpage, "mobile_speed": m_p, "desktop_speed": d_p}, GEMINI_API_KEY)
+                                 ai_recommendations = ai_result.get("recommendations", []) if isinstance(ai_result, dict) else []
+                                 ai_status = ai_result.get("status", "") if isinstance(ai_result, dict) else ""
+                             else:
+                                 ai_recommendations = []
+                                 ai_status = ""
 
                             results.append({
                                 "url": url,

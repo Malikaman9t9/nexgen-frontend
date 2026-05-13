@@ -1,8 +1,5 @@
 import requests
 import time
-import urllib3
-
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 PAGESPEED_BASE = "https://www.googleapis.com/pagespeedonline/v5/runPagespeed"
 
