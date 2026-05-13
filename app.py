@@ -789,15 +789,15 @@ elif menu == "Bulk Analysis":
                             onpage = get_basic_onpage(url)
                             speed = check_speed(url, SPEED_API_KEY)
 
-                             if onpage:
-                                 m_p = speed.get("mobile", {}).get("performance", 0) if speed else 0
-                                 d_p = speed.get("desktop", {}).get("performance", 0) if speed else 0
-                                 ai_result = get_ai_suggestions({**onpage, "mobile_speed": m_p, "desktop_speed": d_p}, GEMINI_API_KEY)
-                                 ai_recommendations = ai_result.get("recommendations", []) if isinstance(ai_result, dict) else []
-                                 ai_status = ai_result.get("status", "") if isinstance(ai_result, dict) else ""
-                             else:
-                                 ai_recommendations = []
-                                 ai_status = ""
+                            if onpage:
+                                m_p = speed.get("mobile", {}).get("performance", 0) if speed else 0
+                                d_p = speed.get("desktop", {}).get("performance", 0) if speed else 0
+                                ai_result = get_ai_suggestions({**onpage, "mobile_speed": m_p, "desktop_speed": d_p}, GEMINI_API_KEY)
+                                ai_recommendations = ai_result.get("recommendations", []) if isinstance(ai_result, dict) else []
+                                ai_status = ai_result.get("status", "") if isinstance(ai_result, dict) else ""
+                            else:
+                                ai_recommendations = []
+                                ai_status = ""
 
                             results.append({
                                 "url": url,
