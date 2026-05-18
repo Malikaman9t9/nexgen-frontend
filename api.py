@@ -2,7 +2,7 @@ import os
 import io
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, HTMLResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
@@ -11,6 +11,7 @@ from modules.speed_checker import check_speed
 from modules.traffic_checker import get_traffic_data
 from modules.ai_analyzer import get_ai_suggestions
 from modules.report_export import generate_word_report
+from modules.html_report import generate_html_report_single, generate_html_report_bulk
 
 load_dotenv()
 
@@ -20,7 +21,6 @@ RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
 
 app = FastAPI(title="NexGenWebLab API")
 
-ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*")
 CORS_ORIGINS = [
     "https://tools.nexgenweblab.com",
     "https://nexgenweblab.com",
@@ -48,11 +48,35 @@ class AIRequest(BaseModel):
 class ExportRequest(BaseModel):
     url: str
     onpage_data: dict
-    speed_data: dict
+    speed_data: dict = {}
     ai_suggestions: list = []
     agency_name: str = "NexGenWebLab Pro"
     client_name: str = "Client"
     author_name: str = "SEO Team"
+
+class HTMLReportRequest(BaseModel):
+    url: str
+    onpage_data: dict
+    speed_data: dict = {}
+    traffic_data: dict = {}
+    ai_suggestions: list = []
+    agency_name: str = "NexGenWebLab"
+    client_name: str = "Client"
+    author_name: str = "SEO Team"
+    logo_url: str = ""
+    custom_css: str = ""
+
+class BulkReportRequest(BaseModel):
+    reports: list
+    agency_name: str = "NexGenWebLab"
+
+@app.get("/")
+def root():
+    return {"message": "NexGenWebLab API", "version": "1.0", "docs": "/docs"}
+
+@app.get("/api/health")
+def health():
+    return {"status": "ok"}
 
 @app.post("/api/onpage")
 def onpage(req: URLRequest):
@@ -88,6 +112,75 @@ def export_report(req: ExportRequest):
         headers={"Content-Disposition": f"attachment; filename={req.client_name.replace(' ', '_')}_SEO_Report.docx"},
     )
 
-@app.get("/api/health")
-def health():
-    return {"status": "ok"}
+@app.post("/api/export/html")
+def export_html_report(req: HTMLReportRequest):
+    html_bytes = generate_html_report_single(
+        url=req.url,
+        onpage_data=req.onpage_data,
+        speed_data=req.speed_data,
+        traffic_data=req.traffic_data,
+        ai_suggestions=req.ai_suggestions,
+        agency_name=req.agency_name,
+        client_name=req.client_name,
+        author_name=req.author_name,
+        logo_url=req.logo_url,
+        custom_css=req.custom_css,
+    )
+    return StreamingResponse(
+        io.BytesIO(html_bytes),
+        media_type="text/html",
+        headers={"Content-Disposition": f"attachment; filename={req.client_name.replace(' ', '_')}_SEO_Report.html"},
+    )
+
+@app.post("/api/export/html/preview")
+def preview_html_report(req: HTMLReportRequest):
+    html_bytes = generate_html_report_single(
+        url=req.url,
+        onpage_data=req.onpage_data,
+        speed_data=req.speed_data,
+        traffic_data=req.traffic_data,
+        ai_suggestions=req.ai_suggestions,
+        agency_name=req.agency_name,
+        client_name=req.client_name,
+        author_name=req.author_name,
+        logo_url=req.logo_url,
+        custom_css=req.custom_css,
+    )
+    return HTMLResponse(content=html_bytes)
+
+@app.post("/api/export/bulk/html")
+def export_bulk_html_report(req: BulkReportRequest):
+    combined_html = generate_html_report_bulk(
+        reports_data=req.reports,
+        agency_name=req.agency_name,
+    )
+    return StreamingResponse(
+        io.BytesIO(combined_html),
+        media_type="text/html",
+        headers={"Content-Disposition": "attachment; filename=bulk_seo_report.html"},
+    )
+
+@app.get("/api/report-template")
+def get_report_template():
+    template = {
+        "sections": [
+            {"id": "header", "name": "Report Header", "enabled": True},
+            {"id": "scores", "name": "Performance Scores", "enabled": True},
+            {"id": "metrics", "name": "Key Metrics", "enabled": True},
+            {"id": "onpage", "name": "On-Page SEO", "enabled": True},
+            {"id": "speed", "name": "Core Web Vitals", "enabled": True},
+            {"id": "traffic", "name": "Traffic Analysis", "enabled": True},
+            {"id": "ai", "name": "AI Recommendations", "enabled": True},
+            {"id": "keywords", "name": "Top Keywords", "enabled": True},
+        ],
+        "customizations": {
+            "logo_url": "",
+            "primary_color": "#6D28D9",
+            "secondary_color": "#DB2777",
+            "agency_name": "NexGenWebLab",
+            "show_gauges": True,
+            "show_charts": True,
+            "white_label": False,
+        }
+    }
+    return template
