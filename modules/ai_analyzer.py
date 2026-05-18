@@ -3,10 +3,10 @@ import json
 import re
 
 FALLBACK_RECOMMENDATIONS = [
-    {"title": "Improve Loading Speed", "text": "Optimize your Core Web Vitals by deferring unused Javascript and compressing images to modern WebP format.", "icon": "fa-solid fa-bolt"},
-    {"title": "Enhance Content Depth", "text": "Ensure your primary pages have sufficient word count and semantic H1/H2 structures for better entity recognition.", "icon": "fa-solid fa-file-lines"},
-    {"title": "Optimize Meta Tags", "text": "Write compelling Title tags (30-60 chars) and Meta Descriptions to improve organic search click-through rates.", "icon": "fa-solid fa-heading"},
-    {"title": "Image Accessibility", "text": "Add descriptive ALT attributes to all images to assist search engine crawlers and visually impaired users.", "icon": "fa-solid fa-image"}
+    {"title": "Improve Loading Speed", "text": "Optimize your Core Web Vitals by deferring unused Javascript and compressing images to modern WebP format.", "icon": "zap"},
+    {"title": "Enhance Content Depth", "text": "Ensure your primary pages have sufficient word count and semantic H1/H2 structures for better entity recognition.", "icon": "file-text"},
+    {"title": "Optimize Meta Tags", "text": "Write compelling Title tags (30-60 chars) and Meta Descriptions to improve organic search click-through rates.", "icon": "heading"},
+    {"title": "Image Accessibility", "text": "Add descriptive ALT attributes to all images to assist search engine crawlers and visually impaired users.", "icon": "image"}
 ]
 
 def get_ai_suggestions(seo_data, api_key):

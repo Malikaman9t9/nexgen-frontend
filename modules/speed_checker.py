@@ -82,7 +82,11 @@ def _fetch_strategy(url, strategy, api_key, retries=2):
 
     for attempt in range(retries):
         try:
-            params = {"url": url, "strategy": strategy}
+            params = {
+                "url": url,
+                "strategy": strategy,
+                "category": ["performance", "accessibility", "best-practices", "seo"],
+            }
             if has_key:
                 params["key"] = api_key
 

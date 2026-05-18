@@ -45,7 +45,7 @@ def get_basic_onpage(url):
         h3_count = len(soup.find_all("h3"))
 
         images = soup.find_all("img")
-        missing_alt = [img["src"] for img in images if not img.get("alt")]
+        images_missing_alt = [img for img in images if not img.get("alt")]
 
         domain = urlparse(url).netloc
         links = soup.find_all("a", href=True)
@@ -88,10 +88,13 @@ def get_basic_onpage(url):
 
         dir_listing_secured = True
         try:
-            test_dir = urljoin(url, "/wp-includes/")
-            dir_resp = requests.get(test_dir, headers=HEADERS, timeout=5)
-            if "Index of" in dir_resp.text:
-                dir_listing_secured = False
+            test_paths = ["/wp-includes/", "/assets/", "/uploads/", "/images/"]
+            for path in test_paths:
+                test_dir = urljoin(url, path)
+                dir_resp = requests.get(test_dir, headers=HEADERS, timeout=5)
+                if dir_resp.status_code == 200 and "Index of" in dir_resp.text:
+                    dir_listing_secured = False
+                    break
         except Exception:
             pass
 
@@ -104,7 +107,7 @@ def get_basic_onpage(url):
             "h2_count": h2_count,
             "h3_count": h3_count,
             "total_images": len(images),
-            "missing_alt": len(missing_alt),
+            "missing_alt": len(images_missing_alt),
             "internal_links": len(internal_links),
             "external_links": len(external_links),
             "canonical": canonical,
