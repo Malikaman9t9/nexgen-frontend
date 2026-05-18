@@ -25,7 +25,7 @@
         "mainEntity": {
             "@type": "Organization",
             "name": "NexGenWebLab",
-            "email": "support@nexgenweblab.com",
+            "email": "info@nexgenweblab.com",
             "url": "https://nexgenweblab.com"
         }
     }
@@ -45,7 +45,7 @@
                     <div class="space-y-6">
                         <div class="flex items-center gap-5 p-6 bg-slate-50 rounded-2xl border border-slate-200">
                             <div class="w-14 h-14 bg-white shadow-md rounded-2xl flex items-center justify-center text-primary text-xl shrink-0"><i class="fa-solid fa-envelope"></i></div>
-                            <div><p class="text-xs font-black text-slate-400 uppercase tracking-widest">Email Support</p><a href="mailto:support@nexgenweblab.com" class="text-lg font-black text-slate-900 hover:text-primary transition-colors">support@nexgenweblab.com</a></div>
+                            <div><p class="text-xs font-black text-slate-400 uppercase tracking-widest">Email Support</p><a href="mailto:info@nexgenweblab.com" class="text-lg font-black text-slate-900 hover:text-primary transition-colors">info@nexgenweblab.com</a></div>
                         </div>
                         <div class="flex items-center gap-5 p-6 bg-slate-50 rounded-2xl border border-slate-200">
                             <div class="w-14 h-14 bg-white shadow-md rounded-2xl flex items-center justify-center text-secondary text-xl shrink-0"><i class="fa-solid fa-clock"></i></div>
@@ -108,7 +108,7 @@
                 } else if (resp.status === 429) {
                     throw new Error('Too many requests. Please try again in a few minutes.');
                 } else if (resp.status >= 500) {
-                    throw new Error('Server error. Please try again later or email support@nexgenweblab.com');
+                    throw new Error('Server error. Please try again later or email info@nexgenweblab.com');
                 } else {
                     throw new Error('Server responded with status ' + resp.status);
                 }
@@ -116,7 +116,7 @@
                 status.classList.remove('hidden');
                 status.className = 'text-center text-sm font-bold text-red-500';
                 const errorMsg = err.message || 'Network error';
-                status.textContent = 'Failed to send: ' + errorMsg + '. Email us at support@nexgenweblab.com.';
+                status.textContent = 'Failed to send: ' + errorMsg + '. Email us at info@nexgenweblab.com.';
                 console.error('Contact form error:', err);
             }
 

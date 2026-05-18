@@ -8,101 +8,656 @@
     <link rel="canonical" href="https://nexgenweblab.com/auth">
     <link rel="icon" type="image/png" href="/assets/images/favicon.png?v=2">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { primary: '#6D28D9', secondary: '#DB2777' } } } }
     </script>
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        "name": "NexGenWebLab Sign Up",
-        "description": "Create your free NexGenWebLab account for technical SEO audits.",
-        "potentialAction": {
-            "@type": "SignAction",
-            "target": "https://nexgenweblab.com/auth"
-        }
-    }
-    </script>
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%); }
+        .card-shadow { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.03); }
+        .input-focus:focus { box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.15); }
+        .btn-hover:hover { transform: translateY(-1px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15); }
+        .btn-hover:active { transform: translateY(0); }
+        .password-strength { transition: width 0.3s ease, background-color 0.3s ease; }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .shake { animation: shake 0.5s ease-in-out; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        .plan-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .plan-card:hover { transform: translateY(-2px); }
+        .check-icon { animation: checkPop 0.3s ease-out; }
+        @keyframes checkPop { 0% { transform: scale(0); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+    </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-slate-50 to-white font-sans text-slate-900 antialiased flex flex-col relative overflow-y-auto">
-    <div class="absolute top-0 right-0 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px] translate-x-1/2 -translate-y-1/2"></div>
-    <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px] -translate-x-1/2 translate-y-1/2"></div>
-
-    <a href="/" class="absolute top-5 left-5 z-20 flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors bg-white/80 backdrop-blur-sm px-4 py-2.5 rounded-xl shadow-sm border border-slate-200">
-        <i class="fa-solid fa-arrow-left"></i> Back to Home
-    </a>
-
-    <div class="w-full max-w-lg mx-auto bg-white rounded-3xl shadow-xl border border-slate-200 p-8 sm:p-10 my-8 sm:my-12 relative z-10">
-        <div class="text-center mb-7">
-            <img src="/assets/images/logo.png" alt="NexGenWebLab" class="h-7 mx-auto mb-5">
-            <h1 class="text-2xl font-black tracking-tight">Create your account</h1>
-            <p class="text-slate-500 font-medium text-sm mt-1.5">Start auditing websites in seconds — no credit card required.</p>
-        </div>
-
-        <form id="auth-form" class="space-y-4">
-            <div class="grid grid-cols-2 gap-3">
-                <label class="cursor-pointer">
-                    <input type="radio" name="plan" value="free" id="plan-free" class="peer sr-only" checked>
-                    <div class="rounded-xl border-2 border-slate-200 p-3 peer-checked:border-primary peer-checked:bg-primary/5 transition-all text-center">
-                        <div class="font-bold text-slate-900 text-base">Starter</div>
-                        <div class="text-xs text-slate-500 font-medium mt-0.5">Free forever</div>
-                    </div>
-                </label>
-                <label class="cursor-pointer">
-                    <input type="radio" name="plan" value="pro" id="plan-pro" class="peer sr-only">
-                    <div class="rounded-xl border-2 border-slate-200 p-3 peer-checked:border-secondary peer-checked:bg-secondary/5 transition-all text-center">
-                        <div class="font-bold text-secondary text-base">Pro</div>
-                        <div class="text-xs text-slate-500 font-medium mt-0.5">$9.99/mo</div>
-                    </div>
-                </label>
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1.5">Email address</label>
-                <input type="email" id="email" required placeholder="you@company.com" class="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-base" onchange="validateEmail(this)">
-                <div id="email-error" class="text-xs text-red-500 mt-1 hidden">Please enter a valid email address</div>
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1.5">Password</label>
-                <input type="password" id="password" required placeholder="••••••••" minlength="6" class="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-base" onchange="validatePassword(this)">
-                <div id="password-error" class="text-xs text-red-500 mt-1 hidden">Password must be at least 6 characters</div>
-            </div>
-
-            <button type="submit" class="w-full py-3.5 rounded-lg font-bold bg-slate-900 text-white hover:bg-slate-800 transition-colors mt-3 text-base shadow-md flex items-center justify-center gap-2">
-                Create Account <i class="fa-solid fa-arrow-right"></i>
-            </button>
-        </form>
-
-        <div class="mt-6 relative flex items-center justify-center">
-            <div class="absolute w-full border-t border-slate-200"></div>
-            <span class="bg-white px-3 text-xs font-bold text-slate-400 relative z-10 uppercase tracking-widest">Or continue with</span>
-        </div>
-
-        <button type="button" id="google-login-btn" class="mt-6 w-full py-3.5 rounded-lg font-bold border-2 border-slate-200 text-slate-700 bg-white hover:bg-slate-50 transition-colors flex items-center justify-center gap-3 text-base">
-            <i class="fa-brands fa-google text-red-500"></i> Continue with Google
-        </button>
-
-        <p class="text-center text-slate-600 mt-6 font-medium text-sm">
-            Already have an account? <a href="https://tools.nexgenweblab.com" class="text-primary font-bold hover:underline">Log in →</a>
-        </p>
+<body class="min-h-screen gradient-bg font-sans text-slate-900 antialiased flex flex-col">
+    <!-- Background Elements -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-primary/10 to-secondary/5 rounded-full blur-[120px] -translate-y-1/3 translate-x-1/3"></div>
+        <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-secondary/10 to-primary/5 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/3"></div>
     </div>
 
-    <footer class="bg-slate-900 text-slate-300 mt-auto border-t border-slate-800">
-        <div class="max-w-7xl mx-auto px-6 py-8">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500 font-medium">
-                <p>&copy; 2026 NexGenWebLab. All rights reserved.</p>
+    <!-- Header -->
+    <header class="relative z-10 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="/" class="flex items-center gap-2">
+                    <img src="/assets/images/logo.png" alt="NexGenWebLab" class="h-7">
+                </a>
+                <div class="flex items-center gap-4 text-sm">
+                    <span class="text-slate-500">Need help?</span>
+                    <a href="/contact" class="text-primary font-semibold hover:underline flex items-center gap-1">
+                        <i class="fa-solid fa-headset"></i> Contact Us
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex items-center justify-center px-4 py-8 relative z-10">
+        <div class="w-full max-w-md fade-in">
+            <!-- Auth Card -->
+            <div class="bg-white rounded-3xl card-shadow p-8 sm:p-10 relative overflow-hidden">
+                <!-- Logo & Title -->
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                        <i class="fa-solid fa-chart-line text-white text-2xl"></i>
+                    </div>
+                    <h1 id="auth-title" class="text-2xl font-black tracking-tight text-slate-900">Create your account</h1>
+                    <p id="auth-subtitle" class="text-slate-500 font-medium text-sm mt-2">Start auditing websites in seconds</p>
+                </div>
+
+                <!-- Tab Switcher -->
+                <div class="flex bg-slate-100 rounded-xl p-1 mb-6">
+                    <button type="button" id="tab-signup" class="flex-1 py-2.5 text-sm font-bold rounded-lg bg-white text-slate-900 shadow-sm transition-all">Sign Up</button>
+                    <button type="button" id="tab-login" class="flex-1 py-2.5 text-sm font-bold rounded-lg text-slate-500 hover:text-slate-700 transition-all">Log In</button>
+                </div>
+
+                <!-- Form Container -->
+                <div id="form-container">
+                    <!-- Sign Up Form -->
+                    <form id="signup-form" class="space-y-5">
+                        <!-- Plan Selection -->
+                        <div class="space-y-3">
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Choose your plan</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="plan-card cursor-pointer relative">
+                                    <input type="radio" name="plan" value="free" class="peer sr-only" checked>
+                                    <div class="rounded-xl border-2 border-slate-200 p-4 peer-checked:border-primary peer-checked:bg-primary/5 transition-all">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="font-bold text-slate-900">Starter</span>
+                                            <span class="w-5 h-5 rounded-full border-2 border-slate-300 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center">
+                                                <i class="fa-solid fa-check text-white text-[8px] peer-checked:block"></i>
+                                            </span>
+                                        </div>
+                                        <div class="text-2xl font-black text-slate-900">$0</div>
+                                        <div class="text-xs text-slate-500 mt-1">Free forever</div>
+                                        <div class="mt-3 space-y-1">
+                                            <div class="flex items-center gap-1.5 text-xs text-slate-600"><i class="fa-solid fa-check text-emerald-500 text-[10px]"></i> 10 audits/month</div>
+                                            <div class="flex items-center gap-1.5 text-xs text-slate-600"><i class="fa-solid fa-check text-emerald-500 text-[10px]"></i> Basic reports</div>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="plan-card cursor-pointer relative">
+                                    <input type="radio" name="plan" value="pro" class="peer sr-only">
+                                    <div class="rounded-xl border-2 border-slate-200 p-4 peer-checked:border-secondary peer-checked:bg-secondary/5 transition-all relative">
+                                        <div class="absolute -top-2 -right-2 bg-gradient-to-r from-primary to-secondary text-white text-[10px] font-bold px-2 py-1 rounded-full">POPULAR</div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="font-bold text-secondary">Pro</span>
+                                            <span class="w-5 h-5 rounded-full border-2 border-slate-300 peer-checked:border-secondary peer-checked:bg-secondary flex items-center justify-center">
+                                                <i class="fa-solid fa-check text-white text-[8px] peer-checked:block"></i>
+                                            </span>
+                                        </div>
+                                        <div class="text-2xl font-black text-slate-900">$9.99<span class="text-sm font-medium text-slate-400">/mo</span></div>
+                                        <div class="text-xs text-slate-500 mt-1">Billed monthly</div>
+                                        <div class="mt-3 space-y-1">
+                                            <div class="flex items-center gap-1.5 text-xs text-slate-600"><i class="fa-solid fa-check text-emerald-500 text-[10px]"></i> Unlimited audits</div>
+                                            <div class="flex items-center gap-1.5 text-xs text-slate-600"><i class="fa-solid fa-check text-emerald-500 text-[10px]"></i> White label reports</div>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Name Input -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Full Name</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"><i class="fa-solid fa-user"></i></span>
+                                <input type="text" id="signup-name" required placeholder="John Doe" class="w-full pl-11 pr-4 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:outline-none input-focus transition-all font-medium text-base">
+                            </div>
+                        </div>
+
+                        <!-- Email Input -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Email Address</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"><i class="fa-solid fa-envelope"></i></span>
+                                <input type="email" id="signup-email" required placeholder="you@company.com" class="w-full pl-11 pr-4 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:outline-none input-focus transition-all font-medium text-base">
+                            </div>
+                            <p id="email-error" class="text-xs text-red-500 mt-1.5 hidden flex items-center gap-1"><i class="fa-solid fa-circle-exclamation"></i> <span></span></p>
+                        </div>
+
+                        <!-- Password Input -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Password</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"><i class="fa-solid fa-lock"></i></span>
+                                <input type="password" id="signup-password" required placeholder="Min 8 characters" minlength="8" class="w-full pl-11 pr-12 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:outline-none input-focus transition-all font-medium text-base">
+                                <button type="button" id="toggle-password" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                            <!-- Password Strength -->
+                            <div class="mt-2">
+                                <div class="flex gap-1">
+                                    <div id="strength-1" class="h-1 flex-1 rounded-full bg-slate-200"></div>
+                                    <div id="strength-2" class="h-1 flex-1 rounded-full bg-slate-200"></div>
+                                    <div id="strength-3" class="h-1 flex-1 rounded-full bg-slate-200"></div>
+                                    <div id="strength-4" class="h-1 flex-1 rounded-full bg-slate-200"></div>
+                                </div>
+                                <p id="strength-text" class="text-xs text-slate-400 mt-1">Password strength: <span>Enter password</span></p>
+                            </div>
+                            <p id="password-error" class="text-xs text-red-500 mt-1.5 hidden flex items-center gap-1"><i class="fa-solid fa-circle-exclamation"></i> <span></span></p>
+                        </div>
+
+                        <!-- Terms Checkbox -->
+                        <div class="flex items-start gap-3">
+                            <input type="checkbox" id="terms" required class="mt-0.5 w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary">
+                            <label for="terms" class="text-sm text-slate-600">I agree to the <a href="/terms" class="text-primary font-semibold hover:underline">Terms of Service</a> and <a href="/privacy" class="text-primary font-semibold hover:underline">Privacy Policy</a></label>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" id="signup-btn" class="w-full py-4 rounded-xl font-bold bg-gradient-to-r from-primary to-secondary text-white hover:brightness-110 transition-all text-base shadow-lg btn-hover flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                            <span id="signup-btn-text">Create Account</span>
+                            <i id="signup-btn-icon" class="fa-solid fa-arrow-right"></i>
+                            <i id="signup-btn-spinner" class="fa-solid fa-spinner fa-spin hidden"></i>
+                        </button>
+
+                        <!-- Divider -->
+                        <div class="relative flex items-center justify-center my-6">
+                            <div class="absolute w-full border-t border-slate-200"></div>
+                            <span class="bg-white px-4 text-xs font-bold text-slate-400 relative z-10 uppercase tracking-widest">Or continue with</span>
+                        </div>
+
+                        <!-- Social Login -->
+                        <button type="button" id="google-signup-btn" class="w-full py-4 rounded-xl font-bold border-2 border-slate-200 text-slate-700 bg-white hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center justify-center gap-3 text-base btn-hover disabled:opacity-50 disabled:cursor-not-allowed">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                            Continue with Google
+                        </button>
+                    </form>
+
+                    <!-- Login Form (Hidden by default) -->
+                    <form id="login-form" class="space-y-5 hidden">
+                        <!-- Email Input -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Email Address</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"><i class="fa-solid fa-envelope"></i></span>
+                                <input type="email" id="login-email" required placeholder="you@company.com" class="w-full pl-11 pr-4 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:outline-none input-focus transition-all font-medium text-base">
+                            </div>
+                        </div>
+
+                        <!-- Password Input -->
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Password</label>
+                                <a href="#" id="forgot-password-link" class="text-xs text-primary font-semibold hover:underline">Forgot password?</a>
+                            </div>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"><i class="fa-solid fa-lock"></i></span>
+                                <input type="password" id="login-password" required placeholder="••••••••" class="w-full pl-11 pr-12 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:outline-none input-focus transition-all font-medium text-base">
+                                <button type="button" id="toggle-login-password" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" id="login-btn" class="w-full py-4 rounded-xl font-bold bg-gradient-to-r from-primary to-secondary text-white hover:brightness-110 transition-all text-base shadow-lg btn-hover flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                            <span id="login-btn-text">Log In</span>
+                            <i id="login-btn-icon" class="fa-solid fa-arrow-right"></i>
+                            <i id="login-btn-spinner" class="fa-solid fa-spinner fa-spin hidden"></i>
+                        </button>
+
+                        <!-- Divider -->
+                        <div class="relative flex items-center justify-center my-6">
+                            <div class="absolute w-full border-t border-slate-200"></div>
+                            <span class="bg-white px-4 text-xs font-bold text-slate-400 relative z-10 uppercase tracking-widest">Or continue with</span>
+                        </div>
+
+                        <!-- Social Login -->
+                        <button type="button" id="google-login-btn" class="w-full py-4 rounded-xl font-bold border-2 border-slate-200 text-slate-700 bg-white hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center justify-center gap-3 text-base btn-hover disabled:opacity-50 disabled:cursor-not-allowed">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                            Continue with Google
+                        </button>
+                    </form>
+
+                    <!-- Forgot Password Form (Hidden) -->
+                    <form id="forgot-form" class="space-y-5 hidden">
+                        <div class="text-center mb-4">
+                            <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-3">
+                                <i class="fa-solid fa-key text-primary text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-900">Reset your password</h3>
+                            <p class="text-sm text-slate-500 mt-1">Enter your email and we'll send you a reset link</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Email Address</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"><i class="fa-solid fa-envelope"></i></span>
+                                <input type="email" id="forgot-email" required placeholder="you@company.com" class="w-full pl-11 pr-4 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:outline-none input-focus transition-all font-medium text-base">
+                            </div>
+                        </div>
+                        <button type="submit" id="forgot-btn" class="w-full py-4 rounded-xl font-bold bg-gradient-to-r from-primary to-secondary text-white hover:brightness-110 transition-all text-base shadow-lg btn-hover flex items-center justify-center gap-2">
+                            <span>Send Reset Link</span>
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                        <button type="button" id="back-to-login" class="w-full py-3 text-sm font-semibold text-slate-500 hover:text-slate-700 transition-colors flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-arrow-left"></i> Back to Login
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Success Message (Hidden) -->
+                <div id="success-message" class="hidden text-center py-8">
+                    <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 check-icon">
+                        <i class="fa-solid fa-check text-emerald-600 text-2xl"></i>
+                    </div>
+                    <h3 id="success-title" class="text-xl font-bold text-slate-900">Check your email!</h3>
+                    <p id="success-text" class="text-slate-500 mt-2">We've sent a confirmation link to your email address.</p>
+                    <button type="button" id="success-dismiss" class="mt-6 text-sm font-semibold text-primary hover:underline">Dismiss</button>
+                </div>
+
+                <!-- Error Message (Hidden) -->
+                <div id="error-message" class="hidden bg-red-50 border border-red-200 rounded-xl p-4 mt-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-exclamation text-red-600 text-sm"></i>
+                        </div>
+                        <p id="error-text" class="text-sm text-red-700 font-medium"></p>
+                    </div>
+                    <button type="button" id="error-dismiss" class="absolute top-2 right-2 text-red-400 hover:text-red-600"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+
+            <!-- Footer Note -->
+            <p class="text-center text-slate-500 text-sm mt-6">
+                Already have an account? <a href="https://tools.nexgenweblab.com" class="text-primary font-bold hover:underline">Log in to Dashboard →</a>
+            </p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-10 bg-white/80 backdrop-blur-md border-t border-slate-200/50 mt-auto">
+        <div class="max-w-7xl mx-auto px-6 py-6">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+                <p>© 2026 NexGenWebLab. All rights reserved.</p>
                 <div class="flex gap-6">
-                    <a href="/about" class="hover:text-white transition-colors">About</a>
-                    <a href="/pricing" class="hover:text-white transition-colors">Pricing</a>
-                    <a href="/contact" class="hover:text-white transition-colors">Contact</a>
+                    <a href="/privacy" class="hover:text-slate-900 transition-colors">Privacy</a>
+                    <a href="/terms" class="hover:text-slate-900 transition-colors">Terms</a>
+                    <a href="/contact" class="hover:text-slate-900 transition-colors">Contact</a>
                 </div>
             </div>
         </div>
     </footer>
 
-    <script src="/assets/js/auth.js"></script>
+    <script>
+        // Supabase Configuration
+        const SUPABASE_URL = "https://ubnvjmvobwzsystdktpk.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVibnZqbXZvYnd6c3l0ZGt0cGsiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzE2MjIwMSwiZXhwIjoxOTU4NzM4MjAxfQ.VHm8R3QkY8GbnGMoJCL-FP3T3Y3fqBfNLqhYJ3Ew1R8";
+        
+        const { createClient } = window.supabase;
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // DOM Elements
+        const tabSignup = document.getElementById('tab-signup');
+        const tabLogin = document.getElementById('tab-login');
+        const signupForm = document.getElementById('signup-form');
+        const loginForm = document.getElementById('login-form');
+        const forgotForm = document.getElementById('forgot-form');
+        const successMessage = document.getElementById('success-message');
+        const errorMessage = document.getElementById('error-message');
+
+        // Tab Switching
+        tabSignup.addEventListener('click', () => {
+            tabSignup.classList.add('bg-white', 'text-slate-900', 'shadow-sm');
+            tabSignup.classList.remove('text-slate-500');
+            tabLogin.classList.remove('bg-white', 'text-slate-900', 'shadow-sm');
+            tabLogin.classList.add('text-slate-500');
+            signupForm.classList.remove('hidden');
+            loginForm.classList.add('hidden');
+            forgotForm.classList.add('hidden');
+            successMessage.classList.add('hidden');
+            hideError();
+        });
+
+        tabLogin.addEventListener('click', () => {
+            tabLogin.classList.add('bg-white', 'text-slate-900', 'shadow-sm');
+            tabLogin.classList.remove('text-slate-500');
+            tabSignup.classList.remove('bg-white', 'text-slate-900', 'shadow-sm');
+            tabSignup.classList.add('text-slate-500');
+            loginForm.classList.remove('hidden');
+            signupForm.classList.add('hidden');
+            forgotForm.classList.add('hidden');
+            successMessage.classList.add('hidden');
+            hideError();
+        });
+
+        // Forgot Password
+        document.getElementById('forgot-password-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            loginForm.classList.add('hidden');
+            forgotForm.classList.remove('hidden');
+            hideError();
+        });
+
+        document.getElementById('back-to-login').addEventListener('click', () => {
+            forgotForm.classList.add('hidden');
+            loginForm.classList.remove('hidden');
+        });
+
+        // Password Toggle
+        document.getElementById('toggle-password').addEventListener('click', function() {
+            const input = document.getElementById('signup-password');
+            const icon = this.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fa-solid fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fa-solid fa-eye';
+            }
+        });
+
+        document.getElementById('toggle-login-password').addEventListener('click', function() {
+            const input = document.getElementById('login-password');
+            const icon = this.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fa-solid fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fa-solid fa-eye';
+            }
+        });
+
+        // Password Strength
+        const passwordInput = document.getElementById('signup-password');
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            const strengthBars = [
+                document.getElementById('strength-1'),
+                document.getElementById('strength-2'),
+                document.getElementById('strength-3'),
+                document.getElementById('strength-4')
+            ];
+            const strengthText = document.getElementById('strength-text').querySelector('span');
+            
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/\d/.test(password)) strength++;
+            if (/[^a-zA-Z0-9]/.test(password)) strength++;
+
+            const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-emerald-500'];
+            const labels = ['Weak', 'Fair', 'Good', 'Strong'];
+
+            strengthBars.forEach((bar, i) => {
+                bar.className = 'h-1 flex-1 rounded-full ' + (i < strength ? colors[strength - 1] : 'bg-slate-200');
+            });
+
+            strengthText.textContent = password.length > 0 ? labels[Math.max(0, strength - 1)] : 'Enter password';
+            strengthText.className = 'text-xs ' + (strength > 0 ? colors[strength - 1].replace('bg-', 'text-') : 'text-slate-400');
+        });
+
+        // Email Validation
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        document.getElementById('signup-email').addEventListener('blur', function() {
+            const errorEl = document.getElementById('email-error');
+            if (this.value && !validateEmail(this.value)) {
+                errorEl.classList.remove('hidden');
+                errorEl.querySelector('span').textContent = 'Please enter a valid email address';
+                this.classList.add('border-red-500');
+            } else {
+                errorEl.classList.add('hidden');
+                this.classList.remove('border-red-500');
+            }
+        });
+
+        // Show/Hide Error
+        function showError(message) {
+            const errorEl = document.getElementById('error-message');
+            document.getElementById('error-text').textContent = message;
+            errorEl.classList.remove('hidden');
+        }
+
+        function hideError() {
+            document.getElementById('error-message').classList.add('hidden');
+        }
+
+        document.getElementById('error-dismiss').addEventListener('click', hideError);
+
+        // Loading State
+        function setButtonLoading(btn, textEl, iconEl, spinnerEl, loading) {
+            if (loading) {
+                btn.disabled = true;
+                textEl.textContent = 'Loading...';
+                iconEl.classList.add('hidden');
+                spinnerEl.classList.remove('hidden');
+            } else {
+                btn.disabled = false;
+                spinnerEl.classList.add('hidden');
+                iconEl.classList.remove('hidden');
+            }
+        }
+
+        // Sign Up
+        signupForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            hideError();
+
+            const name = document.getElementById('signup-name').value.trim();
+            const email = document.getElementById('signup-email').value.trim();
+            const password = document.getElementById('signup-password').value;
+            const plan = document.querySelector('input[name="plan"]:checked').value;
+            const terms = document.getElementById('terms').checked;
+
+            if (!terms) {
+                showError('Please accept the Terms of Service and Privacy Policy');
+                return;
+            }
+
+            const btn = document.getElementById('signup-btn');
+            const textEl = document.getElementById('signup-btn-text');
+            const iconEl = document.getElementById('signup-btn-icon');
+            const spinnerEl = document.getElementById('signup-btn-spinner');
+
+            setButtonLoading(btn, textEl, iconEl, spinnerEl, true);
+
+            try {
+                // Check if email exists
+                const { data: existingUser } = await supabase
+                    .from('users')
+                    .select('email')
+                    .eq('email', email)
+                    .single();
+
+                if (existingUser) {
+                    showError('An account with this email already exists. Please log in instead.');
+                    setButtonLoading(btn, textEl, iconEl, spinnerEl, false);
+                    return;
+                }
+
+                // Sign up with Supabase Auth
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            full_name: name,
+                            plan: plan
+                        }
+                    }
+                });
+
+                if (error) throw error;
+
+                // Create user record
+                const { error: userError } = await supabase
+                    .from('users')
+                    .insert([
+                        { 
+                            id: data.user.id,
+                            email: email,
+                            full_name: name,
+                            plan: plan,
+                            created_at: new Date().toISOString()
+                        }
+                    ]);
+
+                if (userError) console.error('User record error:', userError);
+
+                // Show success
+                signupForm.classList.add('hidden');
+                successMessage.classList.remove('hidden');
+                document.getElementById('success-title').textContent = 'Account created!';
+                document.getElementById('success-text').textContent = `Welcome to NexGenWebLab! Check your email to confirm your account.`;
+
+            } catch (error) {
+                console.error('Signup error:', error);
+                showError(error.message || 'Failed to create account. Please try again.');
+            }
+
+            setButtonLoading(btn, textEl, iconEl, spinnerEl, false);
+        });
+
+        // Login
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            hideError();
+
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+
+            const btn = document.getElementById('login-btn');
+            const textEl = document.getElementById('login-btn-text');
+            const iconEl = document.getElementById('login-btn-icon');
+            const spinnerEl = document.getElementById('login-btn-spinner');
+
+            setButtonLoading(btn, textEl, iconEl, spinnerEl, true);
+
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) throw error;
+
+                // Get user plan
+                const { data: userData } = await supabase
+                    .from('users')
+                    .select('plan')
+                    .eq('id', data.user.id)
+                    .single();
+
+                // Redirect to dashboard
+                const planParam = userData?.plan === 'pro' ? '?plan=pro' : '';
+                window.location.href = 'https://tools.nexgenweblab.com' + planParam;
+
+            } catch (error) {
+                console.error('Login error:', error);
+                if (error.message.includes('Invalid login credentials')) {
+                    showError('Invalid email or password. Please try again.');
+                } else {
+                    showError(error.message || 'Failed to log in. Please try again.');
+                }
+            }
+
+            setButtonLoading(btn, textEl, iconEl, spinnerEl, false);
+        });
+
+        // Forgot Password
+        forgotForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            hideError();
+
+            const email = document.getElementById('forgot-email').value.trim();
+
+            const btn = document.getElementById('forgot-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<span>Sending...</span> <i class="fa-solid fa-spinner fa-spin"></i>';
+
+            try {
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: 'https://nexgenweblab.com/auth?reset=true'
+                });
+
+                if (error) throw error;
+
+                forgotForm.classList.add('hidden');
+                successMessage.classList.remove('hidden');
+                document.getElementById('success-title').textContent = 'Reset link sent!';
+                document.getElementById('success-text').textContent = `Check your email for a password reset link.`;
+
+            } catch (error) {
+                console.error('Forgot password error:', error);
+                showError(error.message || 'Failed to send reset link. Please try again.');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<span>Send Reset Link</span> <i class="fa-solid fa-paper-plane"></i>';
+        });
+
+        // Google OAuth
+        async function handleGoogleAuth() {
+            try {
+                const { error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: 'https://tools.nexgenweblab.com'
+                    }
+                });
+                if (error) throw error;
+            } catch (error) {
+                console.error('Google auth error:', error);
+                showError('Failed to connect with Google. Please try again.');
+            }
+        }
+
+        document.getElementById('google-signup-btn').addEventListener('click', handleGoogleAuth);
+        document.getElementById('google-login-btn').addEventListener('click', handleGoogleAuth);
+
+        // Check for reset password redirect
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('reset') === 'true') {
+            tabLogin.click();
+        }
+
+        // Check existing session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                const planParam = new URLSearchParams(window.location.search).get('plan');
+                if (planParam === 'pro') {
+                    window.location.href = 'https://tools.nexgenweblab.com/upgrade';
+                } else {
+                    window.location.href = 'https://tools.nexgenweblab.com';
+                }
+            }
+        });
+
+        // Check URL params for plan=pro and auto-select pro
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('plan') === 'pro') {
+            const proRadio = document.getElementById('plan-pro');
+            if (proRadio) proRadio.checked = true;
+        }
+    </script>
 </body>
 </html>

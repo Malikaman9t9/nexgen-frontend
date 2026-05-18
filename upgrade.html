@@ -8,61 +8,262 @@
     <link rel="canonical" href="https://nexgenweblab.com/upgrade">
     <link rel="icon" type="image/png" href="/assets/images/favicon.png?v=2">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { primary: '#6D28D9', secondary: '#DB2777' } } } }
     </script>
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%); }
+        .card-shadow { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.03); }
+        .btn-hover:hover { transform: translateY(-1px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15); }
+        .btn-hover:active { transform: translateY(0); }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-slate-50 to-white font-sans text-slate-900 antialiased flex flex-col relative overflow-hidden">
-    <div class="absolute top-0 right-0 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px] translate-x-1/2 -translate-y-1/2"></div>
-    <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px] -translate-x-1/2 translate-y-1/2"></div>
-
-    <a href="/" class="absolute top-5 left-5 z-20 flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors bg-white/80 backdrop-blur-sm px-4 py-2.5 rounded-xl shadow-sm border border-slate-200">
-        <i class="fa-solid fa-arrow-left"></i> Back to Home
-    </a>
-
-    <div class="w-full max-w-lg mx-auto bg-white rounded-3xl shadow-xl border border-slate-200 p-8 sm:p-10 my-8 sm:my-12 relative z-10 text-center">
-        <div class="text-center mb-7">
-            <div class="w-14 h-14 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg">
-                <i class="fa-solid fa-credit-card text-white text-xl"></i>
-            </div>
-            <h1 class="text-2xl font-black tracking-tight">Complete Your Upgrade</h1>
-            <p class="text-slate-500 font-medium text-sm mt-1.5">Simulating secure payment for Enterprise Pro.</p>
-        </div>
-
-        <div class="bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/10 rounded-2xl p-5 mb-6 text-left">
-            <div class="flex items-center gap-3 text-sm font-bold text-slate-700">
-                <i class="fa-solid fa-crown text-secondary"></i> Enterprise Pro — <span class="text-secondary">$9.99/month</span>
-            </div>
-            <ul class="mt-3 space-y-2 text-xs font-medium text-slate-600">
-                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-xs"></i> White Label Reports</li>
-                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-xs"></i> Bulk SEO Analysis</li>
-                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-xs"></i> Traffic Analytics</li>
-                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-xs"></i> Priority Support</li>
-            </ul>
-        </div>
-
-        <button type="button" id="dummy-payment-btn" class="w-full py-3.5 rounded-lg font-bold bg-gradient-to-r from-primary to-secondary text-white hover:brightness-110 transition-all text-base shadow-md flex items-center justify-center gap-2">
-            Confirm & Pay $9.99/mo <i class="fa-solid fa-arrow-right"></i>
-        </button>
-
-        <p class="text-center text-xs text-slate-400 font-medium mt-6">14-day money-back guarantee. Cancel anytime.</p>
+<body class="min-h-screen gradient-bg font-sans text-slate-900 antialiased flex flex-col">
+    <!-- Background Elements -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-primary/10 to-secondary/5 rounded-full blur-[120px] -translate-y-1/3 translate-x-1/3"></div>
+        <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-secondary/10 to-primary/5 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/3"></div>
     </div>
 
+    <!-- Header -->
+    <header class="relative z-10 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="/" class="flex items-center gap-2">
+                    <img src="/assets/images/logo.png" alt="NexGenWebLab" class="h-7">
+                </a>
+                <div class="flex items-center gap-4">
+                    <a href="/pricing" class="text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors">View Pricing</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex items-center justify-center px-4 py-12 relative z-10">
+        <div id="upgrade-container" class="w-full max-w-lg fade-in">
+            <!-- Loading State -->
+            <div id="loading-state" class="text-center py-20">
+                <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+                    <i class="fa-solid fa-spinner fa-spin text-primary text-2xl"></i>
+                </div>
+                <p class="text-slate-500 font-medium">Checking your account...</p>
+            </div>
+
+            <!-- Logged Out State (Show Sign Up) -->
+            <div id="auth-required-state" class="hidden">
+                <div class="bg-white rounded-3xl card-shadow p-8 sm:p-10 text-center">
+                    <div class="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                        <i class="fa-solid fa-user-plus text-white text-2xl"></i>
+                    </div>
+                    <h1 class="text-2xl font-black tracking-tight text-slate-900 mb-3">Create Account to Upgrade</h1>
+                    <p class="text-slate-500 font-medium mb-8 max-w-md mx-auto">Sign up for free and upgrade to Enterprise Pro to unlock all premium features.</p>
+                    
+                    <!-- Features List -->
+                    <div class="bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/10 rounded-2xl p-5 mb-8 text-left">
+                        <div class="flex items-center gap-3 text-sm font-bold text-slate-700 mb-3">
+                            <i class="fa-solid fa-crown text-secondary"></i> What you get with Pro:
+                        </div>
+                        <ul class="space-y-2 text-sm text-slate-600">
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-xs"></i> Unlimited SEO Audits</li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-xs"></i> White Label Reports</li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-xs"></i> Bulk SEO Analysis</li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-xs"></i> Traffic Analytics</li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500 text-xs"></i> Priority 24/7 Support</li>
+                        </ul>
+                    </div>
+
+                    <a href="/auth?plan=pro" class="inline-flex items-center justify-center gap-2 w-full py-4 rounded-xl font-bold bg-gradient-to-r from-primary to-secondary text-white hover:brightness-110 transition-all text-base shadow-lg btn-hover">
+                        Create Account & Upgrade <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+
+                    <p class="text-slate-500 text-sm mt-4">
+                        Already have an account? <a href="https://tools.nexgenweblab.com/auth?plan=pro" class="text-primary font-bold hover:underline">Log in</a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Logged In (Free Plan) State - Show Payment -->
+            <div id="payment-state" class="hidden">
+                <div class="bg-white rounded-3xl card-shadow p-8 sm:p-10 text-center">
+                    <div class="w-16 h-16 bg-gradient-to-br from-secondary to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                        <i class="fa-solid fa-crown text-white text-2xl"></i>
+                    </div>
+                    <h1 class="text-2xl font-black tracking-tight text-slate-900 mb-2">Upgrade to Enterprise Pro</h1>
+                    <p class="text-slate-500 font-medium mb-6">Complete your upgrade and unlock all premium features</p>
+
+                    <!-- Plan Details -->
+                    <div class="bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/10 rounded-2xl p-6 mb-6 text-left">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <span class="text-3xl font-black text-slate-900">$9.99</span>
+                                <span class="text-slate-500 font-medium">/month</span>
+                            </div>
+                            <span class="bg-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full">SAVE 40%</span>
+                        </div>
+                        
+                        <div class="flex items-center gap-2 mb-4">
+                            <i class="fa-solid fa-check-circle text-emerald-500"></i>
+                            <span class="text-sm text-slate-600">Billed monthly, cancel anytime</span>
+                        </div>
+
+                        <div class="border-t border-slate-200 pt-4 space-y-2">
+                            <div class="flex items-center gap-2 text-sm">
+                                <i class="fa-solid fa-check text-emerald-500 text-xs w-4"></i>
+                                <span class="text-slate-600">Unlimited SEO Audits</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm">
+                                <i class="fa-solid fa-check text-emerald-500 text-xs w-4"></i>
+                                <span class="text-slate-600">White Label Reports</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm">
+                                <i class="fa-solid fa-check text-emerald-500 text-xs w-4"></i>
+                                <span class="text-slate-600">Bulk SEO Analysis</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm">
+                                <i class="fa-solid fa-check text-emerald-500 text-xs w-4"></i>
+                                <span class="text-slate-600">Traffic Analytics</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm">
+                                <i class="fa-solid fa-check text-emerald-500 text-xs w-4"></i>
+                                <span class="text-slate-600">Priority Support</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Info -->
+                    <div id="user-info" class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl mb-6 text-left">
+                        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                            <i class="fa-solid fa-user text-primary"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p id="user-email" class="text-sm font-bold text-slate-900 truncate"></p>
+                            <p class="text-xs text-slate-500">Upgrading to Pro</p>
+                        </div>
+                    </div>
+
+                    <!-- Payment Button -->
+                    <a href="/payment.html" class="inline-flex items-center justify-center gap-2 w-full py-4 rounded-xl font-bold bg-gradient-to-r from-primary to-secondary text-white hover:brightness-110 transition-all text-base shadow-lg btn-hover">
+                        <i class="fa-solid fa-credit-card"></i> Proceed to Payment <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+
+                    <!-- Guarantee -->
+                    <div class="flex items-center justify-center gap-2 mt-6 text-xs text-slate-500">
+                        <i class="fa-solid fa-shield-halved text-emerald-500"></i>
+                        <span>14-day money-back guarantee</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Already Pro State -->
+            <div id="already-pro-state" class="hidden">
+                <div class="bg-white rounded-3xl card-shadow p-8 sm:p-10 text-center">
+                    <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                        <i class="fa-solid fa-check text-white text-2xl"></i>
+                    </div>
+                    <h1 class="text-2xl font-black tracking-tight text-slate-900 mb-2">You're Already a Pro!</h1>
+                    <p class="text-slate-500 font-medium mb-8">Your account already has access to all Enterprise Pro features.</p>
+                    
+                    <a href="https://tools.nexgenweblab.com" class="inline-flex items-center justify-center gap-2 w-full py-4 rounded-xl font-bold bg-slate-900 text-white hover:bg-slate-800 transition-all text-base shadow-lg btn-hover">
+                        <i class="fa-solid fa-gauge-high"></i> Go to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-10 bg-white/80 backdrop-blur-md border-t border-slate-200/50 mt-auto">
+        <div class="max-w-7xl mx-auto px-6 py-6">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+                <p>© 2026 NexGenWebLab. All rights reserved.</p>
+                <div class="flex gap-6">
+                    <a href="/privacy" class="hover:text-slate-900 transition-colors">Privacy</a>
+                    <a href="/terms" class="hover:text-slate-900 transition-colors">Terms</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const payBtn = document.getElementById('dummy-payment-btn');
-            payBtn.addEventListener('click', () => {
-                payBtn.innerText = 'Processing Payment...';
-                payBtn.disabled = true;
-                setTimeout(() => {
-                    // Simulate successful payment and redirect to dashboard with Pro plan
-                    window.location.href = 'https://tools.nexgenweblab.com/?plan=pro';
-                }, 2000);
-            });
-        });
+        // Supabase Configuration
+        const SUPABASE_URL = "https://ubnvjmvobwzsystdktpk.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVibnZqbXZvYnd6c3l0ZGt0cGsiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzE2MjIwMSwiZXhwIjoxOTU4NzM4MjAxfQ.VHm8R3QkY8GbnGMoJCL-FP3T3Y3fqBfNLqhYJ3Ew1R8";
+        
+        const { createClient } = window.supabase;
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Check authentication and plan status
+        async function checkAuthAndPlan() {
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (!session) {
+                // User not logged in - show sign up prompt
+                showAuthRequired();
+                return;
+            }
+
+            const userEmail = session.user.email;
+            document.getElementById('user-email').textContent = userEmail;
+
+            // Check user's plan in database
+            const { data: userData, error } = await supabase
+                .from('users')
+                .select('plan')
+                .eq('id', session.user.id)
+                .single();
+
+            if (error) {
+                console.error('Error fetching user data:', error);
+                // Assume free plan if error
+                showPaymentState();
+                return;
+            }
+
+            if (userData?.plan === 'pro') {
+                // Already pro - show already pro state
+                showAlreadyPro();
+            } else {
+                // Free plan - show payment
+                showPaymentState();
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loading-state').classList.remove('hidden');
+            document.getElementById('auth-required-state').classList.add('hidden');
+            document.getElementById('payment-state').classList.add('hidden');
+            document.getElementById('already-pro-state').classList.add('hidden');
+        }
+
+        function showAuthRequired() {
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('auth-required-state').classList.remove('hidden');
+            document.getElementById('payment-state').classList.add('hidden');
+            document.getElementById('already-pro-state').classList.add('hidden');
+        }
+
+        function showPaymentState() {
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('auth-required-state').classList.add('hidden');
+            document.getElementById('payment-state').classList.remove('hidden');
+            document.getElementById('already-pro-state').classList.add('hidden');
+        }
+
+        function showAlreadyPro() {
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('auth-required-state').classList.add('hidden');
+            document.getElementById('payment-state').classList.add('hidden');
+            document.getElementById('already-pro-state').classList.remove('hidden');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', checkAuthAndPlan);
     </script>
 </body>
 </html>
