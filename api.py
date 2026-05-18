@@ -21,10 +21,18 @@ RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
 app = FastAPI(title="NexGenWebLab API")
 
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*")
+CORS_ORIGINS = [
+    "https://tools.nexgenweblab.com",
+    "https://nexgenweblab.com",
+    "http://localhost:5173",
+    "http://localhost:4173",
+    "*"
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS.split(","),
+    allow_origins=CORS_ORIGINS,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
