@@ -166,7 +166,8 @@ def preview_html_report(req: HTMLReportRequest):
             language=req.language,
             white_label=req.white_label,
         )
-        return HTMLResponse(content=html_bytes)
+        html_content = html_bytes.decode('utf-8') if isinstance(html_bytes, bytes) else html_bytes
+        return HTMLResponse(content=html_content)
     except Exception as e:
         error_msg = str(e)
         try:
@@ -174,7 +175,10 @@ def preview_html_report(req: HTMLReportRequest):
             error_msg += "\n" + traceback.format_exc()
         except:
             pass
-        return HTMLResponse(content=f"<html><body><h1>Error generating report</h1><p>{error_msg[:500]}</p></body></html>", status_code=500)
+        content = error_msg[:2000]
+        if isinstance(content, bytes):
+            content = content.decode('utf-8', errors='replace')
+        return HTMLResponse(content=f"<html><body><h1>Error generating report</h1><p style='font-family:monospace;white-space:pre-wrap;'>{content}</p></body></html>", status_code=500)
 
 @app.post("/api/export/bulk/html")
 def export_bulk_html_report(req: BulkReportRequest):
