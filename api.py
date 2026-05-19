@@ -56,7 +56,7 @@ class ExportRequest(BaseModel):
 
 class HTMLReportRequest(BaseModel):
     url: str
-    onpage_data: dict
+    onpage_data: dict = {}
     speed_data: dict = {}
     traffic_data: dict = {}
     ai_suggestions: list = []
