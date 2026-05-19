@@ -59,53 +59,55 @@ def get_traffic_data(url, api_key):
         engagement = traffic.get("Engagement") or {}
         sources = traffic.get("Sources") or {}
         
-        monthly_data = traffic.get("MonthlyVisits") or traffic.get("Visits") or []
+        monthly_data = traffic.get("Visits") or {}
         monthly_visits_list = []
-        if isinstance(monthly_data, list) and len(monthly_data) > 0:
-            months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-            for i, visit_data in enumerate(monthly_data[-6:] if len(monthly_data) >= 6 else monthly_data):
-                if isinstance(visit_data, dict):
+        if isinstance(monthly_data, dict) and len(monthly_data) > 0:
+            months_map = {"01": "Jan", "02": "Feb", "03": "Mar", "04": "Apr", "05": "May", "06": "Jun", "07": "Jul", "08": "Aug", "09": "Sep", "10": "Oct", "11": "Nov", "12": "Dec"}
+            for date_str, visits in monthly_data.items():
+                try:
+                    month_part = date_str[5:7] if len(date_str) >= 7 else "01"
+                    month_label = months_map.get(month_part, month_part)
                     monthly_visits_list.append({
-                        "month": months[i] if i < 12 else f"M{i+1}",
-                        "visits": int(visit_data.get("visits", 0)) if isinstance(visit_data, dict) else int(visit_data)
+                        "month": month_label,
+                        "visits": int(visits) if visits else 0
                     })
-                elif isinstance(visit_data, (int, float)):
-                    monthly_visits_list.append({
-                        "month": months[i] if i < 12 else f"M{i+1}",
-                        "visits": int(visit_data)
-                    })
+                except Exception as e:
+                    print(f"Error parsing date {date_str}: {e}")
+            if len(monthly_visits_list) > 1:
+                monthly_visits_list = sorted(monthly_visits_list, key=lambda x: x.get("month", ""))[-6:]
+            elif monthly_visits_list:
+                monthly_visits_list = monthly_visits_list[:1]
 
         top_countries = []
-        geo_data = traffic.get("TopCountries") or []
-        if isinstance(geo_data, list):
-            for country in geo_data[:5]:
-                if isinstance(country, dict):
-                    top_countries.append({
-                        "country": country.get("Country", "Unknown"),
-                        "visits": int(country.get("visits", 0)) if isinstance(country.get("visits"), (int, float)) else 0,
-                        "share": f"{float(country.get('share', 0)) * 100:.1f}%" if isinstance(country.get('share'), (int, float)) else "0%"
-                    })
-
-        top_referrals = []
-        referrals_data = sources.get("Referrals") or []
-        if isinstance(referrals_data, list):
-            for ref in referrals_data[:5]:
-                if isinstance(ref, dict):
-                    top_referrals.append({
-                        "source": ref.get("source", "Unknown"),
-                        "visits": int(ref.get("visits", 0)) if isinstance(ref.get("visits"), (int, float)) else 0
-                    })
+        country_shares = raw.get("Traffic", {}).get("TopCountryShares") or {}
+        if isinstance(country_shares, dict):
+            country_names = {"US": "United States", "GB": "United Kingdom", "DE": "Germany", "FR": "France", "IN": "India", "JP": "Japan", "CN": "China", "BR": "Brazil", "CA": "Canada", "AU": "Australia", "ES": "Spain", "IT": "Italy", "MX": "Mexico", "NL": "Netherlands", "RU": "Russia", "KR": "South Korea", "SE": "Sweden"}
+            for code, share in list(country_shares.items())[:5]:
+                top_countries.append({
+                    "country": country_names.get(code, code),
+                    "visits": int(share * 1000000) if share else 0,
+                    "share": f"{share * 100:.1f}%" if share else "0%"
+                })
 
         top_keywords = []
-        organic_data = traffic.get("TopKeywords") or []
-        if isinstance(organic_data, list):
-            for kw in organic_data[:10]:
+        seo_insights = raw.get("SEOInsights") or {}
+        seo_kws = seo_insights.get("TopKeywords") if isinstance(seo_insights, dict) else seo_insights
+        if isinstance(seo_kws, list):
+            rank = 1
+            for kw in seo_kws[:10]:
                 if isinstance(kw, dict):
-                    top_keywords.append({
-                        "keyword": kw.get("keyword", "Unknown"),
-                        "visits": int(kw.get("visits", 0)) if isinstance(kw.get("visits"), (int, float)) else 0,
-                        "position": kw.get("position", 0) if isinstance(kw.get('position'), (int, float)) else 0
-                    })
+                    try:
+                        kw_name = kw.get("Name", "Unknown")
+                        kw_volume = kw.get("Volume", 0)
+                        if isinstance(kw_volume, (int, float)):
+                            top_keywords.append({
+                                "keyword": kw_name,
+                                "visits": int(kw_volume),
+                                "position": rank
+                            })
+                            rank += 1
+                    except:
+                        pass
 
         def safe_pct(val):
             try:
@@ -143,16 +145,25 @@ def get_traffic_data(url, api_key):
             except (ValueError, TypeError):
                 return "N/A"
 
-        rank = raw.get("GlobalRank", raw.get("Rank"))
-        visits = raw.get("EstimatedMonthlyVisits", raw.get("Visits"))
+        rank_data = raw.get("Rank") or {}
+        rank = rank_data.get("GlobalRank")
+        visits_data = traffic.get("Visits", {})
+        if isinstance(visits_data, dict) and visits_data:
+            try:
+                total_visits = sum(int(v) for v in visits_data.values() if v)
+                avg_visits = total_visits // len(visits_data) if visits_data else 0
+            except:
+                avg_visits = None
+        else:
+            avg_visits = None
 
-        if rank is None and visits is None and not engagement and not monthly_visits_list:
+        if rank is None and avg_visits is None and not engagement and not monthly_visits_list:
             return {**FALLBACK, "status": "Low traffic data"}
 
         return {
             "status": "Live Data",
-            "global_rank": safe_rank(rank),
-            "monthly_visits": safe_visits(visits),
+            "global_rank": safe_rank(rank) if rank else "N/A",
+            "monthly_visits": safe_visits(avg_visits) if avg_visits else "N/A",
             "bounce_rate": safe_pct(engagement.get("BounceRate")),
             "pages_per_visit": safe_float_str(engagement.get("PagesPerVisit")),
             "avg_duration": safe_time(engagement.get("TimeOnSite")),
@@ -160,10 +171,10 @@ def get_traffic_data(url, api_key):
             "direct_traffic": safe_pct(sources.get("Direct")),
             "social_traffic": safe_pct(sources.get("Social")),
             "referral_traffic": safe_pct(sources.get("Referrals")),
-            "email_traffic": safe_pct(sources.get("Email")),
+            "email_traffic": safe_pct(sources.get("Mail")),
             "monthly_visits_list": monthly_visits_list,
             "top_countries": top_countries,
-            "top_referrals": top_referrals,
+            "top_referrals": [],
             "top_keywords": top_keywords,
             "raw_data": raw,
         }
