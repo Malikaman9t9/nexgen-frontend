@@ -11,7 +11,7 @@ from modules.speed_checker import check_speed
 from modules.traffic_checker import get_traffic_data
 from modules.ai_analyzer import get_ai_suggestions
 from modules.report_export import generate_word_report
-from modules.html_report import generate_html_report_single, generate_html_report_bulk
+from modules.html_report import generate_html_report_single, generate_html_report_bulk, generate_advanced_html_report
 
 load_dotenv()
 
@@ -65,6 +65,10 @@ class HTMLReportRequest(BaseModel):
     author_name: str = "SEO Team"
     logo_url: str = ""
     custom_css: str = ""
+    primary_color: str = "#6D28D9"
+    secondary_color: str = "#DB2777"
+    language: str = "en"
+    white_label: bool = False
 
 class BulkReportRequest(BaseModel):
     reports: list
@@ -134,17 +138,32 @@ def export_html_report(req: HTMLReportRequest):
 
 @app.post("/api/export/html/preview")
 def preview_html_report(req: HTMLReportRequest):
-    html_bytes = generate_html_report_single(
+    logo_base64 = None
+    if req.logo_url:
+        try:
+            import base64
+            import requests
+            resp = requests.get(req.logo_url, timeout=10)
+            if resp.ok:
+                logo_base64 = base64.b64encode(resp.content).decode()
+        except:
+            pass
+    
+    html_bytes = generate_advanced_html_report(
         url=req.url,
         onpage_data=req.onpage_data,
-        speed_data=req.speed_data,
-        traffic_data=req.traffic_data,
-        ai_suggestions=req.ai_suggestions,
+        speed_data=req.speed_data or {},
+        traffic_data=req.traffic_data or {},
+        ai_suggestions=req.ai_suggestions or [],
         agency_name=req.agency_name,
         client_name=req.client_name,
         author_name=req.author_name,
-        logo_url=req.logo_url,
-        custom_css=req.custom_css,
+        logo_base64=logo_base64,
+        custom_css=req.custom_css or "",
+        primary_color=req.primary_color,
+        secondary_color=req.secondary_color,
+        language=req.language,
+        white_label=req.white_label,
     )
     return HTMLResponse(content=html_bytes)
 
