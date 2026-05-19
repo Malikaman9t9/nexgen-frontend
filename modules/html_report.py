@@ -398,7 +398,7 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
     
     comparison_chart = create_comparison_bar(
         [mobile_score, desktop_score],
-        [t['mobile'], ""
+        [t['mobile'], t['desktop']]
     )
     
     monthly_chart = None
@@ -534,7 +534,7 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
             background: linear-gradient(135deg, #fafafa, #f5f5f5); border-radius: 12px; padding: 25px; text-align: center;
         }}
         .metric-value {{ font-size: 26px; font-weight: 800; color: #0f172a; margin-bottom: 5px; }}
-        .metric-label {{ font-size: 11px; text-transform: {t["title"]}; letter-spacing: 1px; color: #64748b; }}
+        .metric-label {{ font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; }}
         
         /* Checklist Section */
         .checklist-section {{ background: white; border-radius: 20px; padding: 40px; margin: 30px 0; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }}
@@ -561,6 +561,9 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
         .chart-card {{ background: #f8fafc; border-radius: 16px; padding: 25px; }}
         .chart-title {{ font-size: 16px; font-weight: 600; color: #1e293b; margin-bottom: 20px; text-align: center; }}
         .chart-card img {{ width: 100%; border-radius: 10px; }}
+        
+        .comparison-chart {{ margin: 20px 0; text-align: center; }}
+        .comparison-chart img {{ max-width: 500px; }}
         
         /* AI Recommendations */
         .ai-section {{ background: linear-gradient(135deg, #f5f3ff, #fdf2f8); border-radius: 20px; padding: 40px; margin: 30px 0; border-left: 5px solid var(--primary); }}
@@ -672,6 +675,22 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
                     <div class="summary-value">{issues}</div>
                     <div class="summary-label">{t['issue_found']}</div>
                 </div>
+            </div>
+        </div>
+        
+        <!-- Score Comparison -->
+        <div class="charts-section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+                </div>
+                <div>
+                    <h2 class="section-title">Mobile vs Desktop Comparison</h2>
+                    <p class="section-subtitle">Performance comparison across devices</p>
+                </div>
+            </div>
+            <div class="comparison-chart">
+                <img src="data:image/png;base64,{comparison_chart}" alt="Mobile vs Desktop Performance">
             </div>
         </div>
         
