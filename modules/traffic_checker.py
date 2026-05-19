@@ -62,7 +62,6 @@ def get_traffic_data(url, api_key):
         monthly_data = traffic.get("Visits") or {}
         monthly_visits_list = []
         if isinstance(monthly_data, dict) and len(monthly_data) > 0:
-            print(f"[+] Found monthly data with {len(monthly_data)} entries: {list(monthly_data.keys())}")
             months_map = {"01": "Jan", "02": "Feb", "03": "Mar", "04": "Apr", "05": "May", "06": "Jun", "07": "Jul", "08": "Aug", "09": "Sep", "10": "Oct", "11": "Nov", "12": "Dec"}
             for date_str, visits in monthly_data.items():
                 try:
@@ -73,19 +72,15 @@ def get_traffic_data(url, api_key):
                         "month": month_label,
                         "visits": visits_int
                     })
-                except Exception as e:
-                    print(f"Error parsing date {date_str}: {e}")
+                except:
+                    pass
             if len(monthly_visits_list) > 1:
                 monthly_visits_list = sorted(monthly_visits_list, key=lambda x: x.get("month", ""))[-6:]
             elif monthly_visits_list:
                 monthly_visits_list = monthly_visits_list[:1]
-            print(f"[+] Processed monthly visits: {monthly_visits_list}")
-        else:
-            print(f"[-] No monthly data found. traffic.get('Visits') = {traffic.get('Visits')}, type = {type(monthly_data)}")
 
         top_countries = []
         country_shares = raw.get("Traffic", {}).get("TopCountryShares") or {}
-        print(f"[+] Country shares: {country_shares}")
         if isinstance(country_shares, dict) and len(country_shares) > 0:
             country_names = {"US": "United States", "GB": "United Kingdom", "DE": "Germany", "FR": "France", "IN": "India", "JP": "Japan", "CN": "China", "BR": "Brazil", "CA": "Canada", "AU": "Australia", "ES": "Spain", "IT": "Italy", "MX": "Mexico", "NL": "Netherlands", "RU": "Russia", "KR": "South Korea", "SE": "Sweden"}
             for code, share in list(country_shares.items())[:5]:
@@ -117,8 +112,8 @@ def get_traffic_data(url, api_key):
                             "position": rank
                         })
                         rank += 1
-                    except Exception as e:
-                        print(f"Error parsing keyword: {e}")
+                    except:
+                        pass
 
         def safe_pct(val):
             try:
