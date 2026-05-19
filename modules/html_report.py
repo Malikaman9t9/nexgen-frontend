@@ -2,15 +2,7 @@ import io
 import base64
 import requests
 from urllib.parse import urlparse
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import numpy as np
 from datetime import datetime
-from PIL import Image
-import io as pil_io
-
-matplotlib.rcParams['font.family'] = 'sans-serif'
 
 TRANSLATIONS = {
     "en": {
@@ -198,190 +190,53 @@ TRANSLATIONS = {
 def get_translations(lang="en"):
     return TRANSLATIONS.get(lang, TRANSLATIONS["en"])
 
-def fetch_site_logo(url):
-    """Fetch favicon and try to get site logo"""
-    try:
-        parsed = urlparse(url)
-        domain = parsed.netloc
-        
-        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
-        
-        favicon_url = f"https://www.google.com/s2/favicons?domain={domain}&sz=128"
-        favicon_resp = requests.get(favicon_url, headers=headers, timeout=5)
-        
-        if favicon_resp.status_code == 200 and len(favicon_resp.content) > 100:
-            return base64.b64encode(favicon_resp.content).decode()
-        
-        html_resp = requests.get(url, headers=headers, timeout=10)
-        if html_resp.status_code == 200:
-            import re
-            og_image = re.search(r'og:image["\s]*[:="\']([^"\']+)', html_resp.text, re.I)
-            if og_image:
-                img_url = og_image.group(1)
-                img_resp = requests.get(img_url, headers=headers, timeout=10)
-                if img_resp.status_code == 200:
-                    return base64.b64encode(img_resp.content).decode()
-        
-        apple_touch = re.search(r'apple-touch-icon[^>]*href=["\']([^"\']+)', html_resp.text, re.I)
-        if apple_touch:
-            img_url = apple_touch.group(1)
-            img_resp = requests.get(img_url, headers=headers, timeout=10)
-            if img_resp.status_code == 200:
-                return base64.b64encode(img_resp.content).decode()
-        
-        return None
-    except Exception as e:
-        print(f"Logo fetch error: {e}")
-        return None
+def get_score_color(score):
+    if score >= 90:
+        return "#10b981"
+    elif score >= 50:
+        return "#f59e0b"
+    else:
+        return "#ef4444"
 
-def get_site_title_and_description(url):
-    """Get site title and description"""
-    try:
-        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
-        resp = requests.get(url, headers=headers, timeout=10)
-        
-        if resp.status_code == 200:
-            import re
-            title = re.search(r'<title[^>]*>([^<]+)</title>', resp.text, re.I)
-            desc = re.search(r'<meta[^>]*name=["\']description["\'][^>]*content=["\']([^"\']+)', resp.text, re.I)
-            
-            return {
-                'title': title.group(1).strip() if title else domain,
-                'description': desc.group(1).strip() if desc else '',
-            }
-    except:
-        pass
-    return {'title': '', 'description': ''}
+def get_score_label(score):
+    if score >= 90:
+        return "Excellent"
+    elif score >= 70:
+        return "Good"
+    elif score >= 50:
+        return "Needs Work"
+    else:
+        return "Poor"
 
-def create_gauge_chart(score, size=(2, 2), color=None):
-    try:
-        if color is None:
-            color = "#ef4444" if score < 50 else "#f59e0b" if score < 80 else "#10b981"
-        
-        fig, ax = plt.subplots(figsize=size)
-        ax.set_aspect('equal')
-        ax.axis('off')
-        
-        theta = np.linspace(0.75 * np.pi, 0.25 * np.pi, 100)
-        theta_filled = np.linspace(0.75 * np.pi, 0.75 * np.pi + (score / 100) * 1.5 * np.pi, 50)
-        
-        ax.plot(np.cos(theta), np.sin(theta), color='#e2e8f0', linewidth=14, solid_capstyle='round')
-        ax.plot(np.cos(theta_filled), np.sin(theta_filled), color=color, linewidth=14, solid_capstyle='round')
-        
-        ax.text(0, -0.15, f'{score}', ha='center', va='center', fontsize=38, fontweight='bold', color='#0f172a', family='sans-serif')
-        ax.text(0, -0.4, 'Score', ha='center', va='center', fontsize=12, color='#64748b', family='sans-serif')
-        
-        plt.tight_layout(pad=0.5)
-        img_stream = pil_io.BytesIO()
-        plt.savefig(img_stream, format='png', transparent=True, bbox_inches='tight', dpi=150)
-        plt.close(fig)
-        img_stream.seek(0)
-        return base64.b64encode(img_stream.read()).decode()
-    except Exception as e:
-        print(f"Gauge chart error: {e}")
-        return ""
-
-def create_traffic_chart(data, title, color="#6D28D9", size=(8, 3.5)):
-    try:
-        if not data:
-            return None
-        
-        months = [d.get('month', '') for d in data]
-        values = [d.get('visits', 0) for d in data]
-        
-        fig, ax = plt.subplots(figsize=size)
-        fig.patch.set_facecolor('white')
-        ax.set_facecolor('#f8fafc')
-        
-        bars = ax.bar(months, values, color=color, edgecolor='white', linewidth=2, width=0.65)
-        
-        max_val = max(values) if values else 1
-        for bar, val in zip(bars, values):
-            height = bar.get_height()
-            if height > 0:
-                ax.text(bar.get_x() + bar.get_width()/2., height + max_val * 0.03,
-                       f'{val:,}', ha='center', va='bottom', fontsize=10, fontweight='bold', color='#475569')
-        
-        ax.spines['top'].set_visible(False)
-        ax.spines['right'].set_visible(False)
-        ax.spines['left'].set_color('#e2e8f0')
-        ax.spines['bottom'].set_color('#e2e8f0')
-        ax.tick_params(colors='#64748b', labelsize=11)
-        ax.set_ylabel('Visits', fontsize=10, color='#64748b')
-        
-        for spine in ax.spines.values():
-            spine.set_linewidth(1.5)
-        
-        plt.tight_layout(pad=1.5)
-        img_stream = pil_io.BytesIO()
-        plt.savefig(img_stream, format='png', transparent=False, bbox_inches='tight', dpi=120)
-        plt.close(fig)
-        img_stream.seek(0)
-        return base64.b64encode(img_stream.read()).decode()
-    except Exception as e:
-        print(f"Traffic chart error: {e}")
-        return None
-
-def create_source_pie(data, title, colors=["#6D28D9", "#DB2777", "#F59E0B", "#10B981"]):
-    try:
-        if not data:
-            return None
-        
-        labels = [d.get('name', 'Unknown') for d in data]
-        values = [d.get('value', 0) for d in data]
-        
-        fig, ax = plt.subplots(figsize=(5, 5))
-        fig.patch.set_facecolor('white')
-        
-        wedges, texts, autotexts = ax.pie(values, labels=labels, autopct='%1.0f%%',
-                                           colors=colors[:len(data)], startangle=90,
-                                           wedgeprops=dict(width=0.6, edgecolor='white', linewidth=3))
-        for text in texts:
-            text.set_fontsize(11)
-            text.set_color('#475569')
-            text.set_fontweight('600')
-        for autotext in autotexts:
-            autotext.set_fontsize(10)
-            autotext.set_fontweight('bold')
-            autotext.set_color('white')
-        
-        plt.tight_layout(pad=1)
-        img_stream = pil_io.BytesIO()
-        plt.savefig(img_stream, format='png', transparent=False, bbox_inches='tight', dpi=120)
-        plt.close(fig)
-        img_stream.seek(0)
-        return base64.b64encode(img_stream.read()).decode()
-    except Exception as e:
-        print(f"Source pie error: {e}")
-        return None
-
-def create_comparison_bar(metrics, labels, title="", size=(8, 2.5)):
-    fig, ax = plt.subplots(figsize=size)
-    fig.patch.set_facecolor('white')
-    ax.set_facecolor('#f8fafc')
+def generate_html_report_single(url, onpage_data=None, speed_data=None, traffic_data=None, ai_suggestions=None,
+                                 agency_name="NexGenWebLab", client_name="Client", author_name="SEO Team",
+                                 logo_url="", custom_css="", primary_color="#6D28D9", secondary_color="#DB2777",
+                                 language="en", white_label=False):
+    if onpage_data is None:
+        onpage_data = {}
+    if speed_data is None:
+        speed_data = {}
+    if traffic_data is None:
+        traffic_data = {}
+    if ai_suggestions is None:
+        ai_suggestions = []
     
-    x = np.arange(len(labels))
-    bars = ax.bar(x, metrics, color=['#6D28D9', '#DB2777'], width=0.5, edgecolor='white', linewidth=2)
-    
-    for bar in bars:
-        height = bar.get_height()
-        ax.text(bar.get_x() + bar.get_width()/2., height + 1,
-               f'{int(height)}', ha='center', va='bottom', fontsize=11, fontweight='bold', color='#475569')
-    
-    ax.set_xticks(x)
-    ax.set_xticklabels(labels, fontsize=11, color='#475569')
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.spines['left'].set_color('#e2e8f0')
-    ax.spines['bottom'].set_color('#e2e8f0')
-    ax.tick_params(colors='#64748b', labelsize=10)
-    
-    plt.tight_layout(pad=1)
-    img_stream = pil_io.BytesIO()
-    plt.savefig(img_stream, format='png', transparent=False, bbox_inches='tight', dpi=120)
-    plt.close(fig)
-    img_stream.seek(0)
-    return base64.b64encode(img_stream.read()).decode()
+    return generate_advanced_html_report(
+        url=url,
+        onpage_data=onpage_data,
+        speed_data=speed_data,
+        traffic_data=traffic_data,
+        ai_suggestions=ai_suggestions,
+        agency_name=agency_name,
+        client_name=client_name,
+        author_name=author_name,
+        logo_base64=None,
+        custom_css=custom_css,
+        primary_color=primary_color,
+        secondary_color=secondary_color,
+        language=language,
+        white_label=white_label,
+    )
 
 def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai_suggestions,
                                    agency_name="NexGenWebLab", client_name="Client",
@@ -389,105 +244,42 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
                                    primary_color="#6D28D9", secondary_color="#DB2777",
                                    language="en", white_label=False):
     
-    try:
-        t = get_translations(language)
-    except Exception as e:
-        print(f"Translation error: {e}")
-        t = {"title": "SEO Report", "mobile": "Mobile", "desktop": "Desktop", "search": "Search", "direct": "Direct", "social": "Social", "referral": "Referral", "passed": "Passed", "issue_found": "Issues Found"}
+    t = get_translations(language)
+    site_title = url
     
     try:
-        site_info = get_site_title_and_description(url)
-    except Exception as e:
-        print(f"Site info error: {e}")
-        site_info = {"title": "", "description": ""}
-    
-    try:
-        if logo_base64 is None:
-            logo_base64 = fetch_site_logo(url)
-    except Exception as e:
-        print(f"Logo fetch error: {e}")
-        logo_base64 = None
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+        resp = requests.get(url, headers=headers, timeout=10)
+        if resp.status_code == 200:
+            import re
+            title_match = re.search(r'<title[^>]*>([^<]+)</title>', resp.text, re.I)
+            if title_match:
+                site_title = title_match.group(1).strip()
+    except:
+        pass
     
     mobile_score = 50
     desktop_score = 50
-    avg_score = 50
-    
-    try:
-        if speed_data:
-            mobile_score = speed_data.get('mobile', {}).get('performance', 50) or 50
-            desktop_score = speed_data.get('desktop', {}).get('performance', 50) or 50
-            if mobile_score == 0:
-                mobile_score = 50
-            if desktop_score == 0:
-                desktop_score = 50
-        avg_score = (mobile_score + desktop_score) // 2
-    except Exception as e:
-        print(f"Score extraction error: {e}")
-    
-    try:
-        mobile_gauge = create_gauge_chart(mobile_score)
-        desktop_gauge = create_gauge_chart(desktop_score)
-        overall_gauge = create_gauge_chart(avg_score)
-    except Exception as e:
-        print(f"Gauge creation error: {e}")
-        mobile_gauge = desktop_gauge = overall_gauge = ""
-    
-    comparison_chart = ""
-    try:
-        comparison_chart = create_comparison_bar(
-            [mobile_score, desktop_score],
-            [t.get('mobile', 'Mobile'), t.get('desktop', 'Desktop')]
-        )
-    except Exception as e:
-        print(f"Comparison chart error: {e}")
-    
-    monthly_chart = None
-    try:
-        if traffic_data and traffic_data.get('monthly_visits_list'):
-            monthly_chart = create_traffic_chart(traffic_data['monthly_visits_list'], 'Monthly Traffic')
-    except Exception as e:
-        print(f"Monthly chart error: {e}")
-    
-    sources = []
-    try:
-        if traffic_data:
-            if traffic_data.get('search_traffic') and traffic_data.get('search_traffic') != 'N/A':
-                sources.append({'name': t.get('search', 'Search'), 'value': float(traffic_data.get('search_traffic', '0').replace('%', ''))})
-            if traffic_data.get('direct_traffic') and traffic_data.get('direct_traffic') != 'N/A':
-                sources.append({'name': t.get('direct', 'Direct'), 'value': float(traffic_data.get('direct_traffic', '0').replace('%', ''))})
-            if traffic_data.get('social_traffic') and traffic_data.get('social_traffic') != 'N/A':
-                sources.append({'name': t.get('social', 'Social'), 'value': float(traffic_data.get('social_traffic', '0').replace('%', ''))})
-            if traffic_data.get('referral_traffic') and traffic_data.get('referral_traffic') != 'N/A':
-                sources.append({'name': t.get('referral', 'Referral'), 'value': float(traffic_data.get('referral_traffic', '0').replace('%', ''))})
-    except Exception as e:
-        print(f"Sources error: {e}")
-    
-    sources_chart = None
-    try:
-        if sources:
-            sources_chart = create_source_pie(sources, 'Traffic Sources')
-    except Exception as e:
-        print(f"Sources chart error: {e}")
+    if speed_data:
+        mobile_score = speed_data.get('mobile', {}).get('performance', 50) or 50
+        desktop_score = speed_data.get('desktop', {}).get('performance', 50) or 50
+    avg_score = (mobile_score + desktop_score) // 2
     
     onpage_checks = [
-        ('Title Tag', 'Missing', False, onpage_data.get('title', 'Missing')[:50] if onpage_data.get('title', 'Missing') != 'Missing' else 'Missing'),
-        ('Meta Description', 'Missing', False, onpage_data.get('description', 'Missing')[:80] if onpage_data.get('description', 'Missing') != 'Missing' else 'Missing'),
-        ('H1 Headings', f"{len(onpage_data.get('h1', []))} found", len(onpage_data.get('h1', [])) > 0, ', '.join(onpage_data.get('h1', [])[:2])[:60]),
+        ('Title Tag', 'Missing' if not onpage_data.get('title') else 'Found', bool(onpage_data.get('title')), onpage_data.get('title', 'Missing')[:50]),
+        ('Meta Description', 'Missing' if not onpage_data.get('description') else 'Found', bool(onpage_data.get('description')), onpage_data.get('description', 'Missing')[:80]),
+        ('H1 Headings', f"{len(onpage_data.get('h1', []))} found", len(onpage_data.get('h1', [])) > 0, ', '.join(onpage_data.get('h1', [])[:2])[:60] or 'None'),
         ('Word Count', f"{onpage_data.get('word_count', 0)} words", onpage_data.get('word_count', 0) >= 300, str(onpage_data.get('word_count', 0))),
         ('HTTPS/SSL', onpage_data.get('is_https', 'No'), onpage_data.get('is_https', '') == 'Yes', 'Secure' if onpage_data.get('is_https', '') == 'Yes' else 'Not Secure'),
-        ('Schema Markup', onpage_data.get('schema', 'Missing'), onpage_data.get('schema', '') != 'Missing', onpage_data.get('schema', '')),
-        ('Canonical URL', onpage_data.get('canonical', 'Missing'), onpage_data.get('canonical', '') != 'Missing', onpage_data.get('canonical', '')[:60]),
-        ('Missing ALT Images', f"{onpage_data.get('missing_alt', 0)} images", onpage_data.get('missing_alt', 0) == 0, f"{onpage_data.get('missing_alt', 0)} missing"),
+        ('Schema Markup', 'Present' if onpage_data.get('schema') else 'Missing', bool(onpage_data.get('schema')), onpage_data.get('schema', 'Not detected')),
+        ('Canonical URL', 'Present' if onpage_data.get('canonical') else 'Missing', bool(onpage_data.get('canonical')), onpage_data.get('canonical', 'Missing')[:60]),
+        ('Missing ALT Images', f"{onpage_data.get('missing_alt', 0)} missing", onpage_data.get('missing_alt', 0) == 0, f"{onpage_data.get('missing_alt', 0)} images"),
         ('HTML Size', f"{onpage_data.get('html_size_kb', 0):.1f} KB", onpage_data.get('html_size_kb', 0) < 150, 'Optimal' if onpage_data.get('html_size_kb', 0) < 150 else 'Large'),
         ('Load Time', f"{onpage_data.get('response_time', 0):.2f}s", onpage_data.get('response_time', 0) < 1, 'Fast' if onpage_data.get('response_time', 0) < 1 else 'Slow'),
-        ('Internal Links', f"{onpage_data.get('internal_links', 0)} links", onpage_data.get('internal_links', 0) > 5, str(onpage_data.get('internal_links', 0))),
-        ('External Links', f"{onpage_data.get('external_links', 0)} links", True, str(onpage_data.get('external_links', 0))),
     ]
     
-    issues = sum(1 for _, _, passed in onpage_checks if not passed)
-    passed_count = sum(1 for _, _, passed in onpage_checks if passed)
-    
-    logo_html = f'<img src="data:image/png;base64,{logo_base64}" class="site-logo" alt="Site Logo" />' if logo_base64 else ''
+    passed_count = sum(1 for _, _, passed, _ in onpage_checks if passed)
+    issues_count = sum(1 for _, _, passed, _ in onpage_checks if not passed)
     
     html = f'''<!DOCTYPE html>
 <html lang="{language}" dir="{"rtl" if language == "ar" else "ltr"}">
@@ -510,7 +302,6 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
         
         .report-wrapper {{ max-width: 1200px; margin: 0 auto; padding: 20px; }}
         
-        /* Cover Page */
         .cover-page {{
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
             color: white; min-height: 100vh; display: flex; flex-direction: column;
@@ -537,132 +328,62 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
         .cover-meta-item {{ text-align: left; }}
         .cover-meta-label {{ font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.6; margin-bottom: 5px; }}
         .cover-meta-value {{ font-size: 16px; font-weight: 600; }}
-        .cover-logo {{
-            width: 80px; height: 80px; background: white; border-radius: 20px;
-            display: flex; align-items: center; justify-content: center; margin-bottom: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }}
-        {logo_html}
-        .site-logo {{ width: 50px; height: 50px; border-radius: 10px; }}
         
-        /* Score Cards Section */
-        .scores-section {{
-            background: white; border-radius: 20px; padding: 40px; margin: 30px 0;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-        }}
-        .section-header {{
-            display: flex; align-items: center; gap: 15px; margin-bottom: 30px; padding-bottom: 20px;
-            border-bottom: 2px solid #f1f5f9;
-        }}
-        .section-icon {{
-            width: 48px; height: 48px; background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 12px; display: flex; align-items: center; justify-content: center;
-        }}
-        .section-icon svg {{ width: 24px; height: 24px; stroke: white; }}
+        .section {{ background: white; border-radius: 20px; padding: 40px; margin: 30px 0; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }}
+        .section-header {{ display: flex; align-items: center; gap: 15px; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #f1f5f9; }}
+        .section-icon {{ width: 48px; height: 48px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; }}
         .section-title {{ font-size: 24px; font-weight: 700; color: #0f172a; }}
         .section-subtitle {{ font-size: 14px; color: #64748b; margin-top: 4px; }}
         
-        .scores-grid {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-bottom: 30px; }}
-        .score-card {{
-            background: linear-gradient(135deg, #f8fafc, #f1f5f9); border-radius: 16px;
-            padding: 30px; text-align: center; border: 1px solid #e2e8f0;
-        }}
-        .score-card-title {{ font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: #64748b; margin-bottom: 20px; }}
-        .score-card img {{ max-width: 140px; margin: 0 auto; }}
+        .scores-grid {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }}
+        .score-card {{ background: linear-gradient(135deg, #f8fafc, #f1f5f9); border-radius: 16px; padding: 30px; text-align: center; border: 1px solid #e2e8f0; }}
+        .score-card-title {{ font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #64748b; margin-bottom: 15px; }}
+        .score-number {{ font-size: 64px; font-weight: 800; color: var(--primary); line-height: 1; }}
+        .score-label {{ font-size: 12px; color: #64748b; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; }}
         
-        .scores-summary {{
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;
-            background: #f8fafc; border-radius: 12px; padding: 25px;
-        }}
-        .summary-item {{ text-align: center; }}
-        .summary-value {{ font-size: 28px; font-weight: 800; color: var(--primary); }}
-        .summary-label {{ font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; margin-top: 5px; }}
-        
-        /* Metrics Grid */
-        .metrics-section {{ background: white; border-radius: 20px; padding: 40px; margin: 30px 0; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }}
         .metrics-grid {{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }}
-        .metric-card {{
-            background: linear-gradient(135deg, #fafafa, #f5f5f5); border-radius: 12px; padding: 25px; text-align: center;
-        }}
+        .metric-card {{ background: linear-gradient(135deg, #fafafa, #f5f5f5); border-radius: 12px; padding: 25px; text-align: center; }}
         .metric-value {{ font-size: 26px; font-weight: 800; color: #0f172a; margin-bottom: 5px; }}
         .metric-label {{ font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; }}
         
-        /* Checklist Section */
-        .checklist-section {{ background: white; border-radius: 20px; padding: 40px; margin: 30px 0; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }}
         .checklist-grid {{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }}
-        .check-item {{
-            display: flex; align-items: flex-start; gap: 15px; padding: 18px; border-radius: 12px;
-            background: #fafafa; transition: all 0.3s ease;
-        }}
-        .check-item:hover {{ transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }}
-        .check-icon {{
-            width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 14px; flex-shrink: 0;
-        }}
+        .check-item {{ display: flex; align-items: flex-start; gap: 15px; padding: 18px; border-radius: 12px; background: #fafafa; }}
+        .check-icon {{ width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }}
         .check-icon.pass {{ background: #dcfce7; color: var(--success); }}
         .check-icon.fail {{ background: #fee2e2; color: var(--danger); }}
-        .check-icon.warn {{ background: #fef3c7; color: var(--warning); }}
         .check-content {{ flex: 1; }}
         .check-label {{ font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 4px; }}
         .check-value {{ font-size: 12px; color: #64748b; }}
         
-        /* Charts Section */
-        .charts-section {{ background: white; border-radius: 20px; padding: 40px; margin: 30px 0; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }}
-        .charts-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }}
-        .chart-card {{ background: #f8fafc; border-radius: 16px; padding: 25px; }}
-        .chart-title {{ font-size: 16px; font-weight: 600; color: #1e293b; margin-bottom: 20px; text-align: center; }}
-        .chart-card img {{ width: 100%; border-radius: 10px; }}
-        
-        .comparison-chart {{ margin: 20px 0; text-align: center; }}
-        .comparison-chart img {{ max-width: 500px; }}
-        
-        /* AI Recommendations */
-        .ai-section {{ background: linear-gradient(135deg, #f5f3ff, #fdf2f8); border-radius: 20px; padding: 40px; margin: 30px 0; border-left: 5px solid var(--primary); }}
         .ai-grid {{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }}
-        .ai-card {{
-            background: white; border-radius: 12px; padding: 25px;
-            border-left: 4px solid var(--primary);
-        }}
+        .ai-card {{ background: linear-gradient(135deg, #f5f3ff, #fdf2f8); border-radius: 12px; padding: 25px; border-left: 4px solid var(--primary); }}
         .ai-card-title {{ font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 10px; }}
         .ai-card-text {{ font-size: 13px; color: #64748b; line-height: 1.7; }}
         
-        /* Keywords Table */
-        .keywords-section {{ background: white; border-radius: 20px; padding: 40px; margin: 30px 0; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }}
         .keywords-table {{ width: 100%; border-collapse: collapse; }}
-        .keywords-table th {{
-            background: #f8fafc; padding: 14px 20px; text-align: left;
-            font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #64748b;
-            border-bottom: 2px solid #e2e8f0;
-        }}
+        .keywords-table th {{ background: #f8fafc; padding: 14px 20px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; border-bottom: 2px solid #e2e8f0; }}
         .keywords-table td {{ padding: 14px 20px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }}
         .keywords-table tr:hover {{ background: #f8fafc; }}
         .position-badge {{ background: var(--primary); color: white; padding: 4px 12px; border-radius: 50px; font-size: 12px; font-weight: 600; }}
         
-        /* Footer */
-        .report-footer {{
-            text-align: center; padding: 40px; color: #64748b; font-size: 12px;
-            border-top: 2px solid #e2e8f0; margin-top: 30px;
-        }}
+        .summary-bar {{ display: flex; justify-content: center; gap: 30px; margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 12px; }}
+        .summary-item {{ text-align: center; }}
+        .summary-value {{ font-size: 32px; font-weight: 800; color: var(--primary); }}
+        .summary-label {{ font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; margin-top: 5px; }}
+        
+        .report-footer {{ text-align: center; padding: 40px; color: #64748b; font-size: 12px; border-top: 2px solid #e2e8f0; margin-top: 30px; }}
         .footer-brand {{ color: var(--primary); font-weight: 600; }}
         
-        @media print {{
-            body {{ background: white; }}
-            .cover-page {{ break-after: page; }}
-            .scores-section, .metrics-section, .checklist-section, .charts-section, .ai-section {{ break-inside: avoid; }}
-        }}
-        
-        {custom_css}
+        @media print {{ body {{ background: white; }} .cover-page {{ break-after: page; }} }}
     </style>
 </head>
 <body>
     <div class="report-wrapper">
-        <!-- Cover Page -->
         <div class="cover-page">
             <div class="cover-content">
-                {logo_html}
                 <div class="cover-badge">Technical SEO Audit</div>
                 <h1 class="cover-title">{t.get('title', 'Technical SEO Audit Report')}</h1>
-                <p class="cover-subtitle">{site_info.get('description', 'Comprehensive SEO analysis and recommendations')}</p>
+                <p class="cover-subtitle">Comprehensive SEO analysis and strategic recommendations</p>
                 <div class="cover-meta">
                     <div class="cover-meta-item">
                         <div class="cover-meta-label">{t.get('prepared_for', 'Prepared For')}</div>
@@ -684,12 +405,9 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
             </div>
         </div>
         
-        <!-- Scores Section -->
-        <div class="scores-section">
+        <div class="section">
             <div class="section-header">
-                <div class="section-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                </div>
+                <div class="section-icon">📊</div>
                 <div>
                     <h2 class="section-title">{t.get('scores', 'Performance Scores')}</h2>
                     <p class="section-subtitle">Performance metrics based on Google Lighthouse analysis</p>
@@ -698,59 +416,35 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
             <div class="scores-grid">
                 <div class="score-card">
                     <div class="score-card-title">{t.get('overall_score', 'Overall Score')}</div>
-                    <img src="data:image/png;base64,{overall_gauge}" alt="Overall Score">
+                    <div class="score-number" style="color: {get_score_color(avg_score)}">{avg_score}</div>
+                    <div class="score-label">{get_score_label(avg_score)}</div>
                 </div>
                 <div class="score-card">
                     <div class="score-card-title">{t.get('mobile', 'Mobile')}</div>
-                    <img src="data:image/png;base64,{mobile_gauge}" alt="Mobile Score">
+                    <div class="score-number" style="color: {get_score_color(mobile_score)}">{mobile_score}</div>
+                    <div class="score-label">{get_score_label(mobile_score)}</div>
                 </div>
                 <div class="score-card">
                     <div class="score-card-title">{t.get('desktop', 'Desktop')}</div>
-                    <img src="data:image/png;base64,{desktop_gauge}" alt="Desktop Score">
+                    <div class="score-number" style="color: {get_score_color(desktop_score)}">{desktop_score}</div>
+                    <div class="score-label">{get_score_label(desktop_score)}</div>
                 </div>
             </div>
-            <div class="scores-summary">
-                <div class="summary-item">
-                    <div class="summary-value">{mobile_score}</div>
-                    <div class="summary-label">Mobile Score</div>
-                </div>
-                <div class="summary-item">
-                    <div class="summary-value">{desktop_score}</div>
-                    <div class="summary-label">Desktop Score</div>
-                </div>
+            <div class="summary-bar">
                 <div class="summary-item">
                     <div class="summary-value">{passed_count}</div>
                     <div class="summary-label">{t.get('passed', 'Passed')}</div>
                 </div>
                 <div class="summary-item">
-                    <div class="summary-value">{issues}</div>
+                    <div class="summary-value">{issues_count}</div>
                     <div class="summary-label">{t.get('issue_found', 'Issues Found')}</div>
                 </div>
             </div>
         </div>
         
-        <!-- Score Comparison -->
-        <div class="charts-section">
+        <div class="section">
             <div class="section-header">
-                <div class="section-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-                </div>
-                <div>
-                    <h2 class="section-title">Mobile vs Desktop Comparison</h2>
-                    <p class="section-subtitle">Performance comparison across devices</p>
-                </div>
-            </div>
-            <div class="comparison-chart">
-                <img src="data:image/png;base64,{comparison_chart}" alt="Mobile vs Desktop Performance">
-            </div>
-        </div>
-        
-        <!-- Key Metrics -->
-        <div class="metrics-section">
-            <div class="section-header">
-                <div class="section-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
-                </div>
+                <div class="section-icon">📈</div>
                 <div>
                     <h2 class="section-title">Key Performance Metrics</h2>
                     <p class="section-subtitle">Critical indicators for SEO success</p>
@@ -770,36 +464,17 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
                     <div class="metric-label">{t.get('bounce_rate', 'Bounce Rate')}</div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-value">{traffic_data.get('avg_duration', 'N/A') if traffic_data else 'N/A'}</div>
-                    <div class="metric-label">{t.get('avg_duration', 'Avg. Duration')}</div>
-                </div>
-                <div class="metric-card">
                     <div class="metric-value">{onpage_data.get('word_count', 0)}</div>
                     <div class="metric-label">Words</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-value">{onpage_data.get('total_images', 0)}</div>
-                    <div class="metric-label">Images</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-value">{onpage_data.get('response_time', 0):.2f}s</div>
-                    <div class="metric-label">Load Time</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-value">{onpage_data.get('html_size_kb', 0):.0f}KB</div>
-                    <div class="metric-label">HTML Size</div>
                 </div>
             </div>
         </div>
         
-        <!-- On-Page SEO Checklist -->
-        <div class="checklist-section">
+        <div class="section">
             <div class="section-header">
-                <div class="section-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-                </div>
+                <div class="section-icon">✅</div>
                 <div>
-                    <h2 class="section-title">{t.get('onpage', 'On-Page SEO')}</h2>
+                    <h2 class="section-title">{t.get('onpage', 'On-Page SEO Analysis')}</h2>
                     <p class="section-subtitle">Technical SEO factors audit</p>
                 </div>
             </div>
@@ -821,36 +496,13 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
             </div>
         </div>'''
 
-    if monthly_chart or sources_chart:
-        html += '''
-        <div class="charts-section">
-            <div class="section-header">
-                <div class="section-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-                </div>
-                <div>
-                    <h2 class="section-title">''' + t.get('traffic', 'Traffic Analytics') + '''</h2>
-                    <p class="section-subtitle">Traffic analytics and user behavior</p>
-                </div>
-            </div>
-            <div class="charts-grid">'''
-        if monthly_chart:
-            html += f'<div class="chart-card"><div class="chart-title">Monthly Traffic Trend</div><img src="data:image/png;base64,{monthly_chart}" alt="Traffic Trend"></div>'
-        if sources_chart:
-            html += f'<div class="chart-card"><div class="chart-title">Traffic Sources Distribution</div><img src="data:image/png;base64,{sources_chart}" alt="Traffic Sources"></div>'
-        html += '''
-            </div>
-        </div>'''
-
     if ai_suggestions and len(ai_suggestions) > 0:
         html += f'''
-        <div class="ai-section">
+        <div class="section">
             <div class="section-header">
-                <div class="section-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1010 10H12V2zM2 12a10 10 0 0010 10"/></svg>
-                </div>
+                <div class="section-icon">🤖</div>
                 <div>
-                    <h2 class="section-title">{t.get('ai', 'AI Recommendations')}</h2>
+                    <h2 class="section-title">{t.get('ai', 'AI Strategic Recommendations')}</h2>
                     <p class="section-subtitle">Strategic recommendations powered by AI</p>
                 </div>
             </div>
@@ -863,39 +515,6 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
                 </div>'''
         html += '''
             </div>
-        </div>'''
-
-    if traffic_data and traffic_data.get('top_keywords'):
-        html += f'''
-        <div class="keywords-section">
-            <div class="section-header">
-                <div class="section-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                </div>
-                <div>
-                    <h2 class="section-title">{t.get('keywords', 'Top Keywords')}</h2>
-                    <p class="section-subtitle">Top performing organic keywords</p>
-                </div>
-            </div>
-            <table class="keywords-table">
-                <thead>
-                    <tr>
-                        <th>Keyword</th>
-                        <th>Monthly Visits</th>
-                        <th>Position</th>
-                    </tr>
-                </thead>
-                <tbody>'''
-        for kw in (traffic_data.get('top_keywords') or [])[:10]:
-            html += f'''
-                    <tr>
-                        <td>{kw.get('keyword', 'N/A')}</td>
-                        <td>{kw.get('visits', 0):,}</td>
-                        <td><span class="position-badge">#{kw.get('position', 0)}</span></td>
-                    </tr>'''
-        html += '''
-                </tbody>
-            </table>
         </div>'''
 
     if not white_label:
@@ -911,29 +530,6 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
 </html>'''
 
     return html.encode()
-
-def generate_html_report_single(url, onpage_data, speed_data=None, traffic_data=None, ai_suggestions=None,
-                                 agency_name="NexGenWebLab", client_name="Client", author_name="SEO Team",
-                                 logo_url="", custom_css="", primary_color="#6D28D9", secondary_color="#DB2777",
-                                 language="en", white_label=False):
-    if ai_suggestions is None:
-        ai_suggestions = []
-    return generate_advanced_html_report(
-        url=url,
-        onpage_data=onpage_data,
-        speed_data=speed_data or {},
-        traffic_data=traffic_data or {},
-        ai_suggestions=ai_suggestions,
-        agency_name=agency_name,
-        client_name=client_name,
-        author_name=author_name,
-        logo_base64=None,
-        custom_css=custom_css,
-        primary_color=primary_color,
-        secondary_color=secondary_color,
-        language=language,
-        white_label=white_label,
-    )
 
 def generate_html_report_bulk(reports_data, agency_name="NexGenWebLab", primary_color="#6D28D9", secondary_color="#DB2777"):
     combined_html = f'''<!DOCTYPE html>
