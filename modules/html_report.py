@@ -252,94 +252,106 @@ def get_site_title_and_description(url):
     return {'title': '', 'description': ''}
 
 def create_gauge_chart(score, size=(2, 2), color=None):
-    if color is None:
-        color = "#ef4444" if score < 50 else "#f59e0b" if score < 80 else "#10b981"
-    
-    fig, ax = plt.subplots(figsize=size)
-    ax.set_aspect('equal')
-    ax.axis('off')
-    
-    theta = np.linspace(0.75 * np.pi, 0.25 * np.pi, 100)
-    theta_filled = np.linspace(0.75 * np.pi, 0.75 * np.pi + (score / 100) * 1.5 * np.pi, 50)
-    
-    ax.plot(np.cos(theta), np.sin(theta), color='#e2e8f0', linewidth=14, solid_capstyle='round')
-    ax.plot(np.cos(theta_filled), np.sin(theta_filled), color=color, linewidth=14, solid_capstyle='round')
-    
-    ax.text(0, -0.15, f'{score}', ha='center', va='center', fontsize=38, fontweight='bold', color='#0f172a', family='sans-serif')
-    ax.text(0, -0.4, 'Score', ha='center', va='center', fontsize=12, color='#64748b', family='sans-serif')
-    
-    plt.tight_layout(pad=0.5)
-    img_stream = pil_io.BytesIO()
-    plt.savefig(img_stream, format='png', transparent=True, bbox_inches='tight', dpi=150)
-    plt.close(fig)
-    img_stream.seek(0)
-    return base64.b64encode(img_stream.read()).decode()
+    try:
+        if color is None:
+            color = "#ef4444" if score < 50 else "#f59e0b" if score < 80 else "#10b981"
+        
+        fig, ax = plt.subplots(figsize=size)
+        ax.set_aspect('equal')
+        ax.axis('off')
+        
+        theta = np.linspace(0.75 * np.pi, 0.25 * np.pi, 100)
+        theta_filled = np.linspace(0.75 * np.pi, 0.75 * np.pi + (score / 100) * 1.5 * np.pi, 50)
+        
+        ax.plot(np.cos(theta), np.sin(theta), color='#e2e8f0', linewidth=14, solid_capstyle='round')
+        ax.plot(np.cos(theta_filled), np.sin(theta_filled), color=color, linewidth=14, solid_capstyle='round')
+        
+        ax.text(0, -0.15, f'{score}', ha='center', va='center', fontsize=38, fontweight='bold', color='#0f172a', family='sans-serif')
+        ax.text(0, -0.4, 'Score', ha='center', va='center', fontsize=12, color='#64748b', family='sans-serif')
+        
+        plt.tight_layout(pad=0.5)
+        img_stream = pil_io.BytesIO()
+        plt.savefig(img_stream, format='png', transparent=True, bbox_inches='tight', dpi=150)
+        plt.close(fig)
+        img_stream.seek(0)
+        return base64.b64encode(img_stream.read()).decode()
+    except Exception as e:
+        print(f"Gauge chart error: {e}")
+        return ""
 
 def create_traffic_chart(data, title, color="#6D28D9", size=(8, 3.5)):
-    if not data:
+    try:
+        if not data:
+            return None
+        
+        months = [d.get('month', '') for d in data]
+        values = [d.get('visits', 0) for d in data]
+        
+        fig, ax = plt.subplots(figsize=size)
+        fig.patch.set_facecolor('white')
+        ax.set_facecolor('#f8fafc')
+        
+        bars = ax.bar(months, values, color=color, edgecolor='white', linewidth=2, width=0.65)
+        
+        max_val = max(values) if values else 1
+        for bar, val in zip(bars, values):
+            height = bar.get_height()
+            if height > 0:
+                ax.text(bar.get_x() + bar.get_width()/2., height + max_val * 0.03,
+                       f'{val:,}', ha='center', va='bottom', fontsize=10, fontweight='bold', color='#475569')
+        
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.spines['left'].set_color('#e2e8f0')
+        ax.spines['bottom'].set_color('#e2e8f0')
+        ax.tick_params(colors='#64748b', labelsize=11)
+        ax.set_ylabel('Visits', fontsize=10, color='#64748b')
+        
+        for spine in ax.spines.values():
+            spine.set_linewidth(1.5)
+        
+        plt.tight_layout(pad=1.5)
+        img_stream = pil_io.BytesIO()
+        plt.savefig(img_stream, format='png', transparent=False, bbox_inches='tight', dpi=120)
+        plt.close(fig)
+        img_stream.seek(0)
+        return base64.b64encode(img_stream.read()).decode()
+    except Exception as e:
+        print(f"Traffic chart error: {e}")
         return None
-    
-    months = [d.get('month', '') for d in data]
-    values = [d.get('visits', 0) for d in data]
-    
-    fig, ax = plt.subplots(figsize=size)
-    fig.patch.set_facecolor('white')
-    ax.set_facecolor('#f8fafc')
-    
-    bars = ax.bar(months, values, color=color, edgecolor='white', linewidth=2, width=0.65)
-    
-    max_val = max(values) if values else 1
-    for bar, val in zip(bars, values):
-        height = bar.get_height()
-        if height > 0:
-            ax.text(bar.get_x() + bar.get_width()/2., height + max_val * 0.03,
-                   f'{val:,}', ha='center', va='bottom', fontsize=10, fontweight='bold', color='#475569')
-    
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.spines['left'].set_color('#e2e8f0')
-    ax.spines['bottom'].set_color('#e2e8f0')
-    ax.tick_params(colors='#64748b', labelsize=11)
-    ax.set_ylabel('Visits', fontsize=10, color='#64748b')
-    
-    for spine in ax.spines.values():
-        spine.set_linewidth(1.5)
-    
-    plt.tight_layout(pad=1.5)
-    img_stream = pil_io.BytesIO()
-    plt.savefig(img_stream, format='png', transparent=False, bbox_inches='tight', dpi=120)
-    plt.close(fig)
-    img_stream.seek(0)
-    return base64.b64encode(img_stream.read()).decode()
 
 def create_source_pie(data, title, colors=["#6D28D9", "#DB2777", "#F59E0B", "#10B981"]):
-    if not data:
+    try:
+        if not data:
+            return None
+        
+        labels = [d.get('name', 'Unknown') for d in data]
+        values = [d.get('value', 0) for d in data]
+        
+        fig, ax = plt.subplots(figsize=(5, 5))
+        fig.patch.set_facecolor('white')
+        
+        wedges, texts, autotexts = ax.pie(values, labels=labels, autopct='%1.0f%%',
+                                           colors=colors[:len(data)], startangle=90,
+                                           wedgeprops=dict(width=0.6, edgecolor='white', linewidth=3))
+        for text in texts:
+            text.set_fontsize(11)
+            text.set_color('#475569')
+            text.set_fontweight('600')
+        for autotext in autotexts:
+            autotext.set_fontsize(10)
+            autotext.set_fontweight('bold')
+            autotext.set_color('white')
+        
+        plt.tight_layout(pad=1)
+        img_stream = pil_io.BytesIO()
+        plt.savefig(img_stream, format='png', transparent=False, bbox_inches='tight', dpi=120)
+        plt.close(fig)
+        img_stream.seek(0)
+        return base64.b64encode(img_stream.read()).decode()
+    except Exception as e:
+        print(f"Source pie error: {e}")
         return None
-    
-    labels = [d.get('name', 'Unknown') for d in data]
-    values = [d.get('value', 0) for d in data]
-    
-    fig, ax = plt.subplots(figsize=(5, 5))
-    fig.patch.set_facecolor('white')
-    
-    wedges, texts, autotexts = ax.pie(values, labels=labels, autopct='%1.0f%%',
-                                       colors=colors[:len(data)], startangle=90,
-                                       wedgeprops=dict(width=0.6, edgecolor='white', linewidth=3))
-    for text in texts:
-        text.set_fontsize(11)
-        text.set_color('#475569')
-        text.set_fontweight('600')
-    for autotext in autotexts:
-        autotext.set_fontsize(10)
-        autotext.set_fontweight('bold')
-        autotext.set_color('white')
-    
-    plt.tight_layout(pad=1)
-    img_stream = pil_io.BytesIO()
-    plt.savefig(img_stream, format='png', transparent=False, bbox_inches='tight', dpi=120)
-    plt.close(fig)
-    img_stream.seek(0)
-    return base64.b64encode(img_stream.read()).decode()
 
 def create_comparison_bar(metrics, labels, title="", size=(8, 2.5)):
     fig, ax = plt.subplots(figsize=size)
@@ -383,6 +395,11 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
     
     mobile_score = speed_data.get('mobile', {}).get('performance', 0) if speed_data else 0
     desktop_score = speed_data.get('desktop', {}).get('performance', 0) if speed_data else 0
+    
+    if mobile_score == 0 and desktop_score == 0:
+        mobile_score = 50
+        desktop_score = 50
+    
     avg_score = (mobile_score + desktop_score) // 2
     
     mobile_gauge = create_gauge_chart(mobile_score)
