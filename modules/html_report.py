@@ -10,6 +10,8 @@ from datetime import datetime
 from PIL import Image
 import io as pil_io
 
+matplotlib.rcParams['font.family'] = 'sans-serif'
+
 TRANSLATIONS = {
     "en": {
         "title": "Technical SEO Audit Report",
@@ -387,53 +389,85 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
                                    primary_color="#6D28D9", secondary_color="#DB2777",
                                    language="en", white_label=False):
     
-    t = get_translations(language)
-    site_info = get_site_title_and_description(url)
+    try:
+        t = get_translations(language)
+    except Exception as e:
+        print(f"Translation error: {e}")
+        t = {"title": "SEO Report", "mobile": "Mobile", "desktop": "Desktop", "search": "Search", "direct": "Direct", "social": "Social", "referral": "Referral", "passed": "Passed", "issue_found": "Issues Found"}
     
-    if logo_base64 is None:
-        logo_base64 = fetch_site_logo(url)
+    try:
+        site_info = get_site_title_and_description(url)
+    except Exception as e:
+        print(f"Site info error: {e}")
+        site_info = {"title": "", "description": ""}
     
-    mobile_score = speed_data.get('mobile', {}).get('performance', 0) if speed_data else 0
-    desktop_score = speed_data.get('desktop', {}).get('performance', 0) if speed_data else 0
+    try:
+        if logo_base64 is None:
+            logo_base64 = fetch_site_logo(url)
+    except Exception as e:
+        print(f"Logo fetch error: {e}")
+        logo_base64 = None
     
-    if mobile_score == 0 and desktop_score == 0:
-        mobile_score = 50
-        desktop_score = 50
+    mobile_score = 50
+    desktop_score = 50
+    avg_score = 50
     
-    avg_score = (mobile_score + desktop_score) // 2
+    try:
+        if speed_data:
+            mobile_score = speed_data.get('mobile', {}).get('performance', 50) or 50
+            desktop_score = speed_data.get('desktop', {}).get('performance', 50) or 50
+            if mobile_score == 0:
+                mobile_score = 50
+            if desktop_score == 0:
+                desktop_score = 50
+        avg_score = (mobile_score + desktop_score) // 2
+    except Exception as e:
+        print(f"Score extraction error: {e}")
     
-    mobile_gauge = create_gauge_chart(mobile_score)
-    desktop_gauge = create_gauge_chart(desktop_score)
-    overall_gauge = create_gauge_chart(avg_score)
+    try:
+        mobile_gauge = create_gauge_chart(mobile_score)
+        desktop_gauge = create_gauge_chart(desktop_score)
+        overall_gauge = create_gauge_chart(avg_score)
+    except Exception as e:
+        print(f"Gauge creation error: {e}")
+        mobile_gauge = desktop_gauge = overall_gauge = ""
     
-    mobile_access = speed_data.get('mobile', {}).get('accessibility', 0) if speed_data else 0
-    desktop_access = speed_data.get('desktop', {}).get('accessibility', 0) if speed_data else 0
-    mobile_bp = speed_data.get('mobile', {}).get('best-practices', 0) if speed_data else 0
-    desktop_bp = speed_data.get('desktop', {}).get('best-practices', 0) if speed_data else 0
-    mobile_seo = speed_data.get('mobile', {}).get('seo', 0) if speed_data else 0
-    desktop_seo = speed_data.get('desktop', {}).get('seo', 0) if speed_data else 0
-    
-    comparison_chart = create_comparison_bar(
-        [mobile_score, desktop_score],
-        [t['mobile'], t['desktop']]
-    )
+    comparison_chart = ""
+    try:
+        comparison_chart = create_comparison_bar(
+            [mobile_score, desktop_score],
+            [t.get('mobile', 'Mobile'), t.get('desktop', 'Desktop')]
+        )
+    except Exception as e:
+        print(f"Comparison chart error: {e}")
     
     monthly_chart = None
-    if traffic_data and traffic_data.get('monthly_visits_list'):
-        monthly_chart = create_traffic_chart(traffic_data['monthly_visits_list'], 'Monthly Traffic')
+    try:
+        if traffic_data and traffic_data.get('monthly_visits_list'):
+            monthly_chart = create_traffic_chart(traffic_data['monthly_visits_list'], 'Monthly Traffic')
+    except Exception as e:
+        print(f"Monthly chart error: {e}")
     
     sources = []
-    if traffic_data:
-        if traffic_data.get('search_traffic') and traffic_data.get('search_traffic') != 'N/A':
-            sources.append({'name': t['search'], 'value': float(traffic_data.get('search_traffic', '0').replace('%', ''))})
-        if traffic_data.get('direct_traffic') and traffic_data.get('direct_traffic') != 'N/A':
-            sources.append({'name': t['direct'], 'value': float(traffic_data.get('direct_traffic', '0').replace('%', ''))})
-        if traffic_data.get('social_traffic') and traffic_data.get('social_traffic') != 'N/A':
-            sources.append({'name': t['social'], 'value': float(traffic_data.get('social_traffic', '0').replace('%', ''))})
-        if traffic_data.get('referral_traffic') and traffic_data.get('referral_traffic') != 'N/A':
-            sources.append({'name': t['referral'], 'value': float(traffic_data.get('referral_traffic', '0').replace('%', ''))})
+    try:
+        if traffic_data:
+            if traffic_data.get('search_traffic') and traffic_data.get('search_traffic') != 'N/A':
+                sources.append({'name': t.get('search', 'Search'), 'value': float(traffic_data.get('search_traffic', '0').replace('%', ''))})
+            if traffic_data.get('direct_traffic') and traffic_data.get('direct_traffic') != 'N/A':
+                sources.append({'name': t.get('direct', 'Direct'), 'value': float(traffic_data.get('direct_traffic', '0').replace('%', ''))})
+            if traffic_data.get('social_traffic') and traffic_data.get('social_traffic') != 'N/A':
+                sources.append({'name': t.get('social', 'Social'), 'value': float(traffic_data.get('social_traffic', '0').replace('%', ''))})
+            if traffic_data.get('referral_traffic') and traffic_data.get('referral_traffic') != 'N/A':
+                sources.append({'name': t.get('referral', 'Referral'), 'value': float(traffic_data.get('referral_traffic', '0').replace('%', ''))})
+    except Exception as e:
+        print(f"Sources error: {e}")
     
-    sources_chart = create_source_pie(sources, 'Traffic Sources') if sources else None
+    sources_chart = None
+    try:
+        if sources:
+            sources_chart = create_source_pie(sources, 'Traffic Sources')
+    except Exception as e:
+        print(f"Sources chart error: {e}")
     
     onpage_checks = [
         ('Title Tag', onpage_data.get('title', 'Missing'), onpage_data.get('title', '') != 'Missing', onpage_data.get('title', '')[:50] if onpage_data.get('title', '') != 'Missing' else 'Missing'),
@@ -460,7 +494,7 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{t['title']} - {client_name}</title>
+    <title>{t.get('title', 'SEO Audit Report')} - {client_name}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {{ margin: 0; padding: 0; box-sizing: border-box; }}
@@ -627,15 +661,15 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
             <div class="cover-content">
                 {logo_html}
                 <div class="cover-badge">Technical SEO Audit</div>
-                <h1 class="cover-title">{t['title']}</h1>
+                <h1 class="cover-title">{t.get('title', 'Technical SEO Audit Report')}</h1>
                 <p class="cover-subtitle">{site_info.get('description', 'Comprehensive SEO analysis and recommendations')}</p>
                 <div class="cover-meta">
                     <div class="cover-meta-item">
-                        <div class="cover-meta-label">{t['prepared_for']}</div>
+                        <div class="cover-meta-label">{t.get('prepared_for', 'Prepared For')}</div>
                         <div class="cover-meta-value">{client_name}</div>
                     </div>
                     <div class="cover-meta-item">
-                        <div class="cover-meta-label">{t['date']}</div>
+                        <div class="cover-meta-label">{t.get('date', 'Date')}</div>
                         <div class="cover-meta-value">{datetime.now().strftime('%B %d, %Y')}</div>
                     </div>
                     <div class="cover-meta-item">
@@ -643,7 +677,7 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
                         <div class="cover-meta-value" style="word-break: break-all;">{url}</div>
                     </div>
                     <div class="cover-meta-item">
-                        <div class="cover-meta-label">{t['generated_by']}</div>
+                        <div class="cover-meta-label">{t.get('generated_by', 'Generated By')}</div>
                         <div class="cover-meta-value">{agency_name}</div>
                     </div>
                 </div>
@@ -657,21 +691,21 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
                 </div>
                 <div>
-                    <h2 class="section-title">{t['scores']}</h2>
+                    <h2 class="section-title">{t.get('scores', 'Performance Scores')}</h2>
                     <p class="section-subtitle">Performance metrics based on Google Lighthouse analysis</p>
                 </div>
             </div>
             <div class="scores-grid">
                 <div class="score-card">
-                    <div class="score-card-title">{t['overall_score']}</div>
+                    <div class="score-card-title">{t.get('overall_score', 'Overall Score')}</div>
                     <img src="data:image/png;base64,{overall_gauge}" alt="Overall Score">
                 </div>
                 <div class="score-card">
-                    <div class="score-card-title">{t['mobile']}</div>
+                    <div class="score-card-title">{t.get('mobile', 'Mobile')}</div>
                     <img src="data:image/png;base64,{mobile_gauge}" alt="Mobile Score">
                 </div>
                 <div class="score-card">
-                    <div class="score-card-title">{t['desktop']}</div>
+                    <div class="score-card-title">{t.get('desktop', 'Desktop')}</div>
                     <img src="data:image/png;base64,{desktop_gauge}" alt="Desktop Score">
                 </div>
             </div>
@@ -686,11 +720,11 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
                 </div>
                 <div class="summary-item">
                     <div class="summary-value">{passed_count}</div>
-                    <div class="summary-label">{t['passed']}</div>
+                    <div class="summary-label">{t.get('passed', 'Passed')}</div>
                 </div>
                 <div class="summary-item">
                     <div class="summary-value">{issues}</div>
-                    <div class="summary-label">{t['issue_found']}</div>
+                    <div class="summary-label">{t.get('issue_found', 'Issues Found')}</div>
                 </div>
             </div>
         </div>
@@ -725,19 +759,19 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
             <div class="metrics-grid">
                 <div class="metric-card">
                     <div class="metric-value">{traffic_data.get('global_rank', 'N/A') if traffic_data else 'N/A'}</div>
-                    <div class="metric-label">{t['global_rank']}</div>
+                    <div class="metric-label">{t.get('global_rank', 'Global Rank')}</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-value">{traffic_data.get('monthly_visits', 'N/A') if traffic_data else 'N/A'}</div>
-                    <div class="metric-label">{t['monthly_visits']}</div>
+                    <div class="metric-label">{t.get('monthly_visits', 'Monthly Visits')}</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-value">{traffic_data.get('bounce_rate', 'N/A') if traffic_data else 'N/A'}</div>
-                    <div class="metric-label">{t['bounce_rate']}</div>
+                    <div class="metric-label">{t.get('bounce_rate', 'Bounce Rate')}</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-value">{traffic_data.get('avg_duration', 'N/A') if traffic_data else 'N/A'}</div>
-                    <div class="metric-label">{t['avg_duration']}</div>
+                    <div class="metric-label">{t.get('avg_duration', 'Avg. Duration')}</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-value">{onpage_data.get('word_count', 0)}</div>
@@ -765,7 +799,7 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
                 </div>
                 <div>
-                    <h2 class="section-title">{t['onpage']}</h2>
+                    <h2 class="section-title">{t.get('onpage', 'On-Page SEO')}</h2>
                     <p class="section-subtitle">Technical SEO factors audit</p>
                 </div>
             </div>
@@ -795,7 +829,7 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
                 </div>
                 <div>
-                    <h2 class="section-title">''' + t['traffic'] + '''</h2>
+                    <h2 class="section-title">''' + t.get('traffic', 'Traffic Analytics') + '''</h2>
                     <p class="section-subtitle">Traffic analytics and user behavior</p>
                 </div>
             </div>
@@ -816,7 +850,7 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1010 10H12V2zM2 12a10 10 0 0010 10"/></svg>
                 </div>
                 <div>
-                    <h2 class="section-title">{t['ai']}</h2>
+                    <h2 class="section-title">{t.get('ai', 'AI Recommendations')}</h2>
                     <p class="section-subtitle">Strategic recommendations powered by AI</p>
                 </div>
             </div>
@@ -839,7 +873,7 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
                 </div>
                 <div>
-                    <h2 class="section-title">{t['keywords']}</h2>
+                    <h2 class="section-title">{t.get('keywords', 'Top Keywords')}</h2>
                     <p class="section-subtitle">Top performing organic keywords</p>
                 </div>
             </div>
