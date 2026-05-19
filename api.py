@@ -138,34 +138,39 @@ def export_html_report(req: HTMLReportRequest):
 
 @app.post("/api/export/html/preview")
 def preview_html_report(req: HTMLReportRequest):
-    logo_base64 = None
-    if req.logo_url:
-        try:
-            import base64
-            import requests
-            resp = requests.get(req.logo_url, timeout=10)
-            if resp.ok:
-                logo_base64 = base64.b64encode(resp.content).decode()
-        except:
-            pass
-    
-    html_bytes = generate_advanced_html_report(
-        url=req.url,
-        onpage_data=req.onpage_data,
-        speed_data=req.speed_data or {},
-        traffic_data=req.traffic_data or {},
-        ai_suggestions=req.ai_suggestions or [],
-        agency_name=req.agency_name,
-        client_name=req.client_name,
-        author_name=req.author_name,
-        logo_base64=logo_base64,
-        custom_css=req.custom_css or "",
-        primary_color=req.primary_color,
-        secondary_color=req.secondary_color,
-        language=req.language,
-        white_label=req.white_label,
-    )
-    return HTMLResponse(content=html_bytes)
+    try:
+        logo_base64 = None
+        if req.logo_url:
+            try:
+                import base64
+                import requests as req_lib
+                resp = req_lib.get(req.logo_url, timeout=10)
+                if resp.ok:
+                    logo_base64 = base64.b64encode(resp.content).decode()
+            except Exception as e:
+                print(f"Logo fetch error: {e}")
+        
+        html_bytes = generate_advanced_html_report(
+            url=req.url,
+            onpage_data=req.onpage_data,
+            speed_data=req.speed_data or {},
+            traffic_data=req.traffic_data or {},
+            ai_suggestions=req.ai_suggestions or [],
+            agency_name=req.agency_name,
+            client_name=req.client_name,
+            author_name=req.author_name,
+            logo_base64=logo_base64,
+            custom_css=req.custom_css or "",
+            primary_color=req.primary_color,
+            secondary_color=req.secondary_color,
+            language=req.language,
+            white_label=req.white_label,
+        )
+        return HTMLResponse(content=html_bytes)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return HTMLResponse(content=f"<html><body><h1>Error generating report</h1><pre>{str(e)}</pre></body></html>", status_code=500)
 
 @app.post("/api/export/bulk/html")
 def export_bulk_html_report(req: BulkReportRequest):
