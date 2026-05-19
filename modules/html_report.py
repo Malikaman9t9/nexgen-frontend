@@ -495,6 +495,96 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
     html += '''
             </div>
         </div>'''
+    
+    # Traffic Sources Section
+    if traffic_data and any([
+        traffic_data.get('search_traffic', 'N/A') != 'N/A',
+        traffic_data.get('direct_traffic', 'N/A') != 'N/A',
+        traffic_data.get('social_traffic', 'N/A') != 'N/A',
+        traffic_data.get('referral_traffic', 'N/A') != 'N/A'
+    ]):
+        source_items = [
+            ('Organic Search', traffic_data.get('search_traffic', 'N/A')),
+            ('Direct', traffic_data.get('direct_traffic', 'N/A')),
+            ('Social', traffic_data.get('social_traffic', 'N/A')),
+            ('Referral', traffic_data.get('referral_traffic', 'N/A')),
+            ('Email', traffic_data.get('email_traffic', 'N/A')),
+        ]
+        html += f'''
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon">🌐</div>
+                <div>
+                    <h2 class="section-title">{t.get('traffic', 'Traffic Sources')}</h2>
+                    <p class="section-subtitle">Off-page SEO and traffic distribution</p>
+                </div>
+            </div>
+            <div class="metrics-grid">'''
+        for label, value in source_items:
+            if value and value != 'N/A':
+                html += f'''
+                <div class="metric-card">
+                    <div class="metric-value" style="color: var(--primary);">{value}</div>
+                    <div class="metric-label">{label}</div>
+                </div>'''
+        html += '''
+            </div>
+        </div>'''
+    
+    # Top Keywords Section
+    if traffic_data and traffic_data.get('top_keywords') and len(traffic_data.get('top_keywords', [])) > 0:
+        html += f'''
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon">🔑</div>
+                <div>
+                    <h2 class="section-title">{t.get('keywords', 'Top Organic Keywords')}</h2>
+                    <p class="section-subtitle">High-performing keywords driving traffic</p>
+                </div>
+            </div>
+            <table class="keywords-table">
+                <thead>
+                    <tr>
+                        <th>Keyword</th>
+                        <th>Monthly Visits</th>
+                        <th>Position</th>
+                    </tr>
+                </thead>
+                <tbody>'''
+        for kw in traffic_data.get('top_keywords', [])[:10]:
+            html += f'''
+                    <tr>
+                        <td>{kw.get('keyword', 'N/A')}</td>
+                        <td>{kw.get('visits', 0):,}</td>
+                        <td><span class="position-badge">#{kw.get('position', 0)}</span></td>
+                    </tr>'''
+        html += '''
+                </tbody>
+            </table>
+        </div>'''
+    
+    # Top Countries Section
+    if traffic_data and traffic_data.get('top_countries') and len(traffic_data.get('top_countries', [])) > 0:
+        html += f'''
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon">🌍</div>
+                <div>
+                    <h2 class="section-title">Top Countries</h2>
+                    <p class="section-subtitle">Geographic distribution of visitors</p>
+                </div>
+            </div>
+            <div class="countries-grid">'''
+        for country in traffic_data.get('top_countries', [])[:5]:
+            html += f'''
+                <div class="country-item">
+                    <span class="country-name">{country.get('country', 'N/A')}</span>
+                    <span class="country-visits">{country.get('visits', 0):,}</span>
+                    <span class="country-share">{country.get('share', '0%')}</span>
+                </div>'''
+        html += '''
+            </div>
+        </div>'''
 
     if ai_suggestions and len(ai_suggestions) > 0:
         html += f'''

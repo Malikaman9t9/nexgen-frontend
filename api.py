@@ -49,6 +49,7 @@ class ExportRequest(BaseModel):
     url: str
     onpage_data: dict
     speed_data: dict = {}
+    traffic_data: dict = {}
     ai_suggestions: list = []
     agency_name: str = "NexGenWebLab Pro"
     client_name: str = "Client"
@@ -105,6 +106,7 @@ def export_report(req: ExportRequest):
         url=req.url,
         onpage_data=req.onpage_data,
         speed_data=req.speed_data,
+        traffic_data=req.traffic_data,
         ai_suggestions=req.ai_suggestions,
         agency_name=req.agency_name,
         client_name=req.client_name,
