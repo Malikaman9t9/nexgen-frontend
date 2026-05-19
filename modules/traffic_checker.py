@@ -62,14 +62,16 @@ def get_traffic_data(url, api_key):
         monthly_data = traffic.get("Visits") or {}
         monthly_visits_list = []
         if isinstance(monthly_data, dict) and len(monthly_data) > 0:
+            print(f"[+] Found monthly data with {len(monthly_data)} entries: {list(monthly_data.keys())}")
             months_map = {"01": "Jan", "02": "Feb", "03": "Mar", "04": "Apr", "05": "May", "06": "Jun", "07": "Jul", "08": "Aug", "09": "Sep", "10": "Oct", "11": "Nov", "12": "Dec"}
             for date_str, visits in monthly_data.items():
                 try:
                     month_part = date_str[5:7] if len(date_str) >= 7 else "01"
                     month_label = months_map.get(month_part, month_part)
+                    visits_int = int(visits) if visits else 0
                     monthly_visits_list.append({
                         "month": month_label,
-                        "visits": int(visits) if visits else 0
+                        "visits": visits_int
                     })
                 except Exception as e:
                     print(f"Error parsing date {date_str}: {e}")
@@ -77,10 +79,14 @@ def get_traffic_data(url, api_key):
                 monthly_visits_list = sorted(monthly_visits_list, key=lambda x: x.get("month", ""))[-6:]
             elif monthly_visits_list:
                 monthly_visits_list = monthly_visits_list[:1]
+            print(f"[+] Processed monthly visits: {monthly_visits_list}")
+        else:
+            print(f"[-] No monthly data found. traffic.get('Visits') = {traffic.get('Visits')}, type = {type(monthly_data)}")
 
         top_countries = []
         country_shares = raw.get("Traffic", {}).get("TopCountryShares") or {}
-        if isinstance(country_shares, dict):
+        print(f"[+] Country shares: {country_shares}")
+        if isinstance(country_shares, dict) and len(country_shares) > 0:
             country_names = {"US": "United States", "GB": "United Kingdom", "DE": "Germany", "FR": "France", "IN": "India", "JP": "Japan", "CN": "China", "BR": "Brazil", "CA": "Canada", "AU": "Australia", "ES": "Spain", "IT": "Italy", "MX": "Mexico", "NL": "Netherlands", "RU": "Russia", "KR": "South Korea", "SE": "Sweden"}
             for code, share in list(country_shares.items())[:5]:
                 top_countries.append({
@@ -99,15 +105,20 @@ def get_traffic_data(url, api_key):
                     try:
                         kw_name = kw.get("Name", "Unknown")
                         kw_volume = kw.get("Volume", 0)
-                        if isinstance(kw_volume, (int, float)):
-                            top_keywords.append({
-                                "keyword": kw_name,
-                                "visits": int(kw_volume),
-                                "position": rank
-                            })
-                            rank += 1
-                    except:
-                        pass
+                        if kw_volume is None:
+                            volume_int = 0
+                        elif isinstance(kw_volume, (int, float)):
+                            volume_int = int(kw_volume)
+                        else:
+                            volume_int = int(str(kw_volume))
+                        top_keywords.append({
+                            "keyword": kw_name,
+                            "visits": volume_int,
+                            "position": rank
+                        })
+                        rank += 1
+                    except Exception as e:
+                        print(f"Error parsing keyword: {e}")
 
         def safe_pct(val):
             try:
