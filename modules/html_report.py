@@ -470,8 +470,8 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
         print(f"Sources chart error: {e}")
     
     onpage_checks = [
-        ('Title Tag', onpage_data.get('title', 'Missing'), onpage_data.get('title', '') != 'Missing', onpage_data.get('title', '')[:50] if onpage_data.get('title', '') != 'Missing' else 'Missing'),
-        ('Meta Description', onpage_data.get('description', 'Missing'), onpage_data.get('description', '') != 'Missing', onpage_data.get('description', '')[:80] if onpage_data.get('description', '') != 'Missing' else 'Missing'),
+        ('Title Tag', 'Missing', False, onpage_data.get('title', 'Missing')[:50] if onpage_data.get('title', 'Missing') != 'Missing' else 'Missing'),
+        ('Meta Description', 'Missing', False, onpage_data.get('description', 'Missing')[:80] if onpage_data.get('description', 'Missing') != 'Missing' else 'Missing'),
         ('H1 Headings', f"{len(onpage_data.get('h1', []))} found", len(onpage_data.get('h1', [])) > 0, ', '.join(onpage_data.get('h1', [])[:2])[:60]),
         ('Word Count', f"{onpage_data.get('word_count', 0)} words", onpage_data.get('word_count', 0) >= 300, str(onpage_data.get('word_count', 0))),
         ('HTTPS/SSL', onpage_data.get('is_https', 'No'), onpage_data.get('is_https', '') == 'Yes', 'Secure' if onpage_data.get('is_https', '') == 'Yes' else 'Not Secure'),
