@@ -142,11 +142,11 @@ def preview_html_report(req: HTMLReportRequest):
         logo_base64 = None
         if req.logo_url:
             try:
-                import base64
+                import base64 as b64
                 import requests as req_lib
                 resp = req_lib.get(req.logo_url, timeout=10)
                 if resp.ok:
-                    logo_base64 = base64.b64encode(resp.content).decode()
+                    logo_base64 = b64.b64encode(resp.content).decode()
             except Exception as e:
                 print(f"Logo fetch error: {e}")
         
@@ -168,9 +168,13 @@ def preview_html_report(req: HTMLReportRequest):
         )
         return HTMLResponse(content=html_bytes)
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return HTMLResponse(content=f"<html><body><h1>Error generating report</h1><pre>{str(e)}</pre></body></html>", status_code=500)
+        error_msg = str(e)
+        try:
+            import traceback
+            error_msg += "\n" + traceback.format_exc()
+        except:
+            pass
+        return HTMLResponse(content=f"<html><body><h1>Error generating report</h1><p>{error_msg[:500]}</p></body></html>", status_code=500)
 
 @app.post("/api/export/bulk/html")
 def export_bulk_html_report(req: BulkReportRequest):
