@@ -382,24 +382,18 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
         .report-footer {{ text-align: center; padding: 40px; color: #64748b; font-size: 12px; border-top: 2px solid #e2e8f0; margin-top: 30px; }}
         .footer-brand {{ color: var(--primary); font-weight: 600; }}
         
-        .traffic-sources-section { margin: 30px 0; }
-        .traffic-sources-wrapper { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-        .traffic-sources-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid #f1f5f9; }
-        .traffic-sources-icon { width: 48px; height: 48px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; }
-        .traffic-sources-title-group h2 { font-size: 24px; font-weight: 700; color: #0f172a; margin: 0; }
-        .traffic-sources-title-group p { font-size: 14px; color: #64748b; margin: 4px 0 0 0; }
-        .traffic-sources-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; }
+        .traffic-sources-section {{ margin: 30px 0; }}
+        .traffic-sources-wrapper {{ background: white; border-radius: 20px; padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }}
+        .traffic-sources-header {{ display: flex; align-items: center; gap: 15px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid #f1f5f9; }}
+        .traffic-sources-icon {{ width: 48px; height: 48px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; }}
+        .traffic-sources-title-group h2 {{ font-size: 24px; font-weight: 700; color: #0f172a; margin: 0; }}
+        .traffic-sources-title-group p {{ font-size: 14px; color: #64748b; margin: 4px 0 0 0; }}
+.traffic-sources-grid {{ display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; }}
         .source-card {{ background: linear-gradient(135deg, #f5f3ff, #fdf2f8); border-radius: 12px; padding: 25px; text-align: center; border: 1px solid #e2e8f0; }}
         .source-value {{ font-size: 28px; font-weight: 800; color: var(--primary); margin-bottom: 5px; }}
         .source-label {{ font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; }}
         
-        .countries-section { margin: 30px 0; }
-        .countries-wrapper { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-        .countries-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid #f1f5f9; }
-        .countries-icon { width: 48px; height: 48px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; }
-        .countries-title-group h2 { font-size: 24px; font-weight: 700; color: #0f172a; margin: 0; }
-        .countries-title-group p { font-size: 14px; color: #64748b; margin: 4px 0 0 0; }
-        .countries-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+        .countries-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }}
         .country-item {{ display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 15px 20px; border-radius: 12px; }}
         .country-name {{ font-weight: 600; color: #0f172a; }}
         .country-visits {{ font-weight: 700; color: var(--primary); }}
