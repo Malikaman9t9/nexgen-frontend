@@ -2,7 +2,7 @@ import os
 import io
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse, HTMLResponse
+from fastapi.responses import StreamingResponse, HTMLResponse, JSONResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
@@ -105,24 +105,24 @@ def export_report(req: ExportRequest):
     try:
         docx_bytes = generate_word_report(
             url=req.url,
-            onpage_data=req.onpage_data,
+            onpage_data=req.onpage_data or {},
             speed_data=req.speed_data or {},
             traffic_data=req.traffic_data or {},
             ai_suggestions=req.ai_suggestions or [],
-            agency_name=req.agency_name,
-            client_name=req.client_name,
-            author_name=req.author_name,
+            agency_name=req.agency_name or "NexGenWebLab",
+            client_name=req.client_name or "Client",
+            author_name=req.author_name or "SEO Team",
         )
         return StreamingResponse(
             io.BytesIO(docx_bytes),
             media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            headers={"Content-Disposition": f"attachment; filename={req.client_name.replace(' ', '_')}_SEO_Report.docx"},
+            headers={"Content-Disposition": f"attachment; filename={req.client_name.replace(' ', '_') if req.client_name else 'SEO_Report'}_SEO_Report.docx"},
         )
     except Exception as e:
         print(f"[ERROR] Export failed: {str(e)}")
         import traceback
         traceback.print_exc()
-        return Response(content=f"Export error: {str(e)}", status_code=500)
+        return JSONResponse({"error": str(e), "detail": traceback.format_exc()}, status_code=500)
 
 @app.post("/api/export/html")
 def export_html_report(req: HTMLReportRequest):
