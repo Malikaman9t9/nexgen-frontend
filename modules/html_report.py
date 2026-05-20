@@ -371,10 +371,41 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
         .summary-value {{ font-size: 32px; font-weight: 800; color: var(--primary); }}
         .summary-label {{ font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; margin-top: 5px; }}
         
-        .report-footer {{ text-align: center; padding: 40px; color: #64748b; font-size: 12px; border-top: 2px solid #e2e8f0; margin-top: 30px; }}
-        .footer-brand {{ color: var(--primary); font-weight: 600; }}
+        .report-footer { text-align: center; padding: 40px; color: #64748b; font-size: 12px; border-top: 2px solid #e2e8f0; margin-top: 30px; }
+        .footer-brand { color: var(--primary); font-weight: 600; }
         
-        @media print {{ body {{ background: white; }} .cover-page {{ break-after: page; }} }}
+        .traffic-sources-section { margin: 30px 0; }
+        .traffic-sources-wrapper { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        .traffic-sources-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid #f1f5f9; }
+        .traffic-sources-icon { width: 48px; height: 48px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; }
+        .traffic-sources-title-group h2 { font-size: 24px; font-weight: 700; color: #0f172a; margin: 0; }
+        .traffic-sources-title-group p { font-size: 14px; color: #64748b; margin: 4px 0 0 0; }
+        .traffic-sources-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; }
+        .source-card { background: linear-gradient(135deg, #f5f3ff, #fdf2f8); border-radius: 12px; padding: 25px; text-align: center; border: 1px solid #e2e8f0; }
+        .source-value { font-size: 28px; font-weight: 800; color: var(--primary); margin-bottom: 5px; }
+        .source-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; }
+        
+        .countries-section { margin: 30px 0; }
+        .countries-wrapper { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        .countries-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid #f1f5f9; }
+        .countries-icon { width: 48px; height: 48px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; }
+        .countries-title-group h2 { font-size: 24px; font-weight: 700; color: #0f172a; margin: 0; }
+        .countries-title-group p { font-size: 14px; color: #64748b; margin: 4px 0 0 0; }
+        .countries-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+        .country-item { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 15px 20px; border-radius: 12px; }
+        .country-name { font-weight: 600; color: #0f172a; }
+        .country-visits { font-weight: 700; color: var(--primary); }
+        .country-share { font-size: 12px; color: #64748b; }
+        
+        @media (max-width: 768px) {
+          .traffic-sources-grid { grid-template-columns: repeat(2, 1fr); }
+          .scores-grid { grid-template-columns: 1fr; }
+          .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+          .checklist-grid { grid-template-columns: 1fr; }
+          .ai-grid { grid-template-columns: 1fr; }
+        }
+        
+        @media print { body { background: white; } .cover-page { break-after: page; } }
     </style>
 </head>
 <body>
@@ -511,78 +542,86 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
             ('Email', traffic_data.get('email_traffic', 'N/A')),
         ]
         html += f'''
-        <div class="section">
-            <div class="section-header">
-                <div class="section-icon">🌐</div>
-                <div>
-                    <h2 class="section-title">{t.get('traffic', 'Traffic Sources')}</h2>
-                    <p class="section-subtitle">Off-page SEO and traffic distribution</p>
+        <div class="traffic-sources-section">
+            <div class="traffic-sources-wrapper">
+                <div class="traffic-sources-header">
+                    <div class="traffic-sources-icon">🌐</div>
+                    <div class="traffic-sources-title-group">
+                        <h2>{t.get('traffic', 'Traffic Sources')}</h2>
+                        <p>Off-page SEO and traffic distribution</p>
+                    </div>
                 </div>
-            </div>
-            <div class="metrics-grid">'''
+                <div class="traffic-sources-grid">'''
         for label, value in source_items:
             if value and value != 'N/A':
                 html += f'''
-                <div class="metric-card">
-                    <div class="metric-value" style="color: var(--primary);">{value}</div>
-                    <div class="metric-label">{label}</div>
-                </div>'''
+                    <div class="source-card">
+                        <div class="source-value">{value}</div>
+                        <div class="source-label">{label}</div>
+                    </div>'''
         html += '''
+                </div>
             </div>
         </div>'''
     
     # Top Keywords Section
     if traffic_data and traffic_data.get('top_keywords') and len(traffic_data.get('top_keywords', [])) > 0:
         html += f'''
-        <div class="section">
-            <div class="section-header">
-                <div class="section-icon">🔑</div>
-                <div>
-                    <h2 class="section-title">{t.get('keywords', 'Top Organic Keywords')}</h2>
-                    <p class="section-subtitle">High-performing keywords driving traffic</p>
+        <div class="keywords-section">
+            <div class="keywords-wrapper">
+                <div class="keywords-header">
+                    <div class="keywords-icon">🔑</div>
+                    <div class="keywords-title-group">
+                        <h2>{t.get('keywords', 'Top Organic Keywords')}</h2>
+                        <p>High-performing keywords driving traffic</p>
+                    </div>
                 </div>
-            </div>
-            <table class="keywords-table">
-                <thead>
-                    <tr>
-                        <th>Keyword</th>
-                        <th>Monthly Visits</th>
-                        <th>Position</th>
-                    </tr>
-                </thead>
-                <tbody>'''
+                <div class="keywords-table-container">
+                    <table class="keywords-table">
+                        <thead>
+                            <tr>
+                                <th>Keyword</th>
+                                <th>Monthly Visits</th>
+                                <th>Position</th>
+                            </tr>
+                        </thead>
+                        <tbody>'''
         for kw in traffic_data.get('top_keywords', [])[:10]:
             html += f'''
-                    <tr>
-                        <td>{kw.get('keyword', 'N/A')}</td>
-                        <td>{kw.get('visits', 0):,}</td>
-                        <td><span class="position-badge">#{kw.get('position', 0)}</span></td>
-                    </tr>'''
+                            <tr>
+                                <td>{kw.get('keyword', 'N/A')}</td>
+                                <td>{kw.get('visits', 0):,}</td>
+                                <td><span class="position-badge">#{kw.get('position', 0)}</span></td>
+                            </tr>'''
         html += '''
-                </tbody>
-            </table>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>'''
     
     # Top Countries Section
     if traffic_data and traffic_data.get('top_countries') and len(traffic_data.get('top_countries', [])) > 0:
         html += f'''
-        <div class="section">
-            <div class="section-header">
-                <div class="section-icon">🌍</div>
-                <div>
-                    <h2 class="section-title">Top Countries</h2>
-                    <p class="section-subtitle">Geographic distribution of visitors</p>
+        <div class="countries-section">
+            <div class="countries-wrapper">
+                <div class="countries-header">
+                    <div class="countries-icon">🌍</div>
+                    <div class="countries-title-group">
+                        <h2>Top Countries</h2>
+                        <p>Geographic distribution of visitors</p>
+                    </div>
                 </div>
-            </div>
-            <div class="countries-grid">'''
+                <div class="countries-grid">'''
         for country in traffic_data.get('top_countries', [])[:5]:
             html += f'''
-                <div class="country-item">
-                    <span class="country-name">{country.get('country', 'N/A')}</span>
-                    <span class="country-visits">{country.get('visits', 0):,}</span>
-                    <span class="country-share">{country.get('share', '0%')}</span>
-                </div>'''
+                    <div class="country-item">
+                        <span class="country-name">{country.get('country', 'N/A')}</span>
+                        <span class="country-visits">{country.get('visits', 0):,}</span>
+                        <span class="country-share">{country.get('share', '0%')}</span>
+                    </div>'''
         html += '''
+                </div>
             </div>
         </div>'''
 
