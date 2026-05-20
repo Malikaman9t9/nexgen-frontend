@@ -397,13 +397,13 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
         .country-visits { font-weight: 700; color: var(--primary); }
         .country-share { font-size: 12px; color: #64748b; }
         
-        @media (max-width: 768px) {
+        @media (max-width: 768px) {{
           .traffic-sources-grid { grid-template-columns: repeat(2, 1fr); }
           .scores-grid { grid-template-columns: 1fr; }
           .metrics-grid { grid-template-columns: repeat(2, 1fr); }
           .checklist-grid { grid-template-columns: 1fr; }
-          .ai-grid { grid-template-columns: 1fr; }
-        }
+          .ai-grid { grid-template-columns: 1fr; }}
+        }}
         
         @media print { body { background: white; } .cover-page { break-after: page; } }
     </style>
