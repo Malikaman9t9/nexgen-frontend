@@ -102,21 +102,27 @@ def ai(req: AIRequest):
 
 @app.post("/api/export")
 def export_report(req: ExportRequest):
-    docx_bytes = generate_word_report(
-        url=req.url,
-        onpage_data=req.onpage_data,
-        speed_data=req.speed_data,
-        traffic_data=req.traffic_data,
-        ai_suggestions=req.ai_suggestions,
-        agency_name=req.agency_name,
-        client_name=req.client_name,
-        author_name=req.author_name,
-    )
-    return StreamingResponse(
-        io.BytesIO(docx_bytes),
-        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        headers={"Content-Disposition": f"attachment; filename={req.client_name.replace(' ', '_')}_SEO_Report.docx"},
-    )
+    try:
+        docx_bytes = generate_word_report(
+            url=req.url,
+            onpage_data=req.onpage_data,
+            speed_data=req.speed_data or {},
+            traffic_data=req.traffic_data or {},
+            ai_suggestions=req.ai_suggestions or [],
+            agency_name=req.agency_name,
+            client_name=req.client_name,
+            author_name=req.author_name,
+        )
+        return StreamingResponse(
+            io.BytesIO(docx_bytes),
+            media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            headers={"Content-Disposition": f"attachment; filename={req.client_name.replace(' ', '_')}_SEO_Report.docx"},
+        )
+    except Exception as e:
+        print(f"[ERROR] Export failed: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return Response(content=f"Export error: {str(e)}", status_code=500)
 
 @app.post("/api/export/html")
 def export_html_report(req: HTMLReportRequest):
