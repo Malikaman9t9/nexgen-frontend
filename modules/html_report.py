@@ -403,9 +403,7 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
           .metrics-grid { grid-template-columns: repeat(2, 1fr); }
           .checklist-grid { grid-template-columns: 1fr; }
           .ai-grid { grid-template-columns: 1fr; }}
-        }}
-        
-        @media print { body { background: white; } .cover-page { break-after: page; } }
+        @media print { body { background: white; } .cover-page { break-after: page; } }}
     </style>
 </head>
 <body>
