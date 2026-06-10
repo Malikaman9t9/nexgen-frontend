@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /assets/
+Disallow: /auth
+Disallow: /upgrade
+
+Sitemap: https://nexgenweblab.com/sitemap.xml
