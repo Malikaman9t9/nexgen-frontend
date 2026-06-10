@@ -1,178 +1,90 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog - NexGenWebLab</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <title>Blog - NexGenWebLab | SEO Insights & Digital Marketing Tips</title>
+    <meta name="description" content="Explore expert insights on technical SEO, Core Web Vitals, white label reporting, and digital marketing strategies from the NexGenWebLab team.">
+    <link rel="canonical" href="https://nexgenweblab.com/blog">
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png?v=2">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { primary: '#6D28D9', secondary: '#DB2777' } } } }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        .blog-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .blog-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        .blog-header h1 {
-            color: #6b46c1;
-            margin-bottom: 10px;
-        }
-        .blog-posts {
-            display: grid;
-            gap: 30px;
-        }
-        .blog-post {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            overflow: hidden;
-            transition: transform 0.2s;
-        }
-        .blog-post:hover {
-            transform: translateY(-4px);
-        }
-        .blog-post-image {
-            height: 200px;
-            background-size: cover;
-            background-position: center;
-        }
-        .blog-post-content {
-            padding: 24px;
-        }
-        .blog-post-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: #1f2937;
-        }
-        .blog-post-excerpt {
-            color: #6b7280;
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-        .blog-post-meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.875rem;
-            color: #9ca3af;
-        }
-        .blog-post-tags {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 16px;
-        }
-        .blog-tag {
-            background: #eee;
-            color: #6b7280;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-        }
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 40px;
-            gap: 12px;
-        }
-        .pagination button {
-            padding: 8px 16px;
-            background: #6b46c1;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        .pagination button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .pagination span {
-            min-width: 60px;
-            text-align: center;
-        }
-        .loading, .error {
-            text-align: center;
-            padding: 40px;
-            color: #6b7280;
-        }
-        .error {
-            color: #ef4444;
-        }
-        .no-posts {
-            text-align: center;
-            padding: 60px;
-            color: #9ca3af;
-        }
-        @media (max-width: 768px) {
-            .blog-post-meta {
-                flex-direction: column;
-                gap: 8px;
-                align-items: flex-start;
-            }
-        }
+        .hero-gradient { background: radial-gradient(circle at top right, rgba(109, 40, 217, 0.08), transparent), radial-gradient(circle at bottom left, rgba(219, 39, 119, 0.05), transparent); }
+        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .blog-card { transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .blog-card:hover { transform: translateY(-8px); }
+        .scroll-reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .scroll-reveal.revealed { opacity: 1; transform: translateY(0); }
+        .tag-pill { transition: all 0.2s ease; }
+        .tag-pill:hover { transform: translateY(-1px); }
     </style>
 </head>
-<body>
-    <!-- Include header from index.html or create a simple one -->
-    <header>
-        <div class="container">
-            <div class="logo">
-                <img src="assets/images/logo.png" alt="NexGenWebLab Logo">
-                <span>NexGenWebLab</span>
-            </div>
-            <nav>
-                <a href="index.html">Home</a>
-                <a href="about.html">About</a>
-                <a href="blog.html" class="active">Blog</a>
-                <a href="contact.html">Contact</a>
-                <a href="pricing.html">Pricing</a>
-            </nav>
-        </div>
-    </header>
+<body class="bg-white text-slate-900 antialiased selection:bg-primary selection:text-white flex flex-col min-h-screen hero-gradient overflow-x-hidden">
+    <main class="flex-grow pt-16 md:pt-28">
+        <section class="relative pb-16 md:pb-20">
+            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12 md:mb-16" data-aos="fade-up">
+                    <span class="inline-block text-primary font-black uppercase tracking-widest text-xs md:text-sm mb-4 md:mb-6 bg-primary/5 px-4 py-2 rounded-full">Insights & Updates</span>
+                    <h1 class="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter mb-6 leading-[1.05] md:leading-[0.95] text-slate-950">
+                        Our <span class="text-primary block md:inline">Blog</span>
+                    </h1>
+                    <p class="text-lg md:text-xl text-slate-500 font-bold max-w-3xl mx-auto leading-relaxed">
+                        Expert insights on technical SEO, Core Web Vitals, white label reporting, and digital marketing strategies.
+                    </p>
+                </div>
 
-    <main>
-        <div class="blog-container">
-            <div class="blog-header">
-                <h1>Our Blog</h1>
-                <p>Latest insights on web development, SEO, and digital marketing</p>
+                <div id="loading" class="text-center py-20 hidden">
+                    <div class="inline-block w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                    <p class="text-slate-500 font-bold mt-4">Loading posts...</p>
+                </div>
+
+                <div id="error" class="text-center py-20 hidden">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-exclamation-triangle text-red-500 text-2xl"></i>
+                    </div>
+                    <p class="text-red-500 font-bold text-lg"></p>
+                    <button onclick="loadBlogPosts()" class="mt-4 px-6 py-3 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all">Try Again</button>
+                </div>
+
+                <div id="no-posts" class="text-center py-20 hidden">
+                    <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fa-solid fa-newspaper text-slate-300 text-3xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-black text-slate-900 mb-2">No posts yet</h3>
+                    <p class="text-slate-500 font-medium">Check back soon for new articles and insights.</p>
+                </div>
+
+                <div id="blog-posts" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                </div>
+
+                <div id="pagination" class="flex justify-center items-center gap-4 mt-12 md:mt-16 hidden">
+                    <button id="prev-page" class="px-6 py-3 rounded-xl font-bold border-2 border-slate-200 text-slate-600 hover:border-primary hover:text-primary transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-slate-200 disabled:hover:text-slate-600" disabled>
+                        <i class="fa-solid fa-arrow-left mr-2"></i>Previous
+                    </button>
+                    <span id="page-info" class="text-sm font-bold text-slate-500 min-w-[100px] text-center"></span>
+                    <button id="next-page" class="px-6 py-3 rounded-xl font-bold border-2 border-slate-200 text-slate-600 hover:border-primary hover:text-primary transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-slate-200 disabled:hover:text-slate-600">
+                        Next<i class="fa-solid fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
             </div>
-            
-            <div id="blog-posts" class="blog-posts">
-                <!-- Blog posts will be loaded here -->
-            </div>
-            
-            <div id="pagination" class="pagination">
-                <button id="prev-page">« Previous</button>
-                <span id="page-info">Page 1 of 1</span>
-                <button id="next-page">Next »</button>
-            </div>
-            
-            <div id="loading" class="loading">Loading posts...</div>
-            <div id="error" class="error"></div>
-            <div id="no-posts" class="no-posts">No blog posts found.</div>
-        </div>
+        </section>
     </main>
 
-    <footer>
-        <div class="container">
-            <p>&copy; <span id="year"></span> NexGenWebLab. All rights reserved.</p>
-        </div>
-    </footer>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="/assets/js/site.js"></script>
     <script>
-        // Blog configuration
-        const BLOG_CONFIG = {
-            postsPerPage: 6,
-            currentPage: 1
-        };
+        const SUPABASE_URL = 'https://ubnvjmvobwzsystdktpk.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVibnZqbXZvYnd6c3l0ZGt0cGsiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzE2MjIwMSwiZXhwIjoxOTU4NzM4MjAxfQ.VHm8R3QkY8GbnGMoJCL-FP3T3Y3fqBfNLqhYJ3Ew1R8';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // DOM Elements
+        const BLOG_CONFIG = { postsPerPage: 6, currentPage: 1 };
         const blogPostsContainer = document.getElementById('blog-posts');
         const prevPageBtn = document.getElementById('prev-page');
         const nextPageBtn = document.getElementById('next-page');
@@ -180,39 +92,32 @@
         const loadingEl = document.getElementById('loading');
         const errorEl = document.getElementById('error');
         const noPostsEl = document.getElementById('no-posts');
+        const paginationEl = document.getElementById('pagination');
 
-        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            // Set current year in footer
-            document.getElementById('year').textContent = new Date().getFullYear();
-            
-            // Load blog posts
             loadBlogPosts();
-            
-            // Pagination event listeners
             prevPageBtn.addEventListener('click', () => {
                 if (BLOG_CONFIG.currentPage > 1) {
                     BLOG_CONFIG.currentPage--;
                     loadBlogPosts();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             });
-            
             nextPageBtn.addEventListener('click', () => {
                 BLOG_CONFIG.currentPage++;
                 loadBlogPosts();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             });
         });
 
-        // Load blog posts from Supabase
         async function loadBlogPosts() {
-            showLoading();
-            hideError();
-            hideNoPosts();
-            
+            loadingEl.classList.remove('hidden');
+            blogPostsContainer.classList.add('hidden');
+            errorEl.classList.add('hidden');
+            noPostsEl.classList.add('hidden');
+            paginationEl.classList.add('hidden');
+
             try {
-                const { data: { session } } = await supabaseClient.auth.getSession();
-                
-                // Fetch published posts
                 const { data, error, count } = await supabaseClient
                     .from('blog_posts')
                     .select('*', { count: 'exact' })
@@ -222,104 +127,81 @@
                         (BLOG_CONFIG.currentPage - 1) * BLOG_CONFIG.postsPerPage,
                         BLOG_CONFIG.currentPage * BLOG_CONFIG.postsPerPage - 1
                     );
-                
+
                 if (error) throw error;
-                
-                // Update pagination
+
                 const totalPages = Math.ceil(count / BLOG_CONFIG.postsPerPage) || 1;
                 pageInfo.textContent = `Page ${BLOG_CONFIG.currentPage} of ${totalPages}`;
                 prevPageBtn.disabled = BLOG_CONFIG.currentPage === 1;
                 nextPageBtn.disabled = BLOG_CONFIG.currentPage >= totalPages;
-                
-                // Render posts
+                paginationEl.classList.remove('hidden');
+
                 if (data.length === 0) {
-                    showNoPosts();
+                    noPostsEl.classList.remove('hidden');
                 } else {
                     renderBlogPosts(data);
                 }
             } catch (err) {
                 console.error('Error loading blog posts:', err);
-                showError('Failed to load blog posts. Please try again later.');
+                errorEl.querySelector('p').textContent = 'Failed to load blog posts. Please try again later.';
+                errorEl.classList.remove('hidden');
             } finally {
-                hideLoading();
+                loadingEl.classList.add('hidden');
             }
         }
 
-        // Render blog posts
         function renderBlogPosts(posts) {
             blogPostsContainer.innerHTML = '';
-            
-            posts.forEach(post => {
-                const postElement = document.createElement('div');
-                postElement.className = 'blog-post';
-                
-                // Set background image if available
-                let imageStyle = '';
-                if (post.featured_image) {
-                    imageStyle = `style="background-image: url('${post.featured_image}')"`;
-                }
-                
-                // Format date
+            blogPostsContainer.classList.remove('hidden');
+
+            posts.forEach((post, index) => {
                 const date = new Date(post.created_at);
                 const formattedDate = date.toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
+                    year: 'numeric', month: 'short', day: 'numeric'
                 });
-                
-                postElement.innerHTML = `
-                    <div class="blog-post-image" ${imageStyle}></div>
-                    <div class="blog-post-content">
-                        <h2 class="blog-post-title">${post.title}</h2>
-                        <p class="blog-post-excerpt">${post.excerpt || post.content.substring(0, 150) + '...'}</p>
-                        <div class="blog-post-meta">
-                            <span><i class="far fa-calendar"></i> ${formattedDate}</span>
-                            <span><i class="far fa-user"></i> By ${post.author_name || 'NexGenWebLab'}</span>
+
+                const postEl = document.createElement('article');
+                postEl.className = 'blog-card bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden group hover:shadow-xl';
+                postEl.setAttribute('data-aos', 'fade-up');
+                postEl.setAttribute('data-aos-delay', String(100 + index * 50));
+
+                let imageHtml = '';
+                if (post.featured_image) {
+                    imageHtml = `<div class="h-48 md:h-56 bg-slate-100 overflow-hidden">
+                        <img src="${post.featured_image}" alt="${post.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" onerror="this.parentElement.classList.add('bg-gradient-to-br','from-primary/5','to-secondary/5');this.style.display='none'">
+                    </div>`;
+                } else {
+                    imageHtml = `<div class="h-48 md:h-56 bg-gradient-to-br from-primary/5 to-secondary/5 flex items-center justify-center">
+                        <i class="fa-solid fa-newspaper text-4xl text-slate-300"></i>
+                    </div>`;
+                }
+
+                const tagsHtml = post.tags && post.tags.length > 0
+                    ? post.tags.map(tag => `<span class="tag-pill inline-block bg-primary/5 text-primary text-[11px] font-bold px-3 py-1 rounded-full">${tag}</span>`).join('')
+                    : '';
+
+                postEl.innerHTML = `
+                    ${imageHtml}
+                    <div class="p-6 md:p-8">
+                        <div class="flex items-center gap-3 text-xs text-slate-400 font-bold mb-3">
+                            <span><i class="far fa-calendar mr-1.5"></i>${formattedDate}</span>
+                            <span><i class="far fa-user mr-1.5"></i>${post.author_name || 'NexGenWebLab'}</span>
                         </div>
-                        <div class="blog-post-tags">
-                            ${post.tags ? post.tags.map(tag => `<span class="blog-tag">${tag}</span>`).join('') : ''}
-                        </div>
-                        <a href="blog.html?id=${post.id}" class="btn btn-primary">Read More</a>
+                        <h2 class="text-xl md:text-2xl font-black text-slate-900 mb-3 group-hover:text-primary transition-colors leading-tight">${post.title}</h2>
+                        <p class="text-slate-600 font-medium text-sm leading-relaxed mb-4">${post.excerpt || post.content.substring(0, 120) + '...'}</p>
+                        ${tagsHtml ? `<div class="flex flex-wrap gap-2 mb-4">${tagsHtml}</div>` : ''}
+                        <a href="blog.html?id=${post.id}" class="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-secondary transition-colors">
+                            Read Article <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </a>
                     </div>
                 `;
-                
-                blogPostsContainer.appendChild(postElement);
-            });
-        }
 
-        // UI helpers
-        function showLoading() {
-            loadingEl.style.display = 'block';
-            blogPostsContainer.style.display = 'none';
-        }
-        
-        function hideLoading() {
-            loadingEl.style.display = 'none';
-            blogPostsContainer.style.display = 'grid';
-        }
-        
-        function showError(message) {
-            errorEl.textContent = message;
-            errorEl.style.display = 'block';
-        }
-        
-        function hideError() {
-            errorEl.style.display = 'none';
-        }
-        
-        function showNoPosts() {
-            noPostsEl.style.display = 'block';
-            blogPostsContainer.style.display = 'none';
-            prevPageBtn.style.display = 'none';
-            nextPageBtn.style.display = 'none';
-            pageInfo.style.display = 'none';
-        }
-        
-        function hideNoPosts() {
-            noPostsEl.style.display = 'none';
-            prevPageBtn.style.display = 'inline-block';
-            nextPageBtn.style.display = 'inline-block';
-            pageInfo.style.display = 'inline-block';
+                blogPostsContainer.appendChild(postEl);
+            });
+
+            if (typeof AOS !== 'undefined') {
+                AOS.refresh();
+            }
         }
     </script>
 </body>

@@ -567,6 +567,12 @@
                     .eq('id', data.user.id)
                     .single();
 
+                // Handle redirect parameter
+                const redirectTo = new URLSearchParams(window.location.search).get('redirect');
+                if (redirectTo === 'admin') {
+                    window.location.href = '/admin.html?authorized=true&t=' + Date.now();
+                    return;
+                }
                 // Redirect to dashboard
                 const planParam = userData?.plan === 'pro' ? '?plan=pro' : '';
                 window.location.href = 'https://tools.nexgenweblab.com' + planParam;
@@ -643,7 +649,12 @@
         // Check existing session
         supabase.auth.getSession().then(({ data: { session } }) => {
             if (session) {
-                const planParam = new URLSearchParams(window.location.search).get('plan');
+                const redirectTo = urlParams.get('redirect');
+                if (redirectTo === 'admin') {
+                    window.location.href = '/admin.html?authorized=true&t=' + Date.now();
+                    return;
+                }
+                const planParam = urlParams.get('plan');
                 if (planParam === 'pro') {
                     window.location.href = 'https://tools.nexgenweblab.com/upgrade';
                 } else {
