@@ -312,434 +312,323 @@
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const urlParams = new URLSearchParams(window.location.search);
-        const DOM = {};
 
-        function cacheElements() {
-            DOM.tabSignup = document.getElementById('tab-signup');
-            DOM.tabLogin = document.getElementById('tab-login');
-            DOM.signupForm = document.getElementById('signup-form');
-            DOM.loginForm = document.getElementById('login-form');
-            DOM.forgotForm = document.getElementById('forgot-form');
-            DOM.forgotLink = document.getElementById('forgot-password-link');
-            DOM.backToLogin = document.getElementById('back-to-login');
-            DOM.successMessage = document.getElementById('success-message');
-            DOM.errorMessage = document.getElementById('error-message');
-            DOM.errorText = document.getElementById('error-text');
-            DOM.successTitle = document.getElementById('success-title');
-            DOM.successText = document.getElementById('success-text');
-            DOM.emailError = document.getElementById('email-error');
-            DOM.signupEmail = document.getElementById('signup-email');
-            DOM.signupName = document.getElementById('signup-name');
-            DOM.signupPassword = document.getElementById('signup-password');
-            DOM.signupTerms = document.getElementById('terms');
-            DOM.loginEmail = document.getElementById('login-email');
-            DOM.loginPassword = document.getElementById('login-password');
-            DOM.forgotEmail = document.getElementById('forgot-email');
-            DOM.signupBtn = document.getElementById('signup-btn');
-            DOM.signupBtnText = document.getElementById('signup-btn-text');
-            DOM.signupBtnIcon = document.getElementById('signup-btn-icon');
-            DOM.signupBtnSpinner = document.getElementById('signup-btn-spinner');
-            DOM.loginBtn = document.getElementById('login-btn');
-            DOM.loginBtnText = document.getElementById('login-btn-text');
-            DOM.loginBtnIcon = document.getElementById('login-btn-icon');
-            DOM.loginBtnSpinner = document.getElementById('login-btn-spinner');
-            DOM.forgotBtn = document.getElementById('forgot-btn');
-            DOM.togglePassword = document.getElementById('toggle-password');
-            DOM.toggleLoginPassword = document.getElementById('toggle-login-password');
-            DOM.strengthBars = [
-                document.getElementById('strength-1'),
-                document.getElementById('strength-2'),
-                document.getElementById('strength-3'),
-                document.getElementById('strength-4')
-            ];
-            DOM.strengthText = document.getElementById('strength-text').querySelector('span');
-            DOM.proRadio = document.getElementById('plan-pro');
-            DOM.googleSignupBtn = document.getElementById('google-signup-btn');
-            DOM.googleLoginBtn = document.getElementById('google-login-btn');
-            DOM.planRadios = document.querySelectorAll('input[name="plan"]');
-        }
+        var $ = function (id) { return document.getElementById(id); };
+        var q = function (sel, ctx) { return (ctx || document).querySelector(sel); };
 
-        function showError(msg) {
-            DOM.errorText.textContent = msg;
-            DOM.errorMessage.classList.remove('hidden');
-        }
+        function showError(msg) { var el = $('error-message'), t = $('error-text'); if (t) t.textContent = msg; if (el) el.classList.remove('hidden'); }
+        function hideError() { var el = $('error-message'); if (el) el.classList.add('hidden'); }
 
-        function hideError() {
-            DOM.errorMessage.classList.add('hidden');
-        }
-
-        function toggleForm(show, hide) {
-            show.forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('hidden'); });
-            hide.forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('hidden'); });
+        function showForm(formId) {
+            ['signup-form', 'login-form', 'forgot-form', 'success-message'].forEach(function (id) {
+                var el = $(id);
+                if (el) el.classList.toggle('hidden', id !== formId);
+            });
             hideError();
-            DOM.successMessage.classList.add('hidden');
         }
 
-        function setLoading(btn, loading, opts) {
+        function switchTab(tab) {
+            var isLogin = tab === 'login';
+            var t1 = $('tab-signup'), t2 = $('tab-login');
+            if (!t1 || !t2) return;
+            t1.classList.toggle('bg-white', !isLogin);
+            t1.classList.toggle('text-slate-900', !isLogin);
+            t1.classList.toggle('shadow-sm', !isLogin);
+            t1.classList.toggle('text-slate-500', isLogin);
+            t2.classList.toggle('bg-white', isLogin);
+            t2.classList.toggle('text-slate-900', isLogin);
+            t2.classList.toggle('shadow-sm', isLogin);
+            t2.classList.toggle('text-slate-500', !isLogin);
+            showForm(isLogin ? 'login-form' : 'signup-form');
+        }
+
+        function setLoading(btnId, loading, text, restoreText) {
+            var btn = $(btnId);
             if (!btn) return;
             btn.disabled = loading;
-            if (loading) {
-                if (opts) {
-                    const textEl = opts.textEl, iconEl = opts.iconEl, spinnerEl = opts.spinnerEl;
-                    if (textEl) textEl.textContent = opts.loadingText || 'Loading...';
-                    if (iconEl) iconEl.classList.add('hidden');
-                    if (spinnerEl) spinnerEl.classList.remove('hidden');
-                } else {
-                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
-                }
-            } else if (opts) {
-                const textEl = opts.textEl, iconEl = opts.iconEl, spinnerEl = opts.spinnerEl;
-                if (textEl) textEl.textContent = opts.restoreText || 'Submit';
-                if (iconEl) iconEl.classList.remove('hidden');
-                if (spinnerEl) spinnerEl.classList.add('hidden');
-            } else {
-                btn.innerHTML = opts?.restoreHtml || 'Submit';
-            }
+            btn.innerHTML = loading
+                ? '<i class="fa-solid fa-spinner fa-spin"></i> ' + text + '...'
+                : restoreText;
         }
 
         function getSelectedPlan() {
-            const checked = document.querySelector('input[name="plan"]:checked');
+            var checked = document.querySelector('input[name="plan"]:checked');
             return checked ? checked.value : 'free';
         }
 
-        function validateEmail(v) {
-            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+        function validateEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+        function getPasswordScore(pw) {
+            var s = 0;
+            if (pw.length >= 8) s++;
+            if (pw.length >= 12) s++;
+            if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) s++;
+            if (/\d/.test(pw)) s++;
+            if (/[^a-zA-Z0-9]/.test(pw)) s++;
+            return s;
         }
 
-        function getPasswordStrength(password) {
-            let score = 0;
-            if (password.length >= 8) score++;
-            if (password.length >= 12) score++;
-            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
-            if (/\d/.test(password)) score++;
-            if (/[^a-zA-Z0-9]/.test(password)) score++;
-            const labels = ['', 'Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
-            const colors = ['', 'bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-emerald-500', 'bg-emerald-600'];
-            const textColors = ['', 'text-red-500', 'text-orange-500', 'text-yellow-500', 'text-emerald-500', 'text-emerald-600'];
-            return { score, label: labels[score] || 'Weak', color: colors[score] || 'bg-red-500', textColor: textColors[score] || 'text-red-500' };
-        }
-
-        function formatSupabaseError(err) {
+        function formatError(err) {
             if (!err) return 'An unexpected error occurred. Please try again.';
-            const msg = err.message || err.error_description || err.msg || '';
-            if (msg.includes('Invalid login credentials')) return 'Invalid email or password. Please try again.';
-            if (msg.includes('Email not confirmed')) return 'Please confirm your email address before logging in. Check your inbox for the confirmation link.';
-            if (msg.includes('rate limit') || msg.includes('429') || msg.includes('too many')) return 'Too many attempts. Please wait a moment and try again.';
-            if (msg.includes('User already registered')) return 'An account with this email already exists. Please log in instead.';
-            if (msg.includes('Password should be at least')) return 'Password must be at least 6 characters long.';
-            if (msg.includes('Email link is invalid or has expired')) return 'The reset link is invalid or expired. Please request a new one.';
-            if (msg.includes('Invalid email')) return 'Please enter a valid email address.';
-            if (msg.includes('network') || msg.includes('fetch') || msg.includes('Failed to fetch')) return 'Network error. Please check your internet connection and try again.';
-            if (msg.includes('timeout')) return 'Request timed out. Please try again.';
-            if (msg.toLowerCase().includes('not found')) return 'The requested resource was not found. Please try again.';
-            if (msg.includes('session_not_found')) return 'Your session has expired. Please log in again.';
-            return msg || 'An unexpected error occurred. Please try again.';
-        }
-
-        function setupPasswordToggle(btnId, inputId) {
-            const btn = document.getElementById(btnId);
-            const input = document.getElementById(inputId);
-            if (!btn || !input) return;
-            btn.addEventListener('click', function () {
-                const isPassword = input.type === 'password';
-                input.type = isPassword ? 'text' : 'password';
-                this.querySelector('i').className = isPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
-            });
-        }
-
-        function updatePasswordStrength() {
-            const pw = DOM.signupPassword ? DOM.signupPassword.value : '';
-            const { score, label, color, textColor } = getPasswordStrength(pw);
-            if (DOM.strengthBars) {
-                DOM.strengthBars.forEach((bar, i) => {
-                    if (bar) bar.className = 'h-1 flex-1 rounded-full ' + (i < score ? color : 'bg-slate-200');
-                });
-            }
-            if (DOM.strengthText) {
-                DOM.strengthText.textContent = pw.length > 0 ? label : 'Enter password';
-            }
-        }
-
-        function switchTab(active) {
-            const isSignup = active === 'signup';
-            const add = ['bg-white', 'text-slate-900', 'shadow-sm'];
-            const remove = ['text-slate-500'];
-            if (isSignup) {
-                DOM.tabSignup.classList.add(...add); DOM.tabSignup.classList.remove(...remove);
-                DOM.tabLogin.classList.remove(...add); DOM.tabLogin.classList.add(...remove);
-                toggleForm(['signup-form'], ['login-form', 'forgot-form', 'success-message']);
-            } else {
-                DOM.tabLogin.classList.add(...add); DOM.tabLogin.classList.remove(...remove);
-                DOM.tabSignup.classList.remove(...add); DOM.tabSignup.classList.add(...remove);
-                toggleForm(['login-form'], ['signup-form', 'forgot-form', 'success-message']);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            cacheElements();
-
-            if (DOM.proRadio && urlParams.get('plan') === 'pro') DOM.proRadio.checked = true;
-
-            DOM.tabSignup.addEventListener('click', () => switchTab('signup'));
-            DOM.tabLogin.addEventListener('click', () => switchTab('login'));
-
-            if (DOM.forgotLink) {
-                DOM.forgotLink.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    toggleForm(['forgot-form'], ['login-form', 'signup-form', 'success-message']);
-                });
-            }
-
-            if (DOM.backToLogin) {
-                DOM.backToLogin.addEventListener('click', () => {
-                    toggleForm(['login-form'], ['forgot-form', 'signup-form', 'success-message']);
-                });
-            }
-
-            setupPasswordToggle('toggle-password', 'signup-password');
-            setupPasswordToggle('toggle-login-password', 'login-password');
-
-            if (DOM.signupPassword) {
-                DOM.signupPassword.addEventListener('input', updatePasswordStrength);
-            }
-
-            if (DOM.signupEmail) {
-                DOM.signupEmail.addEventListener('blur', function () {
-                    if (this.value && !validateEmail(this.value)) {
-                        DOM.emailError.classList.remove('hidden');
-                        DOM.emailError.querySelector('span').textContent = 'Please enter a valid email address';
-                        this.classList.add('border-red-500');
-                    } else {
-                        DOM.emailError.classList.add('hidden');
-                        this.classList.remove('border-red-500');
-                    }
-                });
-                DOM.signupEmail.addEventListener('input', function () {
-                    if (this.classList.contains('border-red-500')) {
-                        DOM.emailError.classList.add('hidden');
-                        this.classList.remove('border-red-500');
-                    }
-                });
-            }
-
-            document.getElementById('error-dismiss')?.addEventListener('click', hideError);
-
-            DOM.signupForm?.addEventListener('submit', handleSignup);
-            DOM.loginForm?.addEventListener('submit', handleLogin);
-            DOM.forgotForm?.addEventListener('submit', handleForgotPassword);
-
-            DOM.googleSignupBtn?.addEventListener('click', handleGoogleAuth);
-            DOM.googleLoginBtn?.addEventListener('click', handleGoogleAuth);
-
-            if (urlParams.get('reset') === 'true') switchTab('login');
-
-            supabase.auth.getSession().then(({ data: { session } }) => {
-                if (session) {
-                    const redirectTo = urlParams.get('redirect');
-                    if (redirectTo === 'admin') {
-                        window.location.href = '/admin.html?authorized=true&t=' + Date.now();
-                        return;
-                    }
-                    const plan = urlParams.get('plan');
-                    window.location.href = plan === 'pro'
-                        ? 'https://tools.nexgenweblab.com/upgrade'
-                        : 'https://tools.nexgenweblab.com';
-                }
-            });
-        });
-
-        async function handleSignup(e) {
-            e.preventDefault();
-            hideError();
-
-            const name = DOM.signupName.value.trim();
-            const email = DOM.signupEmail.value.trim();
-            const password = DOM.signupPassword.value;
-            const plan = getSelectedPlan();
-            const termsAccepted = DOM.signupTerms.checked;
-
-            if (!name) { showError('Please enter your full name.'); return; }
-            if (!email) { showError('Please enter your email address.'); return; }
-            if (!validateEmail(email)) { showError('Please enter a valid email address.'); return; }
-            if (!password) { showError('Please enter a password.'); return; }
-            if (password.length < 6) { showError('Password must be at least 6 characters.'); return; }
-            const { score } = getPasswordStrength(password);
-            if (score < 1) { showError('Password is too weak. Use at least 8 characters with a mix of letters, numbers, and symbols.'); return; }
-            if (!termsAccepted) { showError('Please accept the Terms of Service and Privacy Policy.'); return; }
-
-            setLoading(DOM.signupBtn, true, {
-                textEl: DOM.signupBtnText, iconEl: DOM.signupBtnIcon, spinnerEl: DOM.signupBtnSpinner,
-                loadingText: 'Creating account...', restoreText: 'Create Account'
-            });
-
-            try {
-                const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-                    email,
-                    password,
-                    options: {
-                        data: { full_name: name, plan },
-                        emailRedirectTo: window.location.origin + '/auth?redirect=' + (urlParams.get('redirect') || 'tools')
-                    }
-                });
-
-                if (signUpError) throw signUpError;
-                if (!signUpData || !signUpData.user) throw new Error('No user data returned from signup.');
-
-                try {
-                    const { error: profileError } = await supabase.from('profiles').insert({
-                        id: signUpData.user.id,
-                        email: email,
-                        full_name: name,
-                        plan: plan,
-                        role: 'user'
-                    });
-                    if (profileError && !profileError.message?.includes('duplicate')) {
-                        console.warn('Profile creation warning:', profileError.message);
-                    }
-                } catch (profileErr) {
-                    console.warn('Profile insert error (non-fatal):', profileErr);
-                }
-
-                toggleForm(['success-message'], ['signup-form']);
-                DOM.successTitle.textContent = 'Account created!';
-                DOM.successText.textContent = 'Welcome to NexGenWebLab! Check your email to confirm your account. If you don\'t see it, check your spam folder.';
-
-            } catch (err) {
-                console.error('Signup error:', err);
-                showError(formatSupabaseError(err));
-            } finally {
-                setLoading(DOM.signupBtn, false, {
-                    textEl: DOM.signupBtnText, iconEl: DOM.signupBtnIcon, spinnerEl: DOM.signupBtnSpinner,
-                    restoreText: 'Create Account'
-                });
-            }
-        }
-
-        async function handleLogin(e) {
-            e.preventDefault();
-            hideError();
-
-            const email = DOM.loginEmail.value.trim();
-            const password = DOM.loginPassword.value;
-
-            if (!email) { showError('Please enter your email address.'); return; }
-            if (!validateEmail(email)) { showError('Please enter a valid email address.'); return; }
-            if (!password) { showError('Please enter your password.'); return; }
-            if (password.length < 6) { showError('Password must be at least 6 characters.'); return; }
-
-            setLoading(DOM.loginBtn, true, {
-                textEl: DOM.loginBtnText, iconEl: DOM.loginBtnIcon, spinnerEl: DOM.loginBtnSpinner,
-                loadingText: 'Logging in...', restoreText: 'Log In'
-            });
-
-            try {
-                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-                if (error) throw error;
-                if (!data || !data.user) throw new Error('Login succeeded but no user data returned.');
-                if (!data.session) throw new Error('No session returned after login.');
-
-                const redirectTo = urlParams.get('redirect');
-                if (redirectTo === 'admin') {
-                    window.location.href = '/admin.html?authorized=true&t=' + Date.now();
-                    return;
-                }
-
-                let plan = 'free';
-                try {
-                    const { data: profile } = await supabase
-                        .from('profiles')
-                        .select('plan')
-                        .eq('id', data.user.id)
-                        .single();
-                    if (profile && profile.plan) plan = profile.plan;
-                } catch (profileErr) {
-                    console.warn('Could not fetch profile plan:', profileErr);
-                }
-
-                const planParam = plan === 'pro' ? '?plan=pro' : '';
-                window.location.href = 'https://tools.nexgenweblab.com' + planParam;
-
-            } catch (err) {
-                console.error('Login error:', err);
-                showError(formatSupabaseError(err));
-            } finally {
-                setLoading(DOM.loginBtn, false, {
-                    textEl: DOM.loginBtnText, iconEl: DOM.loginBtnIcon, spinnerEl: DOM.loginBtnSpinner,
-                    restoreText: 'Log In'
-                });
-            }
-        }
-
-        async function handleForgotPassword(e) {
-            e.preventDefault();
-            hideError();
-
-            const email = DOM.forgotEmail.value.trim();
-            if (!email) { showError('Please enter your email address.'); return; }
-            if (!validateEmail(email)) { showError('Please enter a valid email address.'); return; }
-
-            setLoading(DOM.forgotBtn, true);
-            DOM.forgotBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
-
-            try {
-                const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                    redirectTo: window.location.origin + '/auth?reset=true'
-                });
-
-                if (error) throw error;
-
-                toggleForm(['success-message'], ['forgot-form']);
-                DOM.successTitle.textContent = 'Reset link sent!';
-                DOM.successText.textContent = 'Check your email for a password reset link. If you don\'t see it, check your spam folder.';
-
-            } catch (err) {
-                console.error('Forgot password error:', err);
-                showError(formatSupabaseError(err));
-                setLoading(DOM.forgotBtn, false);
-                DOM.forgotBtn.innerHTML = '<span>Send Reset Link</span> <i class="fa-solid fa-paper-plane"></i>';
-            }
-        }
-
-        async function handleGoogleAuth() {
-            hideError();
-            const redirectTo = urlParams.get('redirect');
-            let destination = 'https://tools.nexgenweblab.com';
-            if (redirectTo === 'admin') {
-                destination = window.location.origin + '/admin.html?authorized=true&t=' + Date.now();
-            }
-            try {
-                const { error } = await supabase.auth.signInWithOAuth({
-                    provider: 'google',
-                    options: { redirectTo: destination }
-                });
-                if (error) throw error;
-            } catch (err) {
-                console.error('Google auth error:', err);
-                showError(formatSupabaseError(err));
-            }
+            var m = err.message || err.error_description || err.msg || '';
+            if (m.includes('Invalid login credentials') || m.includes('invalid_credentials')) return 'Invalid email or password. Please try again.';
+            if (m.includes('Email not confirmed') || m.includes('email_not_confirmed')) return 'Please confirm your email address first. Check your inbox for the confirmation link.';
+            if (m.includes('rate limit') || m.includes('429') || m.includes('too many')) return 'Too many attempts. Please wait and try again.';
+            if (m.includes('User already registered') || m.includes('already registered')) return 'An account with this email already exists. Please log in instead.';
+            if (m.includes('Password should be at least')) return 'Password must be at least 6 characters.';
+            if (m.includes('Invalid email')) return 'Please enter a valid email address.';
+            if (m.includes('network') || m.includes('fetch') || m.includes('Failed to fetch')) return 'Network error. Check your internet connection and try again.';
+            if (m.includes('timeout')) return 'Request timed out. Please try again.';
+            if (m.includes('session_not_found') || m.includes('Session from')) return 'Session expired. Please log in again.';
+            return m || 'An unexpected error occurred. Please try again.';
         }
 
         function handleOAuthRedirect() {
-            const hash = window.location.hash;
-            if (!hash || !hash.includes('access_token')) return;
-            const params = new URLSearchParams(hash.replace('#', '?'));
-            const accessToken = params.get('access_token');
-            const refreshToken = params.get('refresh_token');
-            if (accessToken && refreshToken) {
-                supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken }).then(({ error }) => {
-                    if (!error) {
-                        const redirectTo = urlParams.get('redirect');
-                        if (redirectTo === 'admin') {
-                            window.location.href = '/admin.html?authorized=true&t=' + Date.now();
-                        } else {
-                            window.location.href = 'https://tools.nexgenweblab.com';
-                        }
+            var hash = window.location.hash;
+            if (!hash || hash.indexOf('access_token') === -1) return;
+            var params = new URLSearchParams(hash.replace('#', '?'));
+            var at = params.get('access_token'), rt = params.get('refresh_token');
+            if (at && rt) {
+                supabase.auth.setSession({ access_token: at, refresh_token: rt }).then(function (r) {
+                    if (!r.error) {
+                        window.location.href = urlParams.get('redirect') === 'admin'
+                            ? '/admin.html?authorized=true&t=' + Date.now()
+                            : 'https://tools.nexgenweblab.com';
                     }
                 });
             }
         }
 
         handleOAuthRedirect();
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if ($('plan-pro') && urlParams.get('plan') === 'pro') $('plan-pro').checked = true;
+
+            var tabSignup = $('tab-signup'), tabLogin = $('tab-login');
+            if (tabSignup) tabSignup.addEventListener('click', function () { switchTab('signup'); });
+            if (tabLogin) tabLogin.addEventListener('click', function () { switchTab('login'); });
+
+            var forgotLink = $('forgot-password-link');
+            if (forgotLink) forgotLink.addEventListener('click', function (e) { e.preventDefault(); showForm('forgot-form'); });
+
+            var backToLogin = $('back-to-login');
+            if (backToLogin) backToLogin.addEventListener('click', function () { showForm('login-form'); });
+
+            var togglePw = $('toggle-password'), pwInput = $('signup-password');
+            if (togglePw && pwInput) {
+                togglePw.addEventListener('click', function () {
+                    var isPw = pwInput.type === 'password';
+                    pwInput.type = isPw ? 'text' : 'password';
+                    this.querySelector('i').className = isPw ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+                });
+            }
+
+            var toggleLoginPw = $('toggle-login-password'), loginPwInput = $('login-password');
+            if (toggleLoginPw && loginPwInput) {
+                toggleLoginPw.addEventListener('click', function () {
+                    var isPw = loginPwInput.type === 'password';
+                    loginPwInput.type = isPw ? 'text' : 'password';
+                    this.querySelector('i').className = isPw ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+                });
+            }
+
+            var strengthInput = $('signup-password');
+            if (strengthInput) {
+                strengthInput.addEventListener('input', function () {
+                    var pw = this.value;
+                    var bars = [$('strength-1'), $('strength-2'), $('strength-3'), $('strength-4')];
+                    var score = getPasswordScore(pw);
+                    var colors = ['', 'bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-emerald-500', 'bg-emerald-600'];
+                    var labels = ['Enter password', 'Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
+                    var c = colors[score] || 'bg-red-500';
+                    bars.forEach(function (bar, i) {
+                        if (bar) bar.className = 'h-1 flex-1 rounded-full ' + (i < score ? c : 'bg-slate-200');
+                    });
+                    var st = $('strength-text');
+                    if (st) st.innerHTML = 'Password strength: <span class="' + (score > 0 ? c.replace('bg-', 'text-') : 'text-slate-400') + '">' + (pw.length > 0 ? labels[score] || 'Weak' : 'Enter password') + '</span>';
+                });
+            }
+
+            var emailInput = $('signup-email'), emailError = $('email-error');
+            if (emailInput) {
+                emailInput.addEventListener('blur', function () {
+                    if (this.value && emailError) {
+                        if (!validateEmail(this.value)) {
+                            emailError.classList.remove('hidden');
+                            var s = emailError.querySelector('span');
+                            if (s) s.textContent = 'Please enter a valid email address';
+                            this.classList.add('border-red-500');
+                        } else {
+                            emailError.classList.add('hidden');
+                            this.classList.remove('border-red-500');
+                        }
+                    }
+                });
+                emailInput.addEventListener('input', function () {
+                    if (this.classList.contains('border-red-500') && emailError) {
+                        emailError.classList.add('hidden');
+                        this.classList.remove('border-red-500');
+                    }
+                });
+            }
+
+            var errorDismiss = $('error-dismiss');
+            if (errorDismiss) errorDismiss.addEventListener('click', hideError);
+
+            var signupForm = $('signup-form');
+            if (signupForm) {
+                signupForm.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+                    hideError();
+                    var name = ($('signup-name')?.value || '').trim();
+                    var email = ($('signup-email')?.value || '').trim();
+                    var password = ($('signup-password')?.value || '');
+                    var terms = $('terms')?.checked || false;
+                    var plan = getSelectedPlan();
+
+                    if (!name) { showError('Please enter your full name.'); return; }
+                    if (!email) { showError('Please enter your email address.'); return; }
+                    if (!validateEmail(email)) { showError('Please enter a valid email address.'); return; }
+                    if (!password) { showError('Please enter a password.'); return; }
+                    if (password.length < 6) { showError('Password must be at least 6 characters.'); return; }
+                    if (getPasswordScore(password) < 1) { showError('Password too weak. Use 8+ characters with letters, numbers, and symbols.'); return; }
+                    if (!terms) { showError('Please accept the Terms of Service and Privacy Policy.'); return; }
+
+                    setLoading('signup-btn', true, 'Creating account', '<i class="fa-solid fa-cloud-upload-alt"></i> Create Account');
+
+                    try {
+                        var { data: sd, error: se } = await supabase.auth.signUp({
+                            email: email, password: password,
+                            options: {
+                                data: { full_name: name, plan: plan },
+                                emailRedirectTo: window.location.origin + '/auth?redirect=' + (urlParams.get('redirect') || 'tools')
+                            }
+                        });
+                        if (se) throw se;
+                        if (!sd || !sd.user) throw new Error('No user data returned from signup.');
+
+                        try {
+                            await supabase.from('profiles').insert({
+                                id: sd.user.id, email: email, full_name: name, plan: plan, role: 'user'
+                            });
+                        } catch (pe) {
+                            if (pe && pe.message && pe.message.indexOf('duplicate') === -1) console.warn('Profile warn:', pe.message);
+                        }
+
+                        showForm('success-message');
+                        var st = $('success-title'), stx = $('success-text');
+                        if (st) st.textContent = 'Account created!';
+                        if (stx) stx.textContent = 'Welcome! Check your email to confirm your account. Also check spam folder.';
+
+                    } catch (err) {
+                        console.error('Signup error:', err);
+                        showError(formatError(err));
+                    } finally {
+                        setLoading('signup-btn', false, '', '<i class="fa-solid fa-cloud-upload-alt"></i> Create Account');
+                    }
+                });
+            }
+
+            var loginForm = $('login-form');
+            if (loginForm) {
+                loginForm.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+                    hideError();
+                    var email = ($('login-email')?.value || '').trim();
+                    var password = ($('login-password')?.value || '');
+
+                    if (!email) { showError('Please enter your email address.'); return; }
+                    if (!validateEmail(email)) { showError('Please enter a valid email address.'); return; }
+                    if (!password) { showError('Please enter your password.'); return; }
+
+                    setLoading('login-btn', true, 'Logging in', '<i class="fa-solid fa-arrow-right"></i> Log In');
+
+                    try {
+                        var { data, error } = await supabase.auth.signInWithPassword({ email: email, password: password });
+                        if (error) throw error;
+                        if (!data || !data.user) throw new Error('No user data returned.');
+                        if (!data.session) throw new Error('No session returned.');
+
+                        if (urlParams.get('redirect') === 'admin') {
+                            window.location.href = '/admin.html?authorized=true&t=' + Date.now();
+                            return;
+                        }
+
+                        var plan = 'free';
+                        try {
+                            var p = await supabase.from('profiles').select('plan').eq('id', data.user.id).single();
+                            if (p.data && p.data.plan) plan = p.data.plan;
+                        } catch (_) { }
+
+                        window.location.href = 'https://tools.nexgenweblab.com' + (plan === 'pro' ? '?plan=pro' : '');
+
+                    } catch (err) {
+                        console.error('Login error:', err);
+                        showError(formatError(err));
+                    } finally {
+                        setLoading('login-btn', false, '', '<i class="fa-solid fa-arrow-right"></i> Log In');
+                    }
+                });
+            }
+
+            var forgotForm = $('forgot-form');
+            if (forgotForm) {
+                forgotForm.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+                    hideError();
+                    var email = ($('forgot-email')?.value || '').trim();
+                    if (!email) { showError('Please enter your email address.'); return; }
+                    if (!validateEmail(email)) { showError('Please enter a valid email address.'); return; }
+
+                    setLoading('forgot-btn', true, 'Sending', '<span>Send Reset Link</span> <i class="fa-solid fa-paper-plane"></i>');
+
+                    try {
+                        var { error } = await supabase.auth.resetPasswordForEmail(email, {
+                            redirectTo: window.location.origin + '/auth?reset=true'
+                        });
+                        if (error) throw error;
+
+                        showForm('success-message');
+                        var st = $('success-title'), stx = $('success-text');
+                        if (st) st.textContent = 'Reset link sent!';
+                        if (stx) stx.textContent = 'Check your email for a password reset link. Check spam folder too.';
+
+                    } catch (err) {
+                        console.error('Forgot password error:', err);
+                        showError(formatError(err));
+                        setLoading('forgot-btn', false, '', '<span>Send Reset Link</span> <i class="fa-solid fa-paper-plane"></i>');
+                    }
+                });
+            }
+
+            var googleSignup = $('google-signup-btn'), googleLogin = $('google-login-btn');
+            var googleHandler = async function () {
+                hideError();
+                var dest = urlParams.get('redirect') === 'admin'
+                    ? window.location.origin + '/admin.html?authorized=true&t=' + Date.now()
+                    : 'https://tools.nexgenweblab.com';
+                try {
+                    var { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: dest } });
+                    if (error) throw error;
+                } catch (err) {
+                    console.error('Google auth error:', err);
+                    showError(formatError(err));
+                }
+            };
+            if (googleSignup) googleSignup.addEventListener('click', googleHandler);
+            if (googleLogin) googleLogin.addEventListener('click', googleHandler);
+
+            if (urlParams.get('reset') === 'true') switchTab('login');
+
+            supabase.auth.getSession().then(function (r) {
+                var session = r.data ? r.data.session : null;
+                if (session) {
+                    window.location.href = urlParams.get('redirect') === 'admin'
+                        ? '/admin.html?authorized=true&t=' + Date.now()
+                        : (urlParams.get('plan') === 'pro' ? 'https://tools.nexgenweblab.com/upgrade' : 'https://tools.nexgenweblab.com');
+                }
+            });
+        });
     </script>
 </body>
 </html>
