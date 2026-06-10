@@ -40,6 +40,7 @@
             '    <nav class="hidden md:flex items-center gap-8" aria-label="Main navigation">' +
             navLink(BASE_URL + "/", "Home").outerHTML +
             navLink(BASE_URL + "/about", "About").outerHTML +
+            navLink(BASE_URL + "/blog", "Blog").outerHTML +
             navLink(BASE_URL + "/pricing", "Pricing").outerHTML +
             navLink(BASE_URL + "/contact", "Contact").outerHTML +
             '      <a href="' + TOOLS_URL + '" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-slate-900 text-white hover:bg-slate-800 transition-colors shadow-md">' +
@@ -51,10 +52,11 @@
             '    </button>' +
             '  </div>' +
             '  <div id="mobile-menu" class="md:hidden hidden pb-6 border-t border-slate-100 pt-4 space-y-3" role="menu">' +
-            '    <a href="' + BASE_URL + '/" class="block px-4 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors" role="menuitem">Home</a>' +
-            '    <a href="' + BASE_URL + '/about" class="block px-4 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors" role="menuitem">About</a>' +
-            '    <a href="' + BASE_URL + '/pricing" class="block px-4 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors" role="menuitem">Pricing</a>' +
-            '    <a href="' + BASE_URL + '/contact" class="block px-4 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors" role="menuitem">Contact</a>' +
+'    <a href="' + BASE_URL + '/" class="block px-4 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors" role="menuitem">Home</a>' +
+'    <a href="' + BASE_URL + '/about" class="block px-4 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors" role="menuitem">About</a>' +
+'    <a href="' + BASE_URL + '/blog" class="block px-4 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors" role="menuitem">Blog</a>' +
+'    <a href="' + BASE_URL + '/pricing" class="block px-4 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors" role="menuitem">Pricing</a>' +
+'    <a href="' + BASE_URL + '/contact" class="block px-4 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors" role="menuitem">Contact</a>' +
             '    <a href="' + TOOLS_URL + '" class="block px-4 py-3 rounded-xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 transition-colors text-center" role="menuitem">Dashboard</a>' +
             '  </div>' +
             '</div>';
