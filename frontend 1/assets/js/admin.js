@@ -2,45 +2,53 @@ const SUPABASE_URL = 'https://ubnvjmvobwzsystdktpk.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Fj_rv9LPpfh5nDouVW-bSw_hdfpn4-v';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let currentEditPostId = null;
+var $ = function (id) { return document.getElementById(id); };
+
+function showDashboard() {
+    var loadEl = $('auth-loading');
+    var contentEl = $('admin-content');
+    if (loadEl) loadEl.style.display = 'none';
+    if (contentEl) contentEl.style.display = 'block';
+    if (typeof AOS !== 'undefined') { AOS.init({ duration: 800, easing: 'ease-out-cubic', once: true, offset: 80 }); AOS.refresh(); }
+}
+
+function redirectToLogin() {
+    window.location.href = '/auth.html?redirect=admin';
+}
+
+function redirectHome() {
+    window.location.href = '/index.html';
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const authorized = urlParams.get('authorized');
-    const authTimestamp = urlParams.get('t');
+    var urlParams = new URLSearchParams(window.location.search);
+    var authorized = urlParams.get('authorized');
+    var authTimestamp = urlParams.get('t');
 
-    if (authorized !== 'true' || !authTimestamp) {
-        await supabaseClient.auth.signOut();
-        window.location.href = '/auth.html?redirect=admin';
-        return;
+    if (authorized !== 'true' || !authTimestamp) { redirectToLogin(); return; }
+
+    var elapsed = Date.now() - parseInt(authTimestamp);
+    if (isNaN(elapsed) || elapsed > 300000) { redirectToLogin(); return; }
+
+    try {
+        var { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) { redirectToLogin(); return; }
+
+        var { data: profile, error: profileError } = await supabaseClient
+            .from('profiles')
+            .select('role')
+            .eq('id', session.user.id)
+            .single();
+
+        if (profileError || !profile || profile.role !== 'admin') { redirectHome(); return; }
+
+        history.replaceState(null, '', '/admin.html');
+        showDashboard();
+        initAdminDashboard();
+    } catch (err) {
+        console.error('Auth check error:', err);
+        redirectToLogin();
     }
-
-    const elapsed = Date.now() - parseInt(authTimestamp);
-    if (isNaN(elapsed) || elapsed > 300000) {
-        await supabaseClient.auth.signOut();
-        window.location.href = '/auth.html?redirect=admin';
-        return;
-    }
-
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (!session) {
-        window.location.href = '/auth.html?redirect=admin';
-        return;
-    }
-
-    const { data: profile, error: profileError } = await supabaseClient
-        .from('profiles')
-        .select('role')
-        .eq('id', session.user.id)
-        .single();
-
-    if (profileError || !profile || profile.role !== 'admin') {
-        window.location.href = '/index.html';
-        return;
-    }
-
-    history.replaceState(null, '', '/admin.html');
-    initAdminDashboard();
 });
 
 function initAdminDashboard() {
