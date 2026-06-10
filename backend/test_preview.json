@@ -1,0 +1,28 @@
+{
+  "url": "https://example.com",
+  "onpage_data": {
+    "title": "Example Domain",
+    "description": "Test",
+    "h1": ["Example Domain"],
+    "word_count": 500,
+    "is_https": "Yes",
+    "missing_alt": 0,
+    "response_time": 0.5,
+    "internal_links": 10,
+    "external_links": 5,
+    "total_images": 20,
+    "html_size_kb": 50
+  },
+  "speed_data": {
+    "mobile": {"performance": 85},
+    "desktop": {"performance": 92}
+  },
+  "traffic_data": {},
+  "ai_suggestions": [],
+  "agency_name": "Test",
+  "client_name": "Client",
+  "primary_color": "#6D28D9",
+  "secondary_color": "#DB2777",
+  "language": "en",
+  "white_label": false
+}
