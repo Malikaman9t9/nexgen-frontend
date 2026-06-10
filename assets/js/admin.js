@@ -1,19 +1,33 @@
-// Supabase client initialization (same as in auth.js)
 const SUPABASE_URL = 'https://ubnvjmvobwzsystdktpk.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Fj_rv9LPpfh5nDouVW-bSw_hdfpn4-v';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Admin dashboard logic
+let currentEditPostId = null;
+
 document.addEventListener('DOMContentLoaded', async () => {
-    // Check if user is logged in
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (!session) {
-        // No session, redirect to login
-        window.location.href = '/auth.html';
+    const urlParams = new URLSearchParams(window.location.search);
+    const authorized = urlParams.get('authorized');
+    const authTimestamp = urlParams.get('t');
+
+    if (authorized !== 'true' || !authTimestamp) {
+        await supabaseClient.auth.signOut();
+        window.location.href = '/auth.html?redirect=admin';
         return;
     }
 
-    // Fetch user's profile to check role
+    const elapsed = Date.now() - parseInt(authTimestamp);
+    if (isNaN(elapsed) || elapsed > 300000) {
+        await supabaseClient.auth.signOut();
+        window.location.href = '/auth.html?redirect=admin';
+        return;
+    }
+
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) {
+        window.location.href = '/auth.html?redirect=admin';
+        return;
+    }
+
     const { data: profile, error: profileError } = await supabaseClient
         .from('profiles')
         .select('role')
@@ -21,22 +35,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         .single();
 
     if (profileError || !profile || profile.role !== 'admin') {
-        // Not an admin, redirect to homepage
         window.location.href = '/index.html';
         return;
     }
 
-    // User is admin, initialize the dashboard
+    history.replaceState(null, '', '/admin.html');
     initAdminDashboard();
 });
 
 function initAdminDashboard() {
-    // Check if we are on the admin dashboard page
-    if (!document.getElementById('admin-dashboard')) {
-        return; // Not on admin page
-    }
+    if (!document.getElementById('admin-dashboard')) return;
 
-    // Initialize markdown editor with preview
     const markdownInput = document.getElementById('markdown-input');
     const markdownPreview = document.getElementById('markdown-preview');
     const titleInput = document.getElementById('title-input');
@@ -45,27 +54,59 @@ function initAdminDashboard() {
     const statusSelect = document.getElementById('status-select');
     const savePostBtn = document.getElementById('save-post-btn');
     const postsListContainer = document.getElementById('posts-list');
+    const tagsDisplay = document.getElementById('tags-display');
+    const blogPostForm = document.getElementById('blog-post-form');
 
-    // Update preview as user types
     if (markdownInput && markdownPreview) {
         markdownInput.addEventListener('input', () => {
-            // Use marked.js to render markdown (assuming it's loaded via CDN in admin.html)
             if (window.marked) {
                 markdownPreview.innerHTML = window.marked.parse(markdownInput.value);
             } else {
-                // Fallback: show plain text with line breaks
                 markdownPreview.textContent = markdownInput.value;
                 markdownPreview.innerHTML = markdownPreview.textContent.replace(/\n/g, '<br>');
             }
         });
     }
 
-    // Load existing posts
+    if (tagsInput && tagsDisplay) {
+        const addTag = (tagText) => {
+            const cleanTag = tagText.trim();
+            if (!cleanTag) return;
+            const el = document.createElement('span');
+            el.className = 'inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-bold px-3 py-1.5 rounded-full';
+            el.innerHTML = `${cleanTag} <button type="button" class="remove-tag hover:text-red-500 transition-colors"><i class="fa-solid fa-xmark"></i></button>`;
+            el.querySelector('.remove-tag').addEventListener('click', () => { el.remove(); updateTagsInput(); });
+            tagsDisplay.appendChild(el);
+            updateTagsInput();
+        };
+
+        tagsInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ',') {
+                e.preventDefault();
+                addTag(tagsInput.value);
+                tagsInput.value = '';
+            }
+        });
+
+        tagsInput.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const text = e.clipboardData.getData('text');
+            text.split(',').forEach(t => addTag(t));
+        });
+
+        function updateTagsInput() {
+            const tags = Array.from(tagsDisplay.querySelectorAll('span'))
+                .map(el => el.childNodes[0].textContent.trim())
+                .filter(t => t.length > 0);
+            tagsInput.value = tags.join(', ');
+        }
+    }
+
     loadPosts();
 
-    // Handle saving a post
-    if (savePostBtn) {
-        savePostBtn.addEventListener('click', async () => {
+    if (blogPostForm) {
+        blogPostForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
             const title = titleInput.value.trim();
             const content = markdownInput ? markdownInput.value.trim() : '';
             const featuredImage = featuredImageInput.value.trim() || null;
@@ -75,66 +116,65 @@ function initAdminDashboard() {
                 .filter(tag => tag.length > 0);
             const status = statusSelect.value;
 
-            // Validate
-            if (!title) {
-                alert('Please enter a title');
-                return;
-            }
-            if (!content) {
-                alert('Please enter content');
-                return;
-            }
+            if (!title) { alert('Please enter a title'); return; }
+            if (!content) { alert('Please enter content'); return; }
 
-            // Disable button during save
             savePostBtn.disabled = true;
-            savePostBtn.textContent = 'Saving...';
+            savePostBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
 
             try {
-                // Get the current user's session
                 const { data: { session } } = await supabaseClient.auth.getSession();
                 if (!session) throw new Error('No session');
 
-                // Insert the new post
-                const { data, error } = await supabaseClient
-                    .from('blog_posts')
-                    .insert({
-                        title: title,
-                        content: content,
-                        excerpt: content.substring(0, 150) + (content.length > 150 ? '...' : ''),
-                        featured_image: featuredImage,
-                        status: status,
-                        tags: tags,
-                        author_id: session.user.id
-                    });
+                if (currentEditPostId) {
+                    const { error } = await supabaseClient
+                        .from('blog_posts')
+                        .update({
+                            title, content,
+                            excerpt: content.substring(0, 150) + (content.length > 150 ? '...' : ''),
+                            featured_image: featuredImage,
+                            status, tags,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', currentEditPostId);
+                    if (error) throw error;
+                    currentEditPostId = null;
+                } else {
+                    const { error } = await supabaseClient
+                        .from('blog_posts')
+                        .insert({
+                            title, content,
+                            excerpt: content.substring(0, 150) + (content.length > 150 ? '...' : ''),
+                            featured_image: featuredImage,
+                            status, tags,
+                            author_id: session.user.id
+                        });
+                    if (error) throw error;
+                }
 
-                if (error) throw error;
-
-                // Reset form
                 titleInput.value = '';
                 if (markdownInput) markdownInput.value = '';
                 featuredImageInput.value = '';
                 tagsInput.value = '';
                 statusSelect.value = 'draft';
                 if (markdownPreview) markdownPreview.innerHTML = '';
-
-                // Reload posts list
+                if (tagsDisplay) tagsDisplay.innerHTML = '';
                 loadPosts();
-
-                alert('Post saved successfully!');
+                savePostBtn.innerHTML = '<i class="fa-solid fa-cloud-upload-alt"></i> Save Post';
+                savePostBtn.disabled = false;
             } catch (err) {
                 console.error('Error saving post:', err);
                 alert('Failed to save post: ' + err.message);
-            } finally {
+                savePostBtn.innerHTML = '<i class="fa-solid fa-cloud-upload-alt"></i> Save Post';
                 savePostBtn.disabled = false;
-                savePostBtn.textContent = 'Save Post';
             }
         });
     }
 }
 
 async function loadPosts() {
-    const postsListContainer = document.getElementById('posts-list');
-    if (!postsListContainer) return;
+    const container = document.getElementById('posts-list');
+    if (!container) return;
 
     try {
         const { data: posts, error } = await supabaseClient
@@ -144,61 +184,179 @@ async function loadPosts() {
 
         if (error) throw error;
 
-        // Render posts list
-        if (posts.length === 0) {
-            postsListContainer.innerHTML = '<p>No posts found.</p>';
+        if (!posts || posts.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-12">
+                    <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-newspaper text-slate-300 text-2xl"></i>
+                    </div>
+                    <p class="text-slate-500 font-bold">No posts yet. Create your first one!</p>
+                </div>
+            `;
             return;
         }
 
-        postsListContainer.innerHTML = '';
+        container.innerHTML = '<div class="space-y-4"></div>';
+        const list = container.querySelector('div');
+
         posts.forEach(post => {
-            const postElement = document.createElement('div');
-            postElement.className = 'post-item';
-            postElement.innerHTML = `
-                <h3>${post.title}</h3>
-                <p><strong>Status:</strong> <span class="status-${post.status}">${post.status}</span></p>
-                <p><strong>Created:</strong> ${new Date(post.created_at).toLocaleString()}</p>
-                <p>${post.excerpt || post.content.substring(0, 100) + '...'}</p>
-                <div class="post-actions">
-                    <button class="btn-edit" data-id="${post.id}">Edit</button>
-                    <button class="btn-delete" data-id="${post.id}">Delete</button>
+            const date = new Date(post.created_at);
+            const formattedDate = date.toLocaleDateString('en-US', {
+                year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+
+            const statusColors = {
+                published: 'bg-emerald-100 text-emerald-700',
+                draft: 'bg-amber-100 text-amber-700',
+                archived: 'bg-red-100 text-red-700'
+            };
+
+            const statusColor = statusColors[post.status] || 'bg-slate-100 text-slate-600';
+
+            const el = document.createElement('div');
+            el.className = 'bg-slate-50 rounded-2xl p-5 border border-slate-200 hover:border-primary/20 transition-all';
+            el.innerHTML = `
+                <div class="flex items-start justify-between gap-4 mb-3">
+                    <h3 class="font-black text-slate-900 text-base leading-snug">${post.title}</h3>
+                    <span class="shrink-0 text-xs font-bold px-3 py-1 rounded-full ${statusColor}">${post.status}</span>
                 </div>
-                <hr>
+                <p class="text-slate-500 text-sm font-medium mb-3 line-clamp-2">${post.excerpt || post.content.substring(0, 100) + '...'}</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-400 font-bold"><i class="far fa-calendar mr-1"></i>${formattedDate}</span>
+                    <div class="flex gap-2">
+                        <button class="btn-edit px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 hover:border-primary hover:text-primary transition-all" data-id="${post.id}">
+                            <i class="fa-solid fa-pen"></i> Edit
+                        </button>
+                        <button class="btn-delete px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-red-500 hover:border-red-300 hover:bg-red-50 transition-all" data-id="${post.id}">
+                            <i class="fa-solid fa-trash-can"></i> Delete
+                        </button>
+                    </div>
+                </div>
+                ${post.tags && post.tags.length > 0 ? `
+                <div class="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-slate-200">
+                    ${post.tags.map(tag => `<span class="text-[10px] font-bold bg-primary/5 text-primary px-2 py-0.5 rounded-full">${tag}</span>`).join('')}
+                </div>` : ''}
             `;
-            postsListContainer.appendChild(postElement);
+            list.appendChild(el);
         });
 
-        // Add event listeners for edit/delete buttons
-        document.querySelectorAll('.btn-edit').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const postId = e.target.getAttribute('data-id');
-                // TODO: Implement edit functionality
-                alert('Edit functionality not implemented yet.');
+        container.querySelectorAll('.btn-edit').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const postId = e.currentTarget.getAttribute('data-id');
+                editPost(postId);
             });
         });
 
-        document.querySelectorAll('.btn-delete').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const postId = e.target.getAttribute('data-id');
-                if (confirm('Are you sure you want to delete this post?')) {
-                    try {
-                        const { error } = await supabaseClient
-                            .from('blog_posts')
-                            .delete()
-                            .eq('id', postId);
-
-                        if (error) throw error;
-                        loadPosts(); // Reload the list
-                        alert('Post deleted successfully.');
-                    } catch (err) {
-                        console.error('Error deleting post:', err);
-                        alert('Failed to delete post: ' + err.message);
-                    }
-                }
+        container.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const postId = e.currentTarget.getAttribute('data-id');
+                showDeleteModal(postId);
             });
         });
     } catch (err) {
         console.error('Error loading posts:', err);
-        postsListContainer.innerHTML = `<p>Error loading posts: ${err.message}</p>`;
+        container.innerHTML = `<div class="text-center py-12"><p class="text-red-500 font-bold">Error loading posts: ${err.message}</p></div>`;
     }
+}
+
+async function editPost(postId) {
+    try {
+        const { data: post, error } = await supabaseClient
+            .from('blog_posts')
+            .select('*')
+            .eq('id', postId)
+            .single();
+
+        if (error) throw error;
+
+        document.getElementById('title-input').value = post.title;
+        document.getElementById('markdown-input').value = post.content;
+        document.getElementById('featured-image-input').value = post.featured_image || '';
+        document.getElementById('status-select').value = post.status;
+
+        if (post.tags && post.tags.length > 0) {
+            document.getElementById('tags-input').value = post.tags.join(', ');
+            const display = document.getElementById('tags-display');
+            display.innerHTML = '';
+            post.tags.forEach(tag => {
+                const el = document.createElement('span');
+                el.className = 'inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-bold px-3 py-1.5 rounded-full';
+                el.innerHTML = `${tag} <button type="button" class="remove-tag hover:text-red-500 transition-colors"><i class="fa-solid fa-xmark"></i></button>`;
+                el.querySelector('.remove-tag').addEventListener('click', () => { el.remove(); updateTagsInput(); });
+                display.appendChild(el);
+            });
+        }
+
+        if (window.marked) {
+            document.getElementById('markdown-preview').innerHTML = window.marked.parse(post.content);
+        }
+
+        currentEditPostId = postId;
+        document.getElementById('save-post-btn').innerHTML = '<i class="fa-solid fa-pen"></i> Update Post';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+        console.error('Error editing post:', err);
+        alert('Failed to load post for editing: ' + err.message);
+    }
+}
+
+let pendingDeleteId = null;
+
+function showDeleteModal(postId) {
+    pendingDeleteId = postId;
+    document.getElementById('delete-modal').classList.remove('hidden');
+}
+
+async function confirmDeletePost() {
+    if (!pendingDeleteId) return;
+    try {
+        const { error } = await supabaseClient
+            .from('blog_posts')
+            .delete()
+            .eq('id', pendingDeleteId);
+        if (error) throw error;
+        pendingDeleteId = null;
+        document.getElementById('delete-modal').classList.add('hidden');
+        loadPosts();
+    } catch (err) {
+        console.error('Error deleting post:', err);
+        alert('Failed to delete post: ' + err.message);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await supabaseClient.auth.signOut();
+                window.location.href = '/auth.html?redirect=admin';
+            } catch (err) {
+                console.error('Logout error:', err);
+            }
+        });
+    }
+
+    const cancelDelete = document.getElementById('cancel-delete');
+    const confirmDelete = document.getElementById('confirm-delete');
+    if (cancelDelete) cancelDelete.addEventListener('click', () => {
+        document.getElementById('delete-modal').classList.add('hidden');
+        pendingDeleteId = null;
+    });
+    if (confirmDelete) confirmDelete.addEventListener('click', confirmDeletePost);
+    document.getElementById('delete-modal')?.addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) {
+            document.getElementById('delete-modal').classList.add('hidden');
+            pendingDeleteId = null;
+        }
+    });
+});
+
+function updateTagsInput() {
+    const display = document.getElementById('tags-display');
+    if (!display) return;
+    const tags = Array.from(display.querySelectorAll('span'))
+        .map(el => el.childNodes[0].textContent.trim())
+        .filter(t => t.length > 0);
+    document.getElementById('tags-input').value = tags.join(', ');
 }
