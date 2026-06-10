@@ -71,8 +71,8 @@
 
                 <!-- Tab Switcher -->
                 <div class="flex bg-slate-100 rounded-xl p-1 mb-6">
-                    <button type="button" id="tab-signup" class="flex-1 py-2.5 text-sm font-bold rounded-lg bg-white text-slate-900 shadow-sm transition-all">Sign Up</button>
-                    <button type="button" id="tab-login" class="flex-1 py-2.5 text-sm font-bold rounded-lg text-slate-500 hover:text-slate-700 transition-all">Log In</button>
+                    <button type="button" id="tab-signup" onclick="switchTab('signup')" class="flex-1 py-2.5 text-sm font-bold rounded-lg bg-white text-slate-900 shadow-sm transition-all">Sign Up</button>
+                    <button type="button" id="tab-login" onclick="switchTab('login')" class="flex-1 py-2.5 text-sm font-bold rounded-lg text-slate-500 hover:text-slate-700 transition-all">Log In</button>
                 </div>
 
                 <!-- Form Container -->
@@ -404,9 +404,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             if ($('plan-pro') && urlParams.get('plan') === 'pro') $('plan-pro').checked = true;
 
-            var tabSignup = $('tab-signup'), tabLogin = $('tab-login');
-            if (tabSignup) tabSignup.addEventListener('click', function () { switchTab('signup'); });
-            if (tabLogin) tabLogin.addEventListener('click', function () { switchTab('login'); });
+            // Tab clicks handled via onclick attributes
 
             var forgotLink = $('forgot-password-link');
             if (forgotLink) forgotLink.addEventListener('click', function (e) { e.preventDefault(); showForm('forgot-form'); });
