@@ -14,6 +14,15 @@
         tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { primary: '#6D28D9', secondary: '#DB2777' } } } }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        (function () {
+            var p = new URLSearchParams(window.location.search);
+            var a = p.get('authorized'), t = p.get('t');
+            if (a !== 'true' || !t || isNaN(Date.now() - parseInt(t)) || (Date.now() - parseInt(t)) > 300000) {
+                window.location.href = '/auth.html?redirect=admin';
+            }
+        })();
+    </script>
     <style>
         .hero-gradient { background: radial-gradient(circle at top right, rgba(109, 40, 217, 0.08), transparent), radial-gradient(circle at bottom left, rgba(219, 39, 119, 0.05), transparent); }
         .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
@@ -42,7 +51,13 @@
     </style>
 </head>
 <body class="bg-white text-slate-900 antialiased selection:bg-primary selection:text-white flex flex-col min-h-screen hero-gradient">
-    <main class="flex-grow pt-16 md:pt-28 pb-16 md:pb-20">
+    <div id="auth-loading" class="fixed inset-0 z-[100] bg-white flex items-center justify-center">
+        <div class="text-center">
+            <div class="inline-block w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></div>
+            <p class="text-slate-500 font-bold text-sm">Verifying access...</p>
+        </div>
+    </div>
+    <main class="flex-grow pt-16 md:pt-28 pb-16 md:pb-20" id="admin-content" style="display:none">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" id="admin-dashboard">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 pb-6 border-b border-slate-200" data-aos="fade-up">
                 <div>
