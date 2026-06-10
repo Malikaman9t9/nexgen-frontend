@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - NexGenWebLab</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .blog-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .blog-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .blog-header h1 {
+            color: #6b46c1;
+            margin-bottom: 10px;
+        }
+        .blog-posts {
+            display: grid;
+            gap: 30px;
+        }
+        .blog-post {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+        .blog-post:hover {
+            transform: translateY(-4px);
+        }
+        .blog-post-image {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+        }
+        .blog-post-content {
+            padding: 24px;
+        }
+        .blog-post-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1f2937;
+        }
+        .blog-post-excerpt {
+            color: #6b7280;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .blog-post-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+            color: #9ca3af;
+        }
+        .blog-post-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+        .blog-tag {
+            background: #eee;
+            color: #6b7280;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 40px;
+            gap: 12px;
+        }
+        .pagination button {
+            padding: 8px 16px;
+            background: #6b46c1;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .pagination span {
+            min-width: 60px;
+            text-align: center;
+        }
+        .loading, .error {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+        .error {
+            color: #ef4444;
+        }
+        .no-posts {
+            text-align: center;
+            padding: 60px;
+            color: #9ca3af;
+        }
+        @media (max-width: 768px) {
+            .blog-post-meta {
+                flex-direction: column;
+                gap: 8px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Include header from index.html or create a simple one -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <img src="assets/images/logo.png" alt="NexGenWebLab Logo">
+                <span>NexGenWebLab</span>
+            </div>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="blog.html" class="active">Blog</a>
+                <a href="contact.html">Contact</a>
+                <a href="pricing.html">Pricing</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="blog-container">
+            <div class="blog-header">
+                <h1>Our Blog</h1>
+                <p>Latest insights on web development, SEO, and digital marketing</p>
+            </div>
+            
+            <div id="blog-posts" class="blog-posts">
+                <!-- Blog posts will be loaded here -->
+            </div>
+            
+            <div id="pagination" class="pagination">
+                <button id="prev-page">« Previous</button>
+                <span id="page-info">Page 1 of 1</span>
+                <button id="next-page">Next »</button>
+            </div>
+            
+            <div id="loading" class="loading">Loading posts...</div>
+            <div id="error" class="error"></div>
+            <div id="no-posts" class="no-posts">No blog posts found.</div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; <span id="year"></span> NexGenWebLab. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+        // Blog configuration
+        const BLOG_CONFIG = {
+            postsPerPage: 6,
+            currentPage: 1
+        };
+
+        // DOM Elements
+        const blogPostsContainer = document.getElementById('blog-posts');
+        const prevPageBtn = document.getElementById('prev-page');
+        const nextPageBtn = document.getElementById('next-page');
+        const pageInfo = document.getElementById('page-info');
+        const loadingEl = document.getElementById('loading');
+        const errorEl = document.getElementById('error');
+        const noPostsEl = document.getElementById('no-posts');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set current year in footer
+            document.getElementById('year').textContent = new Date().getFullYear();
+            
+            // Load blog posts
+            loadBlogPosts();
+            
+            // Pagination event listeners
+            prevPageBtn.addEventListener('click', () => {
+                if (BLOG_CONFIG.currentPage > 1) {
+                    BLOG_CONFIG.currentPage--;
+                    loadBlogPosts();
+                }
+            });
+            
+            nextPageBtn.addEventListener('click', () => {
+                BLOG_CONFIG.currentPage++;
+                loadBlogPosts();
+            });
+        });
+
+        // Load blog posts from Supabase
+        async function loadBlogPosts() {
+            showLoading();
+            hideError();
+            hideNoPosts();
+            
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                
+                // Fetch published posts
+                const { data, error, count } = await supabaseClient
+                    .from('blog_posts')
+                    .select('*', { count: 'exact' })
+                    .eq('status', 'published')
+                    .order('created_at', { ascending: false })
+                    .range(
+                        (BLOG_CONFIG.currentPage - 1) * BLOG_CONFIG.postsPerPage,
+                        BLOG_CONFIG.currentPage * BLOG_CONFIG.postsPerPage - 1
+                    );
+                
+                if (error) throw error;
+                
+                // Update pagination
+                const totalPages = Math.ceil(count / BLOG_CONFIG.postsPerPage) || 1;
+                pageInfo.textContent = `Page ${BLOG_CONFIG.currentPage} of ${totalPages}`;
+                prevPageBtn.disabled = BLOG_CONFIG.currentPage === 1;
+                nextPageBtn.disabled = BLOG_CONFIG.currentPage >= totalPages;
+                
+                // Render posts
+                if (data.length === 0) {
+                    showNoPosts();
+                } else {
+                    renderBlogPosts(data);
+                }
+            } catch (err) {
+                console.error('Error loading blog posts:', err);
+                showError('Failed to load blog posts. Please try again later.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Render blog posts
+        function renderBlogPosts(posts) {
+            blogPostsContainer.innerHTML = '';
+            
+            posts.forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.className = 'blog-post';
+                
+                // Set background image if available
+                let imageStyle = '';
+                if (post.featured_image) {
+                    imageStyle = `style="background-image: url('${post.featured_image}')"`;
+                }
+                
+                // Format date
+                const date = new Date(post.created_at);
+                const formattedDate = date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+                
+                postElement.innerHTML = `
+                    <div class="blog-post-image" ${imageStyle}></div>
+                    <div class="blog-post-content">
+                        <h2 class="blog-post-title">${post.title}</h2>
+                        <p class="blog-post-excerpt">${post.excerpt || post.content.substring(0, 150) + '...'}</p>
+                        <div class="blog-post-meta">
+                            <span><i class="far fa-calendar"></i> ${formattedDate}</span>
+                            <span><i class="far fa-user"></i> By ${post.author_name || 'NexGenWebLab'}</span>
+                        </div>
+                        <div class="blog-post-tags">
+                            ${post.tags ? post.tags.map(tag => `<span class="blog-tag">${tag}</span>`).join('') : ''}
+                        </div>
+                        <a href="blog.html?id=${post.id}" class="btn btn-primary">Read More</a>
+                    </div>
+                `;
+                
+                blogPostsContainer.appendChild(postElement);
+            });
+        }
+
+        // UI helpers
+        function showLoading() {
+            loadingEl.style.display = 'block';
+            blogPostsContainer.style.display = 'none';
+        }
+        
+        function hideLoading() {
+            loadingEl.style.display = 'none';
+            blogPostsContainer.style.display = 'grid';
+        }
+        
+        function showError(message) {
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+        }
+        
+        function hideError() {
+            errorEl.style.display = 'none';
+        }
+        
+        function showNoPosts() {
+            noPostsEl.style.display = 'block';
+            blogPostsContainer.style.display = 'none';
+            prevPageBtn.style.display = 'none';
+            nextPageBtn.style.display = 'none';
+            pageInfo.style.display = 'none';
+        }
+        
+        function hideNoPosts() {
+            noPostsEl.style.display = 'none';
+            prevPageBtn.style.display = 'inline-block';
+            nextPageBtn.style.display = 'inline-block';
+            pageInfo.style.display = 'inline-block';
+        }
+    </script>
+</body>
+</html>
