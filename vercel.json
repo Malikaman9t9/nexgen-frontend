@@ -3,5 +3,13 @@
   "trailingSlash": false,
   "rewrites": [
     { "source": "/sitemap", "destination": "/sitemap.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache" }
+      ]
+    }
   ]
 }
