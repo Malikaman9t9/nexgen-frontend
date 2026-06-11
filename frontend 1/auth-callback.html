@@ -25,6 +25,7 @@
       anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVibnZqbXZvYnd6c3l0ZGt0cGsiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzE2MjIwMSwiZXhwIjoxOTU4NzM4MjAxfQ.VHm8R3QkY8GbnGMoJCL-FP3T3Y3fqBfNLqhYJ3Ew1R8'
     };
     var supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+    var TOOLS_URL = 'https://tools.nexgenweblab.com';
 
     (async function () {
       try {
@@ -35,14 +36,13 @@
         }
 
         var adminResult = await supabase.from('admin_users').select('id, role').eq('id', sessionResult.data.session.user.id).single();
-        if (adminResult.error || !adminResult.data) {
-          await supabase.auth.signOut();
-          window.location.href = '/auth.html';
+        if (adminResult.data) {
+          sessionStorage.setItem('nexgen_admin_role', adminResult.data.role);
+          window.location.href = '/admin/dashboard.html';
           return;
         }
 
-        sessionStorage.setItem('nexgen_admin_role', adminResult.data.role);
-        window.location.href = '/admin/dashboard.html';
+        window.location.href = TOOLS_URL;
       } catch (err) {
         window.location.href = '/auth.html';
       }
