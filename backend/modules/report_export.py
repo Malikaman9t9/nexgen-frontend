@@ -259,8 +259,15 @@ def generate_word_report(url, onpage_data, speed_data, traffic_data, ai_suggesti
         # Traffic Sources Pie Chart
         top_referrals = traffic_data.get('top_referrals', [])
         if top_referrals and len(top_referrals) > 0:
-            labels = [item[0] for item in top_referrals[:5]]  # Top 5
-            sizes = [item[1] for item in top_referrals[:5]]
+            labels = []
+            sizes = []
+            for ref in top_referrals[:5]:
+                if isinstance(ref, dict):
+                    labels.append(ref.get('source', 'Unknown'))
+                    sizes.append(ref.get('visits', 0))
+                elif isinstance(ref, (list, tuple)) and len(ref) >= 2:
+                    labels.append(ref[0])
+                    sizes.append(ref[1])
             # Add "Other" for remaining traffic
             other = 100 - sum(sizes)
             if other > 0:
@@ -288,7 +295,7 @@ def generate_word_report(url, onpage_data, speed_data, traffic_data, ai_suggesti
     doc.add_heading('Top Organic Keywords', level=1)
     
     top_keywords = traffic_data.get('top_keywords', []) if traffic_data else []
-    if top_keywords:
+    if top_keywords and isinstance(top_keywords, list):
         table = doc.add_table(rows=1, cols=2)
         table.style = 'Table Grid'
         hdr_cells = table.rows[0].cells
@@ -297,10 +304,18 @@ def generate_word_report(url, onpage_data, speed_data, traffic_data, ai_suggesti
         hdr_cells[0].paragraphs[0].runs[0].bold = True
         hdr_cells[1].paragraphs[0].runs[0].bold = True
         
-        for keyword, position in top_keywords:
+        for item in top_keywords:
+            if isinstance(item, dict):
+                kw = item.get('keyword', 'Unknown')
+                pos = str(item.get('position', item.get('visits', 'N/A')))
+            elif isinstance(item, (list, tuple)) and len(item) >= 2:
+                kw = item[0]
+                pos = str(item[1])
+            else:
+                continue
             row_cells = table.add_row().cells
-            row_cells[0].text = keyword
-            row_cells[1].text = str(position)
+            row_cells[0].text = kw
+            row_cells[1].text = pos
     else:
         doc.add_paragraph("No keyword data available.")
     
@@ -310,7 +325,7 @@ def generate_word_report(url, onpage_data, speed_data, traffic_data, ai_suggesti
     doc.add_heading('Top Visitor Countries', level=1)
     
     top_countries = traffic_data.get('top_countries', []) if traffic_data else []
-    if top_countries:
+    if top_countries and isinstance(top_countries, list):
         table = doc.add_table(rows=1, cols=2)
         table.style = 'Table Grid'
         hdr_cells = table.rows[0].cells
@@ -319,10 +334,15 @@ def generate_word_report(url, onpage_data, speed_data, traffic_data, ai_suggesti
         hdr_cells[0].paragraphs[0].runs[0].bold = True
         hdr_cells[1].paragraphs[0].runs[0].bold = True
         
-        for country, percentage in top_countries:
-            row_cells = table.add_row().cells
-            row_cells[0].text = country
-            row_cells[1].text = f"{percentage}%"
+        for item in top_countries:
+            if isinstance(item, dict):
+                row_cells = table.add_row().cells
+                row_cells[0].text = item.get('country', 'Unknown')
+                row_cells[1].text = item.get('share', 'N/A')
+            elif isinstance(item, (list, tuple)) and len(item) >= 2:
+                row_cells = table.add_row().cells
+                row_cells[0].text = item[0]
+                row_cells[1].text = f"{item[1]}%"
     else:
         doc.add_paragraph("No country data available.")
     

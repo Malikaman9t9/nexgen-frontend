@@ -1,5 +1,6 @@
 import os
 import io
+import traceback
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, HTMLResponse, JSONResponse
@@ -21,13 +22,16 @@ RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
 
 app = FastAPI(title="NexGenWebLab API")
 
-CORS_ORIGINS = [
-    "https://tools.nexgenweblab.com",
-    "https://nexgenweblab.com",
-    "http://localhost:5173",
-    "http://localhost:4173",
-    "*"
-]
+CORS_RAW = os.getenv("ALLOWED_ORIGINS")
+if CORS_RAW:
+    CORS_ORIGINS = [o.strip() for o in CORS_RAW.split(",") if o.strip()]
+else:
+    CORS_ORIGINS = [
+        "https://tools.nexgenweblab.com",
+        "https://nexgenweblab.com",
+        "http://localhost:5173",
+        "http://localhost:4173",
+    ]
 
 app.add_middleware(
     CORSMiddleware,
@@ -37,13 +41,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 class URLRequest(BaseModel):
     url: str
+
 
 class AIRequest(BaseModel):
     onpage_data: dict
     mobile_speed: int = 0
     desktop_speed: int = 0
+
 
 class ExportRequest(BaseModel):
     url: str
@@ -54,6 +61,7 @@ class ExportRequest(BaseModel):
     agency_name: str = "NexGenWebLab Pro"
     client_name: str = "Client"
     author_name: str = "SEO Team"
+
 
 class HTMLReportRequest(BaseModel):
     url: str
@@ -71,37 +79,77 @@ class HTMLReportRequest(BaseModel):
     language: str = "en"
     white_label: bool = False
 
+
 class BulkReportRequest(BaseModel):
     reports: list
     agency_name: str = "NexGenWebLab"
+
 
 @app.get("/")
 def root():
     return {"message": "NexGenWebLab API", "version": "1.0", "docs": "/docs"}
 
+
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
 
+
 @app.post("/api/onpage")
 def onpage(req: URLRequest):
-    return get_basic_onpage(req.url)
+    if not req.url or not req.url.strip():
+        return JSONResponse({"error": "url is required"}, status_code=422)
+    try:
+        result = get_basic_onpage(req.url.strip())
+        if result is None:
+            return JSONResponse({"error": "Failed to scrape URL — page unreachable or returned non-200"}, status_code=502)
+        return result
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse({"error": f"On-page analysis failed: {str(e)}"}, status_code=500)
+
 
 @app.post("/api/speed")
 def speed(req: URLRequest):
-    return check_speed(req.url, SPEED_API_KEY)
+    if not req.url or not req.url.strip():
+        return JSONResponse({"error": "url is required"}, status_code=422)
+    try:
+        result = check_speed(req.url.strip(), SPEED_API_KEY)
+        if result is None:
+            return JSONResponse({"error": "Speed analysis returned no data"}, status_code=502)
+        return result
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse({"error": f"Speed analysis failed: {str(e)}"}, status_code=500)
+
 
 @app.post("/api/traffic")
 def traffic(req: URLRequest):
-    return get_traffic_data(req.url, RAPIDAPI_KEY)
+    if not req.url or not req.url.strip():
+        return JSONResponse({"error": "url is required"}, status_code=422)
+    try:
+        return get_traffic_data(req.url.strip(), RAPIDAPI_KEY)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse({"error": f"Traffic analysis failed: {str(e)}"}, status_code=500)
+
 
 @app.post("/api/ai")
 def ai(req: AIRequest):
-    seo_data = {**req.onpage_data, "mobile_speed": req.mobile_speed, "desktop_speed": req.desktop_speed}
-    return get_ai_suggestions(seo_data, GEMINI_API_KEY)
+    if not req.onpage_data:
+        return JSONResponse({"error": "onpage_data is required"}, status_code=422)
+    try:
+        seo_data = {**req.onpage_data, "mobile_speed": req.mobile_speed, "desktop_speed": req.desktop_speed}
+        return get_ai_suggestions(seo_data, GEMINI_API_KEY)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse({"error": f"AI analysis failed: {str(e)}"}, status_code=500)
+
 
 @app.post("/api/export")
 def export_report(req: ExportRequest):
+    if not req.url or not req.url.strip():
+        return JSONResponse({"error": "url is required"}, status_code=422)
     try:
         docx_bytes = generate_word_report(
             url=req.url,
@@ -113,36 +161,44 @@ def export_report(req: ExportRequest):
             client_name=req.client_name or "Client",
             author_name=req.author_name or "SEO Team",
         )
+        filename = req.client_name.replace(" ", "_") if req.client_name else "SEO_Report"
         return StreamingResponse(
             io.BytesIO(docx_bytes),
             media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            headers={"Content-Disposition": f"attachment; filename={req.client_name.replace(' ', '_') if req.client_name else 'SEO_Report'}_SEO_Report.docx"},
+            headers={"Content-Disposition": f"attachment; filename={filename}_SEO_Report.docx"},
         )
     except Exception as e:
-        print(f"[ERROR] Export failed: {str(e)}")
-        import traceback
         traceback.print_exc()
         return JSONResponse({"error": str(e), "detail": traceback.format_exc()}, status_code=500)
 
+
 @app.post("/api/export/html")
 def export_html_report(req: HTMLReportRequest):
-    html_bytes = generate_html_report_single(
-        url=req.url,
-        onpage_data=req.onpage_data,
-        speed_data=req.speed_data,
-        traffic_data=req.traffic_data,
-        ai_suggestions=req.ai_suggestions,
-        agency_name=req.agency_name,
-        client_name=req.client_name,
-        author_name=req.author_name,
-        logo_url=req.logo_url,
-        custom_css=req.custom_css,
-    )
-    return StreamingResponse(
-        io.BytesIO(html_bytes),
-        media_type="text/html",
-        headers={"Content-Disposition": f"attachment; filename={req.client_name.replace(' ', '_')}_SEO_Report.html"},
-    )
+    if not req.url or not req.url.strip():
+        return JSONResponse({"error": "url is required"}, status_code=422)
+    try:
+        html_bytes = generate_html_report_single(
+            url=req.url,
+            onpage_data=req.onpage_data or {},
+            speed_data=req.speed_data or {},
+            traffic_data=req.traffic_data or {},
+            ai_suggestions=req.ai_suggestions or [],
+            agency_name=req.agency_name or "NexGenWebLab",
+            client_name=req.client_name or "Client",
+            author_name=req.author_name or "SEO Team",
+            logo_url=req.logo_url or "",
+            custom_css=req.custom_css or "",
+        )
+        filename = req.client_name.replace(" ", "_") if req.client_name else "SEO_Report"
+        return StreamingResponse(
+            io.BytesIO(html_bytes),
+            media_type="text/html",
+            headers={"Content-Disposition": f"attachment; filename={filename}_SEO_Report.html"},
+        )
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse({"error": f"HTML export failed: {str(e)}"}, status_code=500)
+
 
 @app.post("/api/export/html/preview")
 def preview_html_report(req: HTMLReportRequest):
@@ -157,16 +213,16 @@ def preview_html_report(req: HTMLReportRequest):
                     logo_base64 = b64.b64encode(resp.content).decode()
             except Exception as e:
                 print(f"Logo fetch error: {e}")
-        
+
         html_bytes = generate_advanced_html_report(
-            url=req.url,
-            onpage_data=req.onpage_data,
+            url=req.url or "",
+            onpage_data=req.onpage_data or {},
             speed_data=req.speed_data or {},
             traffic_data=req.traffic_data or {},
             ai_suggestions=req.ai_suggestions or [],
-            agency_name=req.agency_name,
-            client_name=req.client_name,
-            author_name=req.author_name,
+            agency_name=req.agency_name or "NexGenWebLab",
+            client_name=req.client_name or "Client",
+            author_name=req.author_name or "SEO Team",
             logo_base64=logo_base64,
             custom_css=req.custom_css or "",
             primary_color=req.primary_color,
@@ -174,53 +230,63 @@ def preview_html_report(req: HTMLReportRequest):
             language=req.language,
             white_label=req.white_label,
         )
-        html_content = html_bytes.decode('utf-8') if isinstance(html_bytes, bytes) else html_bytes
+        html_content = html_bytes.decode("utf-8") if isinstance(html_bytes, bytes) else html_bytes
         return HTMLResponse(content=html_content)
     except Exception as e:
-        error_msg = str(e)
-        try:
-            import traceback
-            error_msg += "\n" + traceback.format_exc()
-        except:
-            pass
+        error_msg = str(e) + "\n" + traceback.format_exc()
         content = error_msg[:2000]
         if isinstance(content, bytes):
-            content = content.decode('utf-8', errors='replace')
-        return HTMLResponse(content=f"<html><body><h1>Error generating report</h1><p style='font-family:monospace;white-space:pre-wrap;'>{content}</p></body></html>", status_code=500)
+            content = content.decode("utf-8", errors="replace")
+        return HTMLResponse(
+            content=f"<html><body><h1>Error generating report</h1><p style='font-family:monospace;white-space:pre-wrap;'>{content}</p></body></html>",
+            status_code=500,
+        )
+
 
 @app.post("/api/export/bulk/html")
 def export_bulk_html_report(req: BulkReportRequest):
-    combined_html = generate_html_report_bulk(
-        reports_data=req.reports,
-        agency_name=req.agency_name,
-    )
-    return StreamingResponse(
-        io.BytesIO(combined_html),
-        media_type="text/html",
-        headers={"Content-Disposition": "attachment; filename=bulk_seo_report.html"},
-    )
+    if not req.reports or not isinstance(req.reports, list):
+        return JSONResponse({"error": "reports must be a non-empty list"}, status_code=422)
+    try:
+        combined_html = generate_html_report_bulk(
+            reports_data=req.reports,
+            agency_name=req.agency_name or "NexGenWebLab",
+        )
+        return StreamingResponse(
+            io.BytesIO(combined_html),
+            media_type="text/html",
+            headers={"Content-Disposition": "attachment; filename=bulk_seo_report.html"},
+        )
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse({"error": f"Bulk export failed: {str(e)}"}, status_code=500)
+
 
 @app.get("/api/report-template")
 def get_report_template():
-    template = {
-        "sections": [
-            {"id": "header", "name": "Report Header", "enabled": True},
-            {"id": "scores", "name": "Performance Scores", "enabled": True},
-            {"id": "metrics", "name": "Key Metrics", "enabled": True},
-            {"id": "onpage", "name": "On-Page SEO", "enabled": True},
-            {"id": "speed", "name": "Core Web Vitals", "enabled": True},
-            {"id": "traffic", "name": "Traffic Analysis", "enabled": True},
-            {"id": "ai", "name": "AI Recommendations", "enabled": True},
-            {"id": "keywords", "name": "Top Keywords", "enabled": True},
-        ],
-        "customizations": {
-            "logo_url": "",
-            "primary_color": "#6D28D9",
-            "secondary_color": "#DB2777",
-            "agency_name": "NexGenWebLab",
-            "show_gauges": True,
-            "show_charts": True,
-            "white_label": False,
+    try:
+        template = {
+            "sections": [
+                {"id": "header", "name": "Report Header", "enabled": True},
+                {"id": "scores", "name": "Performance Scores", "enabled": True},
+                {"id": "metrics", "name": "Key Metrics", "enabled": True},
+                {"id": "onpage", "name": "On-Page SEO", "enabled": True},
+                {"id": "speed", "name": "Core Web Vitals", "enabled": True},
+                {"id": "traffic", "name": "Traffic Analysis", "enabled": True},
+                {"id": "ai", "name": "AI Recommendations", "enabled": True},
+                {"id": "keywords", "name": "Top Keywords", "enabled": True},
+            ],
+            "customizations": {
+                "logo_url": "",
+                "primary_color": "#6D28D9",
+                "secondary_color": "#DB2777",
+                "agency_name": "NexGenWebLab",
+                "show_gauges": True,
+                "show_charts": True,
+                "white_label": False,
+            },
         }
-    }
-    return template
+        return template
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse({"error": f"Failed to load template: {str(e)}"}, status_code=500)
