@@ -97,7 +97,8 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       const params = new URLSearchParams(window.location.search);
-      const slug = params.get('slug');
+      const pathSlug = window.location.pathname.split('/blog/')[1];
+      const slug = params.get('slug') || pathSlug || '';
       if (!slug) { showError('No post specified.'); return; }
       loadPost(slug);
     });

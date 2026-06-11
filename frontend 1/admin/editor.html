@@ -38,13 +38,13 @@
       <a href="/" class="flex items-center gap-2"><img src="/assets/images/logo.png" alt="NexGenWebLab" class="h-6"></a>
     </div>
     <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-      <a href="/admin/dashboard" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500">
+      <a href="/admin/dashboard.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500">
         <i class="fa-solid fa-table-columns w-5 text-center"></i> Posts
       </a>
-      <a href="/admin/editor" class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-primary bg-primary/10">
+      <a href="/admin/editor.html" class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-primary bg-primary/10">
         <i class="fa-solid fa-plus w-5 text-center"></i> New Post
       </a>
-      <a href="/admin/dashboard?tab=settings" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500">
+      <a href="/admin/dashboard.html?tab=settings" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500">
         <i class="fa-solid fa-gear w-5 text-center"></i> Settings
       </a>
     </nav>
@@ -99,13 +99,19 @@
         <div>
           <label for="excerpt" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Excerpt</label>
           <textarea id="excerpt" rows="2" placeholder="Brief summary for blog cards..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-white text-sm font-medium outline-none transition-all focus:border-primary focus:shadow-[0_0_0_3px_rgba(109,40,217,0.08)]"></textarea>
+          <div class="flex justify-end mt-1">
+            <span id="excerpt-counter" class="text-xs font-semibold text-slate-400">0 / 300</span>
+          </div>
         </div>
 
         <div class="grid sm:grid-cols-2 gap-5">
-          <div>
-            <label for="cover-image" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Cover Image URL</label>
-            <input type="url" id="cover-image" placeholder="https://example.com/image.jpg" class="w-full h-11 px-4 rounded-xl border-2 border-slate-200 bg-white text-sm font-medium outline-none transition-all focus:border-primary focus:shadow-[0_0_0_3px_rgba(109,40,217,0.08)]">
+        <div>
+          <label for="cover-image" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Cover Image URL</label>
+          <input type="url" id="cover-image" placeholder="https://example.com/image.jpg" class="w-full h-11 px-4 rounded-xl border-2 border-slate-200 bg-white text-sm font-medium outline-none transition-all focus:border-primary focus:shadow-[0_0_0_3px_rgba(109,40,217,0.08)]">
+          <div id="cover-preview" class="hidden mt-2 rounded-xl overflow-hidden border border-slate-200 max-h-40">
+            <img id="cover-preview-img" src="" alt="Cover preview" class="w-full h-full object-cover">
           </div>
+        </div>
           <div>
             <label for="author-name" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Author Name</label>
             <input type="text" id="author-name" placeholder="NexGenWebLab Team" class="w-full h-11 px-4 rounded-xl border-2 border-slate-200 bg-white text-sm font-semibold outline-none transition-all focus:border-primary focus:shadow-[0_0_0_3px_rgba(109,40,217,0.08)]">
@@ -113,8 +119,9 @@
         </div>
 
         <div>
-          <label for="tags" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Tags (comma separated)</label>
+          <label for="tags" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Tags</label>
           <input type="text" id="tags" placeholder="seo, web development, marketing" class="w-full h-11 px-4 rounded-xl border-2 border-slate-200 bg-white text-sm font-medium outline-none transition-all focus:border-primary focus:shadow-[0_0_0_3px_rgba(109,40,217,0.08)]">
+          <div id="tags-pills" class="flex flex-wrap gap-2 mt-2"></div>
         </div>
 
         <div>
@@ -137,8 +144,8 @@
         <button id="close-mobile" class="p-2 rounded-lg hover:bg-slate-100"><i class="fa-solid fa-xmark text-lg text-slate-500"></i></button>
       </div>
       <nav class="space-y-1">
-        <a href="/admin/dashboard" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-50"><i class="fa-solid fa-table-columns w-5 text-center"></i> Posts</a>
-        <a href="/admin/editor" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-primary bg-primary/10"><i class="fa-solid fa-plus w-5 text-center"></i> New Post</a>
+        <a href="/admin/dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-50"><i class="fa-solid fa-table-columns w-5 text-center"></i> Posts</a>
+        <a href="/admin/editor.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-primary bg-primary/10"><i class="fa-solid fa-plus w-5 text-center"></i> New Post</a>
       </nav>
       <div class="absolute bottom-4 left-4 right-4">
         <button id="mobile-logout" class="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-semibold text-red-500 hover:bg-red-50"><i class="fa-solid fa-right-from-bracket w-5 text-center"></i> Logout</button>
@@ -159,9 +166,10 @@
     // Auth check
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { window.location.href = '/admin'; return; }
-      const { data: admin } = await supabase.from('admin_users').select('id').eq('id', session.user.id).single();
-      if (!admin) { await supabase.auth.signOut(); window.location.href = '/admin'; return; }
+      if (!session) { window.location.href = '/auth.html'; return; }
+      const { data: admin } = await supabase.from('admin_users').select('id, role').eq('id', session.user.id).single();
+      if (!admin) { await supabase.auth.signOut(); window.location.href = '/auth.html'; return; }
+      sessionStorage.setItem('nexgen_admin_role', admin.role);
       initEditor();
     })();
 
@@ -210,6 +218,37 @@
         this.dataset.manual = this.value.length > 0 ? 'true' : '';
       });
 
+      // Cover image preview
+      document.getElementById('cover-image').addEventListener('input', function () {
+        const preview = document.getElementById('cover-preview');
+        const img = document.getElementById('cover-preview-img');
+        const url = this.value.trim();
+        if (url) {
+          preview.classList.remove('hidden');
+          img.src = url;
+          img.onerror = function () { preview.classList.add('hidden'); };
+        } else {
+          preview.classList.add('hidden');
+        }
+      });
+
+      // Tags pills
+      document.getElementById('tags').addEventListener('input', function () {
+        const container = document.getElementById('tags-pills');
+        const tags = this.value.split(',').map(t => t.trim()).filter(Boolean);
+        container.innerHTML = tags.map(tag =>
+          '<span class="inline-block bg-primary/5 text-primary text-xs font-bold px-3 py-1 rounded-full">' + tag + '</span>'
+        ).join('');
+      });
+
+      // Excerpt character counter
+      document.getElementById('excerpt').addEventListener('input', function () {
+        const counter = document.getElementById('excerpt-counter');
+        const len = this.value.length;
+        counter.textContent = len + ' / 300';
+        counter.className = 'text-xs font-semibold ' + (len > 300 ? 'text-red-500' : 'text-slate-400');
+      });
+
       // Status toggle
       document.getElementById('status-draft').addEventListener('click', () => setStatus('draft'));
       document.getElementById('status-published').addEventListener('click', () => setStatus('published'));
@@ -254,7 +293,7 @@
         document.getElementById('editor-form').classList.remove('hidden');
       } catch (err) {
         alert('Failed to load post: ' + err.message);
-        window.location.href = '/admin/dashboard';
+        window.location.href = '/admin/dashboard.html';
       }
     }
 
@@ -325,7 +364,7 @@
       (async () => {
         try {
           await supabase.from('blog_posts').delete().eq('id', editPostId);
-          window.location.href = '/admin/dashboard';
+          window.location.href = '/admin/dashboard.html';
         } catch (err) {
           alert('Delete failed: ' + err.message);
         }
@@ -335,7 +374,8 @@
     // Logout
     async function logout() {
       await supabase.auth.signOut();
-      window.location.href = '/admin';
+      sessionStorage.removeItem('nexgen_admin_role');
+      window.location.href = '/auth.html';
     }
     document.getElementById('logout-btn').addEventListener('click', logout);
     document.getElementById('mobile-logout').addEventListener('click', logout);
