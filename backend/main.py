@@ -1,3 +1,11 @@
+# DEPRECATED — do not use. Routes moved to api.py.
+# This file is kept only for backward compatibility in case Render
+# or another host still references main.py as the entrypoint.
+# All active development should happen in api.py.
+#
+# Routes that exist ONLY in main.py (not in api.py): none
+# (api.py has all the routes main.py has, plus export/html, export/bulk/html, etc.)
+
 import os
 import io
 from fastapi import FastAPI
@@ -29,56 +37,67 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 class URLRequest(BaseModel):
     url: str
+
 
 class AIRequest(BaseModel):
     onpage_data: dict
     mobile_speed: int = 0
     desktop_speed: int = 0
 
+
 class ExportRequest(BaseModel):
     url: str
     onpage_data: dict
-    speed_data: dict
+    speed_data: dict = {}
+    traffic_data: dict = {}
     ai_suggestions: list = []
     agency_name: str = "NexGenWebLab Pro"
     client_name: str = "Client"
     author_name: str = "SEO Team"
 
+
 @app.post("/api/onpage")
 def onpage(req: URLRequest):
     return get_basic_onpage(req.url)
+
 
 @app.post("/api/speed")
 def speed(req: URLRequest):
     return check_speed(req.url, SPEED_API_KEY)
 
+
 @app.post("/api/traffic")
 def traffic(req: URLRequest):
     return get_traffic_data(req.url, RAPIDAPI_KEY)
+
 
 @app.post("/api/ai")
 def ai(req: AIRequest):
     seo_data = {**req.onpage_data, "mobile_speed": req.mobile_speed, "desktop_speed": req.desktop_speed}
     return get_ai_suggestions(seo_data, GEMINI_API_KEY)
 
+
 @app.post("/api/export")
 def export_report(req: ExportRequest):
     docx_bytes = generate_word_report(
         url=req.url,
-        onpage_data=req.onpage_data,
-        speed_data=req.speed_data,
-        ai_suggestions=req.ai_suggestions,
-        agency_name=req.agency_name,
-        client_name=req.client_name,
-        author_name=req.author_name,
+        onpage_data=req.onpage_data or {},
+        speed_data=req.speed_data or {},
+        traffic_data=req.traffic_data or {},
+        ai_suggestions=req.ai_suggestions or [],
+        agency_name=req.agency_name or "NexGenWebLab",
+        client_name=req.client_name or "Client",
+        author_name=req.author_name or "SEO Team",
     )
     return StreamingResponse(
         io.BytesIO(docx_bytes),
         media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         headers={"Content-Disposition": f"attachment; filename={req.client_name.replace(' ', '_')}_SEO_Report.docx"},
     )
+
 
 @app.get("/api/health")
 def health():
