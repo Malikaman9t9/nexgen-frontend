@@ -3,155 +3,444 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Redirecting... — NexGenWebLab</title>
-  <meta http-equiv="refresh" content="0;url=/auth.html">
-  <script>window.location.href = '/auth.html';</script>
+  <title>Admin Sign In — NexGenWebLab</title>
   <meta name="robots" content="noindex, nofollow">
   <link rel="icon" type="image/png" href="/assets/images/favicon.png">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { primary: '#6D28D9', secondary: '#DB2777' } } } }
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: { primary: '#6D28D9', secondary: '#DB2777' }
+        }
+      }
+    }
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    .brand-gradient { background: linear-gradient(135deg, #6D28D9 0%, #DB2777 100%); }
-    .brand-gradient-light { background: linear-gradient(135deg, rgba(109,40,217,0.06), rgba(219,39,119,0.04)); }
-    .input-field { transition: all 0.15s; }
-    .input-field:focus { border-color: #6D28D9; background: #fff; box-shadow: 0 0 0 3px rgba(109,40,217,0.08); }
-    .input-field.input-error { border-color: #dc2626; background: #fef2f2; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-    .fade-in { animation: fadeIn 0.35s ease; }
-    .bg-grid { background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0); background-size: 24px 24px; }
+    :root {
+      --purple: #6D28D9;
+      --pink: #DB2777;
+      --slate-900: #0f172a;
+      --slate-700: #334155;
+      --slate-600: #475569;
+      --slate-500: #64748b;
+      --slate-400: #94a3b8;
+      --slate-300: #cbd5e1;
+      --slate-200: #e2e8f0;
+      --slate-100: #f1f5f9;
+      --slate-50: #f8fafc;
+      --red: #dc2626;
+      --red-light: #fef2f2;
+      --green-light: #f0fdf4;
+      --radius-sm: 10px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #fff; color: var(--slate-900); min-height: 100vh; }
+
+    .login-split { display: flex; min-height: 100vh; }
+
+    .login-brand-panel {
+      flex: 0 0 40%;
+      background: linear-gradient(135deg, var(--purple) 0%, var(--pink) 100%);
+      display: flex;
+      flex-direction: column;
+      padding: 40px;
+      position: relative;
+      overflow: hidden;
+      min-height: 100vh;
+    }
+    .login-brand-panel::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .login-brand-top { position: relative; z-index: 1; margin-bottom: auto; }
+    .login-brand-logo-img { height: 28px; filter: brightness(0) invert(1); }
+    .login-brand-center {
+      position: relative; z-index: 1; flex: 1;
+      display: flex; flex-direction: column; justify-content: center;
+      color: #fff;
+    }
+    .login-brand-bottom { position: relative; z-index: 1; margin-top: auto; }
+    .login-brand-title {
+      font-size: 32px; font-weight: 900; line-height: 1.2;
+      margin-bottom: 12px; letter-spacing: -0.02em;
+    }
+    .login-brand-title span {
+      background: linear-gradient(135deg, #fcd34d, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .login-brand-features {
+      list-style: none; padding: 0;
+      display: flex; flex-direction: column; gap: 18px;
+    }
+    .login-brand-features li {
+      display: flex; align-items: center; gap: 12px;
+      font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.9);
+    }
+    .login-brand-features li svg { flex-shrink: 0; opacity: 0.8; }
+    .login-brand-bottom-text {
+      font-size: 13px; font-weight: 500; opacity: 0.7; margin: 0;
+    }
+
+    .login-form-panel {
+      flex: 0 0 60%;
+      display: flex; align-items: center; justify-content: center;
+      padding: 40px; background: #fff;
+    }
+    .login-form-container { width: 100%; max-width: 420px; }
+    .login-welcome {
+      font-size: 24px; font-weight: 900; color: var(--slate-900); margin-bottom: 4px;
+    }
+    .login-welcome-sub {
+      font-size: 14px; font-weight: 500; color: var(--slate-400); margin-bottom: 28px;
+    }
+
+    .login-form-body { display: flex; flex-direction: column; gap: 18px; }
+
+    .login-submit-error {
+      padding: 12px 16px; background: var(--red-light);
+      border: 1px solid #fecaca; color: var(--red);
+      border-radius: var(--radius-sm); font-size: 14px; font-weight: 600;
+    }
+    .login-reset-sent {
+      padding: 12px 16px; background: var(--green-light);
+      border: 1px solid #bbf7d0; color: #166534;
+      border-radius: var(--radius-sm); font-size: 14px; font-weight: 600;
+    }
+
+    .login-field { display: flex; flex-direction: column; gap: 6px; }
+    .login-field label {
+      font-size: 13px; font-weight: 700; color: var(--slate-600); letter-spacing: 0.3px;
+    }
+
+    .input-wrapper {
+      display: flex; align-items: center; height: 48px;
+      border: 2px solid var(--slate-200); border-radius: var(--radius-sm);
+      background: var(--slate-50); transition: all 0.15s; overflow: hidden;
+    }
+    .input-wrapper:focus-within {
+      border-color: var(--purple); background: #fff;
+      box-shadow: 0 0 0 3px rgba(109,40,217,0.08);
+    }
+    .input-wrapper.input-error {
+      border-color: var(--red); background: var(--red-light);
+    }
+    .input-icon {
+      flex-shrink: 0; color: var(--slate-400); margin-left: 14px; font-size: 16px;
+    }
+    .input-wrapper input {
+      flex: 1; height: 100%; padding: 0 12px; border: none;
+      background: transparent; font-size: 15px; font-weight: 500; color: var(--slate-900);
+    }
+    .input-wrapper input:focus { outline: none; }
+    .input-wrapper input::placeholder { color: var(--slate-400); }
+
+    .input-toggle {
+      flex-shrink: 0; width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--slate-400); background: none; border: none;
+      cursor: pointer; border-radius: 6px; transition: all 0.15s; margin-right: 4px;
+    }
+    .input-toggle:hover { color: var(--slate-600); background: var(--slate-100); }
+
+    .field-error {
+      font-size: 12px; font-weight: 600; color: var(--red); margin-top: 2px;
+    }
+
+    .forgot-row { text-align: right; margin-top: -4px; }
+    .forgot-link {
+      background: none; border: none; color: var(--purple);
+      font-size: 13px; font-weight: 600; cursor: pointer; padding: 0;
+      transition: color 0.15s;
+    }
+    .forgot-link:hover { color: #7c3aed; }
+    .forgot-link:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-primary {
+      width: 100%; height: 50px; border: none; border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      color: #fff; font-size: 16px; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.9; transform: scale(1.01); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .login-divider {
+      display: flex; align-items: center; gap: 16px;
+      color: var(--slate-400); font-size: 13px; font-weight: 500;
+    }
+    .login-divider::before,
+    .login-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--slate-200);
+    }
+
+    .btn-google {
+      width: 100%; height: 48px;
+      border: 2px solid var(--slate-200); border-radius: var(--radius-sm);
+      background: #fff; color: var(--slate-700); font-size: 15px; font-weight: 600;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: all 0.15s;
+    }
+    .btn-google:hover { border-color: var(--slate-300); background: var(--slate-50); }
+    .btn-google:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .back-link {
+      text-align: center; font-size: 13px; color: var(--slate-500); margin: 0;
+    }
+    .back-link a {
+      color: var(--purple); font-weight: 700; text-decoration: none;
+    }
+    .back-link a:hover { text-decoration: underline; }
+
+    .spinner {
+      display: inline-block; width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .skip-link { position: absolute; left: -9999px; }
+    .skip-link:focus { left: 16px; top: 16px; z-index: 999; background: #fff; padding: 8px 16px; border-radius: 6px; }
+
+    @media (max-width: 767px) {
+      .login-split { flex-direction: column; }
+      .login-brand-panel { display: none; }
+      .login-form-panel { flex: 1; padding: 32px 24px; }
+      .login-form-container { max-width: 100%; }
+    }
   </style>
 </head>
-<body class="font-sans antialiased bg-white text-slate-900 min-h-screen flex">
-  <div class="flex w-full min-h-screen">
-    <div class="hidden lg:flex lg:w-1/2 brand-gradient relative items-center justify-center p-12 overflow-hidden">
-      <div class="absolute inset-0 bg-grid"></div>
-      <div class="relative z-10 max-w-md text-white">
-        <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-8 backdrop-blur-sm">
-          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-        </div>
-        <h1 class="text-4xl font-black leading-tight mb-4">Content <span class="text-yellow-300">Manager</span></h1>
-        <p class="text-lg text-white/80 font-medium mb-8">Manage blog posts, update content, and publish insights — all from a simple dashboard.</p>
-        <ul class="space-y-4">
-          <li class="flex items-center gap-3 text-white/90 font-medium">
-            <svg class="w-5 h-5 text-yellow-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+<body>
+  <a href="#login-form" class="skip-link">Skip to form</a>
+  <div class="login-split">
+
+    <!-- Brand Panel (40%) -->
+    <div class="login-brand-panel">
+      <div class="login-brand-top">
+        <img src="/assets/images/logo.png" alt="NexGenWebLab" class="login-brand-logo-img">
+      </div>
+      <div class="login-brand-center">
+        <h1 class="login-brand-title">
+          Professional SEO<br>
+          <span>Audit Platform</span>
+        </h1>
+        <ul class="login-brand-features">
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             Rich text editing with Quill.js
           </li>
-          <li class="flex items-center gap-3 text-white/90 font-medium">
-            <svg class="w-5 h-5 text-yellow-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             Draft / published workflow
           </li>
-          <li class="flex items-center gap-3 text-white/90 font-medium">
-            <svg class="w-5 h-5 text-yellow-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             SEO-friendly slug generation
           </li>
         </ul>
-        <div class="mt-10 pt-8 border-t border-white/20">
-          <p class="text-sm text-white/60 font-medium">NexGenWebLab CMS v1.0</p>
-        </div>
+      </div>
+      <div class="login-brand-bottom">
+        <p class="login-brand-bottom-text">NexGenWebLab CMS v1.0</p>
       </div>
     </div>
 
-    <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-10">
-      <div class="w-full max-w-sm fade-in">
-        <div class="mb-8 lg:hidden">
-          <img src="/assets/images/logo.png" alt="NexGenWebLab" class="h-7">
-        </div>
-        <h2 class="text-2xl font-black text-slate-900 mb-1">Admin sign in</h2>
-        <p class="text-sm text-slate-500 font-medium mb-8">Enter your credentials to access the CMS.</p>
+    <!-- Form Panel (60%) -->
+    <div class="login-form-panel">
+      <div class="login-form-container">
+        <p class="login-welcome">Welcome back</p>
+        <p class="login-welcome-sub">Sign in to the admin panel.</p>
 
-        <div id="error-msg" class="hidden p-4 bg-red-50 border border-red-200 text-red-700 text-sm font-semibold rounded-xl mb-6"></div>
+        <div id="messages-area"></div>
 
-        <form id="login-form" class="space-y-5">
-          <div>
-            <label for="email" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Email</label>
-            <div class="relative">
-              <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-              <input type="email" id="email" required placeholder="admin@nexgenweblab.com" class="input-field w-full h-12 pl-11 pr-4 rounded-xl border-2 border-slate-200 bg-slate-50 text-sm font-semibold text-slate-900 outline-none">
+        <form class="login-form-body" id="login-form" novalidate>
+          <div class="login-field">
+            <label for="email">Email Address</label>
+            <div class="input-wrapper" id="email-wrap">
+              <i class="fa-regular fa-envelope input-icon"></i>
+              <input type="email" id="email" placeholder="you@agency.com" autocomplete="email" required>
             </div>
+            <span class="field-error" id="email-error"></span>
           </div>
-          <div>
-            <label for="password" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Password</label>
-            <div class="relative">
-              <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-              <input type="password" id="password" required placeholder="••••••••" class="input-field w-full h-12 pl-11 pr-4 rounded-xl border-2 border-slate-200 bg-slate-50 text-sm font-semibold text-slate-900 outline-none">
+
+          <div class="login-field">
+            <label for="password">Password</label>
+            <div class="input-wrapper" id="password-wrap">
+              <i class="fa-solid fa-lock input-icon"></i>
+              <input type="password" id="password" placeholder="Enter password" autocomplete="current-password" required>
+              <button type="button" class="input-toggle" id="toggle-pw" tabindex="-1" aria-label="Toggle password visibility">
+                <i class="fa-regular fa-eye" id="toggle-icon"></i>
+              </button>
             </div>
+            <span class="field-error" id="password-error"></span>
           </div>
-          <button type="submit" id="login-btn" class="w-full h-12 rounded-xl font-bold text-base bg-slate-900 text-white hover:bg-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-            <span>Sign in</span>
+
+          <div class="forgot-row" id="forgot-row">
+            <button type="button" class="forgot-link" id="forgot-btn" disabled>Forgot password?</button>
+          </div>
+
+          <button type="submit" class="btn-primary" id="login-btn">
+            <span id="submit-text">Sign In</span>
           </button>
-        </form>
 
-        <p class="mt-8 text-center text-xs text-slate-400 font-medium">
-          &larr; <a href="/" class="text-primary font-semibold hover:underline">Back to site</a>
-        </p>
+          <div class="login-divider"><span>or continue with</span></div>
+
+          <button type="button" class="btn-google" id="google-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+            Google
+          </button>
+
+          <p class="back-link">&larr; <a href="/">Back to site</a></p>
+        </form>
       </div>
     </div>
   </div>
 
   <script>
-    const SUPABASE_URL = 'https://ubnvjmvobwzsystdktpk.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVibnZqbXZvYnd6c3l0ZGt0cGsiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzE2MjIwMSwiZXhwIjoxOTU4NzM4MjAxfQ.VHm8R3QkY8GbnGMoJCL-FP3T3Y3fqBfNLqhYJ3Ew1R8';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    var SUPABASE_CONFIG = {
+      url: 'https://ubnvjmvobwzsystdktpk.supabase.co',
+      anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVibnZqbXZvYnd6c3l0ZGt0cGsiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzE2MjIwMSwiZXhwIjoxOTU4NzM4MjAxfQ.VHm8R3QkY8GbnGMoJCL-FP3T3Y3fqBfNLqhYJ3Ew1R8'
+    };
+    var supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
 
-    const form = document.getElementById('login-form');
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const loginBtn = document.getElementById('login-btn');
-    const errorMsg = document.getElementById('error-msg');
+    var emailInput = document.getElementById('email');
+    var passwordInput = document.getElementById('password');
+    var loginBtn = document.getElementById('login-btn');
+    var submitText = document.getElementById('submit-text');
+    var forgotRow = document.getElementById('forgot-row');
+    var forgotBtn = document.getElementById('forgot-btn');
+    var googleBtn = document.getElementById('google-btn');
+    var messagesArea = document.getElementById('messages-area');
+    var toggleBtn = document.getElementById('toggle-pw');
+    var toggleIcon = document.getElementById('toggle-icon');
+    var emailWrap = document.getElementById('email-wrap');
+    var passwordWrap = document.getElementById('password-wrap');
+    var emailError = document.getElementById('email-error');
+    var passwordError = document.getElementById('password-error');
 
-    form.addEventListener('submit', async (e) => {
+    toggleBtn.addEventListener('click', function () {
+      var isPassword = passwordInput.type === 'password';
+      passwordInput.type = isPassword ? 'text' : 'password';
+      toggleIcon.className = isPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+    });
+
+    function showMessage(text, type) {
+      var cls = type === 'error' ? 'login-submit-error' : 'login-reset-sent';
+      messagesArea.innerHTML = '<div class="' + cls + '">' + text + '</div>';
+    }
+    function clearMessages() { messagesArea.innerHTML = ''; }
+
+    function clearErrors() {
+      emailWrap.classList.remove('input-error');
+      passwordWrap.classList.remove('input-error');
+      emailError.textContent = '';
+      passwordError.textContent = '';
+    }
+
+    function setLoading(loading) {
+      loginBtn.disabled = loading;
+      if (loading) {
+        loginBtn.innerHTML = '<span class="spinner"></span>';
+      } else {
+        loginBtn.innerHTML = '<span id="submit-text">Sign In</span>';
+        submitText = document.getElementById('submit-text');
+      }
+      if (forgotBtn) forgotBtn.disabled = loading;
+    }
+
+    document.getElementById('login-form').addEventListener('submit', async function (e) {
       e.preventDefault();
-      errorMsg.classList.add('hidden');
-      loginBtn.disabled = true;
-      loginBtn.innerHTML = '<svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> Signing in...';
+      clearMessages();
+      clearErrors();
+
+      var email = emailInput.value.trim();
+      var password = passwordInput.value;
+
+      if (!email) { emailError.textContent = 'Email is required'; emailWrap.classList.add('input-error'); emailInput.focus(); return; }
+      if (!password) { passwordError.textContent = 'Password is required'; passwordWrap.classList.add('input-error'); passwordInput.focus(); return; }
+
+      setLoading(true);
 
       try {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: emailInput.value.trim(),
-          password: passwordInput.value
-        });
+        var authResult = await supabase.auth.signInWithPassword({ email: email, password: password });
+        if (authResult.error) { setLoading(false); showMessage(authResult.error.message, 'error'); return; }
 
-        if (error) throw error;
-
-        const { data: admin, error: adminError } = await supabase
-          .from('admin_users')
-          .select('id, email, role')
-          .eq('id', data.user.id)
-          .single();
-
-        if (adminError || !admin) {
+        var adminResult = await supabase.from('admin_users').select('id, email, role').eq('id', authResult.data.user.id).single();
+        if (adminResult.error || !adminResult.data) {
           await supabase.auth.signOut();
-          errorMsg.textContent = 'Access denied. You are not authorized to access this panel.';
-          errorMsg.classList.remove('hidden');
-          loginBtn.disabled = false;
-          loginBtn.innerHTML = 'Sign in';
+          setLoading(false);
+          showMessage('Access denied. You are not authorized to access this panel.', 'error');
           return;
         }
 
+        sessionStorage.setItem('nexgen_admin_role', adminResult.data.role);
         window.location.href = '/admin/dashboard.html';
       } catch (err) {
-        errorMsg.textContent = err.message || 'Invalid email or password.';
-        errorMsg.classList.remove('hidden');
-        loginBtn.disabled = false;
-        loginBtn.innerHTML = 'Sign in';
+        setLoading(false);
+        showMessage(err.message || 'An unexpected error occurred.', 'error');
       }
     });
 
-    // Check if already logged in
-    (async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        const { data: admin } = await supabase
-          .from('admin_users')
-          .select('id')
-          .eq('id', session.user.id)
-          .single();
-        if (admin) window.location.href = '/admin/dashboard';
+    forgotBtn.addEventListener('click', async function () {
+      var email = emailInput.value.trim();
+      if (!email) {
+        showMessage('Enter your email address first.', 'error');
+        emailWrap.classList.add('input-error');
+        emailInput.focus();
+        return;
       }
+      clearMessages();
+      clearErrors();
+      forgotBtn.disabled = true;
+
+      try {
+        var result = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/auth.html' });
+        if (result.error) { showMessage(result.error.message, 'error'); forgotBtn.disabled = false; return; }
+        showMessage('Password reset email sent. Check your inbox.', 'success');
+      } catch (err) {
+        showMessage(err.message || 'Failed to send reset email.', 'error');
+      }
+      forgotBtn.disabled = false;
+    });
+
+    googleBtn.addEventListener('click', async function () {
+      try {
+        await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: { redirectTo: window.location.origin + '/auth-callback.html' }
+        });
+      } catch (err) {
+        showMessage(err.message || 'Google sign-in failed.', 'error');
+      }
+    });
+
+    (async function () {
+      var sessionResult = await supabase.auth.getSession();
+      if (sessionResult.data.session) {
+        var adminCheck = await supabase.from('admin_users').select('id, role').eq('id', sessionResult.data.session.user.id).single();
+        if (adminCheck.data) {
+          sessionStorage.setItem('nexgen_admin_role', adminCheck.data.role);
+          window.location.href = '/admin/dashboard.html';
+        }
+      }
+      forgotBtn.disabled = false;
     })();
   </script>
 </body>
