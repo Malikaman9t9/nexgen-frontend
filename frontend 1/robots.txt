@@ -3,5 +3,6 @@ Allow: /
 Disallow: /assets/
 Disallow: /auth
 Disallow: /upgrade
+Disallow: /admin/
 
 Sitemap: https://nexgenweblab.com/sitemap.xml
