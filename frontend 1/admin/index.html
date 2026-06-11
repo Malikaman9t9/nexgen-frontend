@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login — NexGenWebLab</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { primary: '#6D28D9', secondary: '#DB2777' } } } }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .brand-gradient { background: linear-gradient(135deg, #6D28D9 0%, #DB2777 100%); }
+    .brand-gradient-light { background: linear-gradient(135deg, rgba(109,40,217,0.06), rgba(219,39,119,0.04)); }
+    .input-field { transition: all 0.15s; }
+    .input-field:focus { border-color: #6D28D9; background: #fff; box-shadow: 0 0 0 3px rgba(109,40,217,0.08); }
+    .input-field.input-error { border-color: #dc2626; background: #fef2f2; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in { animation: fadeIn 0.35s ease; }
+    .bg-grid { background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0); background-size: 24px 24px; }
+  </style>
+</head>
+<body class="font-sans antialiased bg-white text-slate-900 min-h-screen flex">
+  <div class="flex w-full min-h-screen">
+    <div class="hidden lg:flex lg:w-1/2 brand-gradient relative items-center justify-center p-12 overflow-hidden">
+      <div class="absolute inset-0 bg-grid"></div>
+      <div class="relative z-10 max-w-md text-white">
+        <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-8 backdrop-blur-sm">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <h1 class="text-4xl font-black leading-tight mb-4">Content <span class="text-yellow-300">Manager</span></h1>
+        <p class="text-lg text-white/80 font-medium mb-8">Manage blog posts, update content, and publish insights — all from a simple dashboard.</p>
+        <ul class="space-y-4">
+          <li class="flex items-center gap-3 text-white/90 font-medium">
+            <svg class="w-5 h-5 text-yellow-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            Rich text editing with Quill.js
+          </li>
+          <li class="flex items-center gap-3 text-white/90 font-medium">
+            <svg class="w-5 h-5 text-yellow-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            Draft / published workflow
+          </li>
+          <li class="flex items-center gap-3 text-white/90 font-medium">
+            <svg class="w-5 h-5 text-yellow-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            SEO-friendly slug generation
+          </li>
+        </ul>
+        <div class="mt-10 pt-8 border-t border-white/20">
+          <p class="text-sm text-white/60 font-medium">NexGenWebLab CMS v1.0</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-10">
+      <div class="w-full max-w-sm fade-in">
+        <div class="mb-8 lg:hidden">
+          <img src="/assets/images/logo.png" alt="NexGenWebLab" class="h-7">
+        </div>
+        <h2 class="text-2xl font-black text-slate-900 mb-1">Admin sign in</h2>
+        <p class="text-sm text-slate-500 font-medium mb-8">Enter your credentials to access the CMS.</p>
+
+        <div id="error-msg" class="hidden p-4 bg-red-50 border border-red-200 text-red-700 text-sm font-semibold rounded-xl mb-6"></div>
+
+        <form id="login-form" class="space-y-5">
+          <div>
+            <label for="email" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Email</label>
+            <div class="relative">
+              <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+              <input type="email" id="email" required placeholder="admin@nexgenweblab.com" class="input-field w-full h-12 pl-11 pr-4 rounded-xl border-2 border-slate-200 bg-slate-50 text-sm font-semibold text-slate-900 outline-none">
+            </div>
+          </div>
+          <div>
+            <label for="password" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Password</label>
+            <div class="relative">
+              <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+              <input type="password" id="password" required placeholder="••••••••" class="input-field w-full h-12 pl-11 pr-4 rounded-xl border-2 border-slate-200 bg-slate-50 text-sm font-semibold text-slate-900 outline-none">
+            </div>
+          </div>
+          <button type="submit" id="login-btn" class="w-full h-12 rounded-xl font-bold text-base bg-slate-900 text-white hover:bg-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+            <span>Sign in</span>
+          </button>
+        </form>
+
+        <p class="mt-8 text-center text-xs text-slate-400 font-medium">
+          &larr; <a href="/" class="text-primary font-semibold hover:underline">Back to site</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://ubnvjmvobwzsystdktpk.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVibnZqbXZvYnd6c3l0ZGt0cGsiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzE2MjIwMSwiZXhwIjoxOTU4NzM4MjAxfQ.VHm8R3QkY8GbnGMoJCL-FP3T3Y3fqBfNLqhYJ3Ew1R8';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const form = document.getElementById('login-form');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const loginBtn = document.getElementById('login-btn');
+    const errorMsg = document.getElementById('error-msg');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorMsg.classList.add('hidden');
+      loginBtn.disabled = true;
+      loginBtn.innerHTML = '<svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> Signing in...';
+
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: emailInput.value.trim(),
+          password: passwordInput.value
+        });
+
+        if (error) throw error;
+
+        const { data: admin, error: adminError } = await supabase
+          .from('admin_users')
+          .select('id, email, role')
+          .eq('id', data.user.id)
+          .single();
+
+        if (adminError || !admin) {
+          await supabase.auth.signOut();
+          errorMsg.textContent = 'Access denied. You are not authorized to access this panel.';
+          errorMsg.classList.remove('hidden');
+          loginBtn.disabled = false;
+          loginBtn.innerHTML = 'Sign in';
+          return;
+        }
+
+        window.location.href = '/admin/dashboard';
+      } catch (err) {
+        errorMsg.textContent = err.message || 'Invalid email or password.';
+        errorMsg.classList.remove('hidden');
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = 'Sign in';
+      }
+    });
+
+    // Check if already logged in
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data: admin } = await supabase
+          .from('admin_users')
+          .select('id')
+          .eq('id', session.user.id)
+          .single();
+        if (admin) window.location.href = '/admin/dashboard';
+      }
+    })();
+  </script>
+</body>
+</html>

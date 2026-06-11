@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Admin — NexGenWebLab</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { primary: '#6D28D9', secondary: '#DB2777' } } } }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .sidebar-link { transition: all 0.15s; }
+    .sidebar-link:hover { background: rgba(109,40,217,0.06); color: #6D28D9; }
+    .sidebar-link.active { background: rgba(109,40,217,0.1); color: #6D28D9; font-weight: 700; }
+    .status-badge { font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 999px; }
+    .status-published { background: #d1fae5; color: #065f46; }
+    .status-draft { background: #fef3c7; color: #92400e; }
+    @keyframes fadeSlide { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-in { animation: fadeSlide 0.3s ease; }
+  </style>
+</head>
+<body class="font-sans antialiased bg-slate-50 text-slate-900 min-h-screen flex">
+  <aside class="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-white border-r border-slate-200">
+    <div class="flex items-center h-16 px-6 border-b border-slate-200">
+      <a href="/" class="flex items-center gap-2">
+        <img src="/assets/images/logo.png" alt="NexGenWebLab" class="h-6">
+      </a>
+    </div>
+    <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <a href="/admin/dashboard" class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700">
+        <i class="fa-solid fa-table-columns w-5 text-center"></i> Posts
+      </a>
+      <a href="/admin/editor" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500">
+        <i class="fa-solid fa-plus w-5 text-center"></i> New Post
+      </a>
+      <a href="/admin/dashboard?tab=settings" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500">
+        <i class="fa-solid fa-gear w-5 text-center"></i> Settings
+      </a>
+    </nav>
+    <div class="p-3 border-t border-slate-200">
+      <button id="logout-btn" class="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-semibold text-red-500 hover:bg-red-50 transition-all">
+        <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> Logout
+      </button>
+    </div>
+  </aside>
+
+  <div class="md:pl-64 flex flex-col flex-1">
+    <header class="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-200">
+      <div class="flex items-center justify-between h-16 px-4 sm:px-6">
+        <div class="flex items-center gap-3">
+          <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-slate-100 transition-colors">
+            <i class="fa-solid fa-bars text-lg text-slate-600"></i>
+          </button>
+          <h1 class="text-lg font-black text-slate-900">Blog Posts</h1>
+        </div>
+        <a href="/admin/editor" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white text-sm font-bold hover:bg-slate-800 transition-all">
+          <i class="fa-solid fa-plus"></i> New Post
+        </a>
+      </div>
+    </header>
+
+    <main class="flex-1 p-4 sm:p-6 lg:p-8">
+      <div class="flex flex-wrap items-center gap-2 mb-6">
+        <button class="filter-btn active px-4 py-2 rounded-xl text-sm font-bold bg-white border border-slate-200 text-slate-700 hover:border-primary transition-all" data-filter="all">All</button>
+        <button class="filter-btn px-4 py-2 rounded-xl text-sm font-bold bg-white border border-slate-200 text-slate-500 hover:border-primary transition-all" data-filter="published">Published</button>
+        <button class="filter-btn px-4 py-2 rounded-xl text-sm font-bold bg-white border border-slate-200 text-slate-500 hover:border-primary transition-all" data-filter="draft">Draft</button>
+      </div>
+
+      <div id="posts-container" class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+        <div class="text-center py-20" id="loading-state">
+          <div class="inline-block w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+          <p class="text-slate-500 font-bold text-sm mt-3">Loading posts...</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Delete confirmation modal -->
+  <div id="delete-modal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
+    <div class="relative z-10 flex items-center justify-center min-h-screen px-4">
+      <div class="bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full animate-in">
+        <div class="text-center">
+          <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fa-solid fa-trash-can text-red-500 text-xl"></i>
+          </div>
+          <h3 class="text-lg font-black text-slate-900 mb-1">Delete Post</h3>
+          <p class="text-sm text-slate-500 font-medium mb-6">This action cannot be undone.</p>
+          <div class="flex gap-3">
+            <button id="cancel-delete" class="flex-1 py-2.5 rounded-xl font-bold border-2 border-slate-200 text-slate-600 hover:border-slate-300 transition-all text-sm">Cancel</button>
+            <button id="confirm-delete" class="flex-1 py-2.5 rounded-xl font-bold bg-red-500 text-white hover:bg-red-600 transition-all text-sm">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile sidebar overlay -->
+  <div id="mobile-sidebar" class="fixed inset-0 z-40 hidden">
+    <div class="absolute inset-0 bg-black/30"></div>
+    <div class="relative w-64 h-full bg-white shadow-xl p-4">
+      <div class="flex items-center justify-between mb-6">
+        <img src="/assets/images/logo.png" alt="NexGenWebLab" class="h-6">
+        <button id="close-mobile" class="p-2 rounded-lg hover:bg-slate-100"><i class="fa-solid fa-xmark text-lg text-slate-500"></i></button>
+      </div>
+      <nav class="space-y-1">
+        <a href="/admin/dashboard" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-primary bg-primary/10"><i class="fa-solid fa-table-columns w-5 text-center"></i> Posts</a>
+        <a href="/admin/editor" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-50"><i class="fa-solid fa-plus w-5 text-center"></i> New Post</a>
+        <a href="/admin/dashboard?tab=settings" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-50"><i class="fa-solid fa-gear w-5 text-center"></i> Settings</a>
+      </nav>
+      <div class="absolute bottom-4 left-4 right-4">
+        <button id="mobile-logout" class="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-semibold text-red-500 hover:bg-red-50 transition-all"><i class="fa-solid fa-right-from-bracket w-5 text-center"></i> Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://ubnvjmvobwzsystdktpk.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVibnZqbXZvYnd6c3l0ZGt0cGsiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzE2MjIwMSwiZXhwIjoxOTU4NzM4MjAxfQ.VHm8R3QkY8GbnGMoJCL-FP3T3Y3fqBfNLqhYJ3Ew1R8';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let currentFilter = 'all';
+    let deletePostId = null;
+
+    // Auth check
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { window.location.href = '/admin'; return; }
+      const { data: admin } = await supabase.from('admin_users').select('id').eq('id', session.user.id).single();
+      if (!admin) { await supabase.auth.signOut(); window.location.href = '/admin'; return; }
+      loadPosts();
+    })();
+
+    async function loadPosts() {
+      const container = document.getElementById('posts-container');
+      document.getElementById('loading-state').classList.remove('hidden');
+
+      try {
+        let query = supabase.from('blog_posts').select('*').order('created_at', { ascending: false });
+
+        if (currentFilter === 'published') query = query.eq('status', 'published');
+        else if (currentFilter === 'draft') query = query.eq('status', 'draft');
+
+        const { data: posts, error } = await query;
+        if (error) throw error;
+
+        renderPosts(posts || []);
+      } catch (err) {
+        container.innerHTML = `<div class="text-center py-16"><p class="text-red-500 font-bold">Error: ${err.message}</p></div>`;
+      } finally {
+        document.getElementById('loading-state').classList.add('hidden');
+      }
+    }
+
+    function renderPosts(posts) {
+      const container = document.getElementById('posts-container');
+
+      if (posts.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-16">
+            <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="fa-solid fa-newspaper text-slate-300 text-2xl"></i>
+            </div>
+            <p class="text-slate-500 font-bold">No posts found.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const table = document.createElement('table');
+      table.className = 'w-full text-sm';
+      table.innerHTML = `
+        <thead>
+          <tr class="border-b border-slate-200 text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <th class="text-left px-5 py-4">Title</th>
+            <th class="text-left px-5 py-4 hidden sm:table-cell">Status</th>
+            <th class="text-left px-5 py-4 hidden lg:table-cell">Published</th>
+            <th class="text-right px-5 py-4">Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      `;
+
+      const tbody = table.querySelector('tbody');
+      posts.forEach(post => {
+        const date = post.published_at
+          ? new Date(post.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+          : '—';
+
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-slate-100 hover:bg-slate-50 transition-colors';
+        tr.innerHTML = `
+          <td class="px-5 py-4">
+            <div class="font-bold text-slate-900">${post.title}</div>
+            <div class="text-xs text-slate-400 font-medium mt-0.5">/${post.slug}</div>
+          </td>
+          <td class="px-5 py-4 hidden sm:table-cell">
+            <span class="status-badge status-${post.status}">${post.status}</span>
+          </td>
+          <td class="px-5 py-4 text-slate-500 text-sm hidden lg:table-cell">${date}</td>
+          <td class="px-5 py-4 text-right">
+            <a href="/admin/editor?id=${post.id}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-primary hover:bg-primary/5 transition-all">
+              <i class="fa-solid fa-pen"></i> Edit
+            </a>
+            <button onclick="promptDelete('${post.id}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-red-500 hover:bg-red-50 transition-all">
+              <i class="fa-solid fa-trash-can"></i> Delete
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      container.innerHTML = '';
+      container.appendChild(table);
+    }
+
+    function promptDelete(id) {
+      deletePostId = id;
+      document.getElementById('delete-modal').classList.remove('hidden');
+    }
+
+    document.getElementById('confirm-delete').addEventListener('click', async () => {
+      if (!deletePostId) return;
+      try {
+        await supabase.from('blog_posts').delete().eq('id', deletePostId);
+        deletePostId = null;
+        document.getElementById('delete-modal').classList.add('hidden');
+        loadPosts();
+      } catch (err) {
+        alert('Delete failed: ' + err.message);
+      }
+    });
+
+    document.getElementById('cancel-delete').addEventListener('click', () => {
+      deletePostId = null;
+      document.getElementById('delete-modal').classList.add('hidden');
+    });
+
+    document.getElementById('delete-modal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        deletePostId = null;
+        document.getElementById('delete-modal').classList.add('hidden');
+      }
+    });
+
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => {
+          b.classList.remove('active', 'text-slate-700');
+          b.classList.add('text-slate-500');
+        });
+        btn.classList.add('active', 'text-slate-700');
+        btn.classList.remove('text-slate-500');
+        currentFilter = btn.dataset.filter;
+        loadPosts();
+      });
+    });
+
+    // Logout
+    async function logout() {
+      await supabase.auth.signOut();
+      window.location.href = '/admin';
+    }
+    document.getElementById('logout-btn').addEventListener('click', logout);
+    document.getElementById('mobile-logout').addEventListener('click', logout);
+
+    // Mobile sidebar
+    document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+      document.getElementById('mobile-sidebar').classList.remove('hidden');
+    });
+    document.getElementById('close-mobile').addEventListener('click', () => {
+      document.getElementById('mobile-sidebar').classList.add('hidden');
+    });
+    document.getElementById('mobile-sidebar').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) document.getElementById('mobile-sidebar').classList.add('hidden');
+    });
+  </script>
+</body>
+</html>

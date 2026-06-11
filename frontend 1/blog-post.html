@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en-US" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="meta-title">Blog Post — NexGenWebLab</title>
+  <meta id="meta-description" name="description" content="">
+  <link rel="canonical" id="meta-canonical" href="">
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png?v=2">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { primary: '#6D28D9', secondary: '#DB2777' } } } }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .hero-gradient { background: radial-gradient(circle at top right, rgba(109, 40, 217, 0.08), transparent), radial-gradient(circle at bottom left, rgba(219, 39, 119, 0.05), transparent); }
+    .blog-content h1, .blog-content h2, .blog-content h3, .blog-content h4 { font-weight: 800; line-height: 1.2; margin-top: 1.5em; margin-bottom: 0.6em; color: #0f172a; }
+    .blog-content h1 { font-size: 2rem; }
+    .blog-content h2 { font-size: 1.6rem; }
+    .blog-content h3 { font-size: 1.3rem; }
+    .blog-content p { margin-bottom: 1.2em; line-height: 1.8; color: #334155; font-size: 1.05rem; }
+    .blog-content ul, .blog-content ol { margin-bottom: 1.2em; padding-left: 1.6em; }
+    .blog-content li { margin-bottom: 0.3em; color: #334155; font-size: 1.05rem; line-height: 1.7; }
+    .blog-content blockquote { border-left: 4px solid #6D28D9; padding: 0.8em 1.2em; margin: 1.5em 0; background: #f8fafc; border-radius: 0 12px 12px 0; color: #475569; font-style: italic; }
+    .blog-content a { color: #6D28D9; font-weight: 600; text-decoration: underline; transition: color 0.15s; }
+    .blog-content a:hover { color: #5B21B6; }
+    .blog-content img { max-width: 100%; border-radius: 16px; margin: 1.5em 0; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+    .blog-content pre { background: #1e293b; color: #e2e8f0; padding: 1.2em; border-radius: 12px; overflow-x: auto; margin: 1.2em 0; font-size: 0.95rem; }
+    .blog-content pre code { background: none; padding: 0; }
+    .blog-content code { background: #f1f5f9; padding: 2px 8px; border-radius: 6px; font-size: 0.9em; color: #6D28D9; }
+    .blog-content hr { margin: 2em 0; border-color: #e2e8f0; }
+    .blog-content iframe { max-width: 100%; border-radius: 12px; margin: 1.5em 0; }
+    .tag-pill { transition: all 0.2s; }
+    .tag-pill:hover { transform: translateY(-1px); }
+    .scroll-reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+    .scroll-reveal.revealed { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body class="bg-white text-slate-900 antialiased selection:bg-primary selection:text-white flex flex-col min-h-screen hero-gradient">
+  <main class="flex-grow pt-16 md:pt-28">
+    <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 md:pb-20">
+      <div id="loading" class="text-center py-20">
+        <div class="inline-block w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+        <p class="text-slate-500 font-bold mt-4">Loading post...</p>
+      </div>
+
+      <div id="error" class="text-center py-20 hidden">
+        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="fa-solid fa-exclamation-triangle text-red-500 text-2xl"></i>
+        </div>
+        <p id="error-msg" class="text-red-500 font-bold text-lg">Post not found.</p>
+        <a href="/blog" class="inline-block mt-6 px-6 py-3 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all">
+          <i class="fa-solid fa-arrow-left mr-2"></i> Back to Blog
+        </a>
+      </div>
+
+      <div id="post-content" class="hidden">
+        <div data-aos="fade-up">
+          <a href="/blog" class="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-secondary transition-colors mb-8">
+            <i class="fa-solid fa-arrow-left"></i> Back to Blog
+          </a>
+        </div>
+
+        <div id="post-cover" class="hidden mb-10 rounded-[2rem] overflow-hidden shadow-lg" data-aos="fade-up">
+          <img id="cover-img" src="" alt="" class="w-full h-auto max-h-[500px] object-cover">
+        </div>
+
+        <header data-aos="fade-up" data-aos-delay="50">
+          <div class="flex flex-wrap items-center gap-3 text-sm text-slate-400 font-bold mb-4">
+            <span id="post-date"><i class="far fa-calendar mr-1.5"></i></span>
+            <span id="post-author"><i class="far fa-user mr-1.5"></i></span>
+          </div>
+          <h1 id="post-title" class="text-3xl md:text-5xl lg:text-6xl font-black text-slate-950 tracking-tighter leading-[1.08] mb-6"></h1>
+          <div id="post-tags" class="flex flex-wrap gap-2 mb-8"></div>
+        </header>
+
+        <div id="post-body" class="blog-content max-w-none" data-aos="fade-up" data-aos-delay="100"></div>
+
+        <div class="mt-16 pt-8 border-t border-slate-200" data-aos="fade-up">
+          <a href="/blog" class="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-secondary transition-colors">
+            <i class="fa-solid fa-arrow-left"></i> Back to Blog
+          </a>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="/assets/js/site.js"></script>
+  <script>
+    const SUPABASE_URL = 'https://ubnvjmvobwzsystdktpk.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVibnZqbXZvYnd6c3l0ZGt0cGsiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzE2MjIwMSwiZXhwIjoxOTU4NzM4MjAxfQ.VHm8R3QkY8GbnGMoJCL-FP3T3Y3fqBfNLqhYJ3Ew1R8';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const slug = params.get('slug');
+      if (!slug) { showError('No post specified.'); return; }
+      loadPost(slug);
+    });
+
+    async function loadPost(slug) {
+      const loading = document.getElementById('loading');
+      const error = document.getElementById('error');
+      const content = document.getElementById('post-content');
+
+      try {
+        const { data: posts, error: err } = await supabase
+          .from('blog_posts')
+          .select('*')
+          .eq('slug', slug)
+          .eq('status', 'published')
+          .limit(1);
+
+        if (err) throw err;
+
+        if (!posts || posts.length === 0) {
+          showError('Post not found.');
+          return;
+        }
+
+        renderPost(posts[0]);
+        loading.classList.add('hidden');
+        content.classList.remove('hidden');
+        document.title = posts[0].title + ' — NexGenWebLab';
+        document.getElementById('meta-description').content = posts[0].excerpt || '';
+        document.getElementById('meta-canonical').href = 'https://nexgenweblab.com/blog/' + slug;
+
+        if (typeof AOS !== 'undefined') {
+          AOS.init({ duration: 800, easing: 'ease-out-cubic', once: true, offset: 80 });
+          AOS.refresh();
+        }
+      } catch (err) {
+        loading.classList.add('hidden');
+        showError('Failed to load post. Please try again later.');
+        console.error(err);
+      }
+    }
+
+    function renderPost(post) {
+      document.getElementById('post-title').textContent = post.title;
+
+      const date = post.published_at
+        ? new Date(post.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+        : new Date(post.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      document.getElementById('post-date').innerHTML += date;
+      document.getElementById('post-author').innerHTML += post.author_name || 'NexGenWebLab Team';
+
+      if (post.cover_image_url) {
+        document.getElementById('post-cover').classList.remove('hidden');
+        document.getElementById('cover-img').src = post.cover_image_url;
+        document.getElementById('cover-img').alt = post.title;
+      }
+
+      if (post.tags && post.tags.length > 0) {
+        const tagsContainer = document.getElementById('post-tags');
+        post.tags.forEach(tag => {
+          const el = document.createElement('span');
+          el.className = 'inline-block bg-primary/5 text-primary text-xs font-bold px-3 py-1.5 rounded-full';
+          el.textContent = tag;
+          tagsContainer.appendChild(el);
+        });
+      }
+
+      document.getElementById('post-body').innerHTML = post.content || '';
+    }
+
+    function showError(msg) {
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('error').classList.remove('hidden');
+      document.getElementById('error-msg').textContent = msg;
+    }
+  </script>
+</body>
+</html>
