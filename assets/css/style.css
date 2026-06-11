@@ -1,8 +1,0 @@
-/* Custom base styles not handled by Tailwind */
-html {
-    scroll-behavior: smooth;
-}
-::selection {
-    background-color: #6D28D9;
-    color: white;
-}
