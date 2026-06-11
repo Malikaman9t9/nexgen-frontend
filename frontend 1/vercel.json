@@ -2,7 +2,22 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/sitemap", "destination": "/sitemap.html" }
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/blog", "destination": "/blog.html" },
+    { "source": "/blog/:slug", "destination": "/blog-post.html?slug=:slug" },
+    { "source": "/about", "destination": "/about.html" },
+    { "source": "/pricing", "destination": "/pricing.html" },
+    { "source": "/contact", "destination": "/contact.html" },
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/terms", "destination": "/terms.html" },
+    { "source": "/auth", "destination": "/auth.html" },
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/admin/dashboard", "destination": "/admin/dashboard.html" },
+    { "source": "/admin/editor", "destination": "/admin/editor.html" },
+    { "source": "/payment", "destination": "/payment.html" },
+    { "source": "/upgrade", "destination": "/upgrade.html" },
+    { "source": "/sitemap", "destination": "/sitemap.xml" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
     {
