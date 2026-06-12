@@ -71,12 +71,13 @@
         <button class="filter-btn px-4 py-2 rounded-xl text-sm font-bold bg-white border border-slate-200 text-slate-500 hover:border-primary transition-all" data-filter="draft">Draft</button>
       </div>
 
-      <div id="posts-container" class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-        <div class="text-center py-20" id="loading-state">
+      <div id="loading-state" class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+        <div class="text-center py-20">
           <div class="inline-block w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
           <p class="text-slate-500 font-bold text-sm mt-3">Loading posts...</p>
         </div>
       </div>
+      <div id="posts-container" class="bg-white rounded-2xl border border-slate-200 overflow-hidden hidden"></div>
     </main>
   </div>
 
@@ -128,12 +129,18 @@
     let deletePostId = null;
 
     function showLoading() {
-      var el = document.getElementById('loading-state');
-      if (el) el.style.display = '';
+      var loading = document.getElementById('loading-state');
+      var container = document.getElementById('posts-container');
+      if (loading) loading.classList.remove('hidden');
+      if (container) container.classList.add('hidden');
     }
     function hideLoading() {
-      var el = document.getElementById('loading-state');
-      if (el) el.style.display = 'none';
+      var loading = document.getElementById('loading-state');
+      if (loading) loading.classList.add('hidden');
+    }
+    function showPosts() {
+      var container = document.getElementById('posts-container');
+      if (container) container.classList.remove('hidden');
     }
 
     // Auth check
@@ -159,91 +166,96 @@
     async function loadPosts() {
       showLoading();
 
-      try {
-        var { data: posts, error } = await supabase.from('blog_posts').select('*').order('created_at', { ascending: false });
+      var timeout = setTimeout(function () {
+        var container = document.getElementById('posts-container');
+        if (container) container.innerHTML = '<div class="text-center py-16"><p class="text-red-500 font-bold">Request timed out. Check your Supabase connection.</p></div>';
+        hideLoading();
+        showPosts();
+      }, 15000);
 
+      try {
+        var { data: posts, error } = await supabase.from('blog_posts').select('*');
+
+        clearTimeout(timeout);
         if (error) throw error;
 
-        if (!posts || posts.length === 0) {
-          document.getElementById('posts-container').innerHTML = `
-            <div class="text-center py-16">
-              <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fa-solid fa-newspaper text-slate-300 text-2xl"></i>
-              </div>
-              <p class="text-slate-500 font-bold">No posts found.</p>
-              <a href="/admin/editor.html" class="inline-block mt-4 px-5 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-bold hover:bg-slate-800 transition-all">Create your first post</a>
-            </div>
-          `;
-        } else {
-          renderPosts(posts);
-        }
+        renderPosts(posts || []);
       } catch (err) {
-        document.getElementById('posts-container').innerHTML = '<div class="text-center py-16"><p class="text-red-500 font-bold">Error: ' + err.message + '</p></div>';
-      } finally {
+        clearTimeout(timeout);
+        var container = document.getElementById('posts-container');
+        if (container) container.innerHTML = '<div class="text-center py-16"><p class="text-red-500 font-bold">Error: ' + err.message + '</p></div>';
         hideLoading();
+        showPosts();
       }
     }
 
     function renderPosts(posts) {
-      const container = document.getElementById('posts-container');
+      var container = document.getElementById('posts-container');
+      if (!container) return;
 
-      if (posts.length === 0) {
+      if (!posts || posts.length === 0) {
         container.innerHTML = `
           <div class="text-center py-16">
             <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <i class="fa-solid fa-newspaper text-slate-300 text-2xl"></i>
             </div>
             <p class="text-slate-500 font-bold">No posts found.</p>
+            <a href="/admin/editor.html" class="inline-block mt-4 px-5 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-bold hover:bg-slate-800 transition-all">Create your first post</a>
           </div>
         `;
+        hideLoading();
+        showPosts();
         return;
       }
 
-      const table = document.createElement('table');
+      var table = document.createElement('table');
       table.className = 'w-full text-sm';
-      table.innerHTML = `
-        <thead>
-          <tr class="border-b border-slate-200 text-xs font-bold text-slate-400 uppercase tracking-wider">
-            <th class="text-left px-5 py-4">Title</th>
-            <th class="text-left px-5 py-4 hidden sm:table-cell">Status</th>
-            <th class="text-left px-5 py-4 hidden lg:table-cell">Published</th>
-            <th class="text-right px-5 py-4">Actions</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      `;
+      table.innerHTML = [
+        '<thead>',
+        '<tr class="border-b border-slate-200 text-xs font-bold text-slate-400 uppercase tracking-wider">',
+        '<th class="text-left px-5 py-4">Title</th>',
+        '<th class="text-left px-5 py-4 hidden sm:table-cell">Status</th>',
+        '<th class="text-left px-5 py-4 hidden lg:table-cell">Published</th>',
+        '<th class="text-right px-5 py-4">Actions</th>',
+        '</tr>',
+        '</thead>',
+        '<tbody></tbody>'
+      ].join('');
 
-      const tbody = table.querySelector('tbody');
-      posts.forEach(post => {
-        const date = post.published_at
+      var tbody = table.querySelector('tbody');
+      for (var i = 0; i < posts.length; i++) {
+        var post = posts[i];
+        var date = post.published_at
           ? new Date(post.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
-          : '—';
+          : '\u2014';
 
-        const tr = document.createElement('tr');
+        var tr = document.createElement('tr');
         tr.className = 'border-b border-slate-100 hover:bg-slate-50 transition-colors';
-        tr.innerHTML = `
-          <td class="px-5 py-4">
-            <div class="font-bold text-slate-900">${post.title}</div>
-            <div class="text-xs text-slate-400 font-medium mt-0.5">/${post.slug}</div>
-          </td>
-          <td class="px-5 py-4 hidden sm:table-cell">
-            <span class="status-badge status-${post.status}">${post.status}</span>
-          </td>
-          <td class="px-5 py-4 text-slate-500 text-sm hidden lg:table-cell">${date}</td>
-          <td class="px-5 py-4 text-right">
-            <a href="/admin/editor.html?id=${post.id}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-primary hover:bg-primary/5 transition-all">
-              <i class="fa-solid fa-pen"></i> Edit
-            </a>
-            <button onclick="promptDelete('${post.id}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-red-500 hover:bg-red-50 transition-all">
-              <i class="fa-solid fa-trash-can"></i> Delete
-            </button>
-          </td>
-        `;
+        tr.innerHTML = [
+          '<td class="px-5 py-4">',
+          '<div class="font-bold text-slate-900">' + post.title + '</div>',
+          '<div class="text-xs text-slate-400 font-medium mt-0.5">/' + post.slug + '</div>',
+          '</td>',
+          '<td class="px-5 py-4 hidden sm:table-cell">',
+          '<span class="status-badge status-' + post.status + '">' + post.status + '</span>',
+          '</td>',
+          '<td class="px-5 py-4 text-slate-500 text-sm hidden lg:table-cell">' + date + '</td>',
+          '<td class="px-5 py-4 text-right">',
+          '<a href="/admin/editor.html?id=' + post.id + '" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-primary hover:bg-primary/5 transition-all">',
+          '<i class="fa-solid fa-pen"></i> Edit',
+          '</a>',
+          '<button onclick="promptDelete(\'' + post.id + '\')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-red-500 hover:bg-red-50 transition-all">',
+          '<i class="fa-solid fa-trash-can"></i> Delete',
+          '</button>',
+          '</td>'
+        ].join('');
         tbody.appendChild(tr);
-      });
+      }
 
       container.innerHTML = '';
       container.appendChild(table);
+      hideLoading();
+      showPosts();
     }
 
     function promptDelete(id) {
