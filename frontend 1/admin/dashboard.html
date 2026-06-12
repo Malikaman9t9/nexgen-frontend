@@ -123,7 +123,7 @@
   <script>
     const SUPABASE_URL = 'https://ubnvjmvobwzsystdktpk.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_Fj_rv9LPpfh5nDouVW-bSw_hdfpn4-v';
-    const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    var sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let currentFilter = 'all';
     let deletePostId = null;
