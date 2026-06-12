@@ -16,8 +16,8 @@
     { "source": "/admin/editor", "destination": "/admin/editor.html" },
     { "source": "/payment", "destination": "/payment.html" },
     { "source": "/upgrade", "destination": "/upgrade.html" },
-    { "source": "/sitemap", "destination": "/api/sitemap" },
-    { "source": "/sitemap.xml", "destination": "/api/sitemap" }
+    { "source": "/sitemap.xml", "destination": "/api/sitemap" },
+    { "source": "/auth-callback", "destination": "/auth-callback.html" }
   ],
   "headers": [
     {
