@@ -27,10 +27,11 @@ if CORS_RAW:
     CORS_ORIGINS = [o.strip() for o in CORS_RAW.split(",") if o.strip()]
 else:
     CORS_ORIGINS = [
-        "https://tools.nexgenweblab.com",
         "https://nexgenweblab.com",
+        "https://www.nexgenweblab.com",
+        "https://tools.nexgenweblab.com",
         "http://localhost:5173",
-        "http://localhost:4173",
+        "http://localhost:3000",
     ]
 
 app.add_middleware(

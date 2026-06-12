@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verifying — NexGenWebLab</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { primary: '#6D28D9', secondary: '#DB2777' } } } }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+</head>
+<body class="font-sans antialiased bg-white text-slate-900 min-h-screen flex items-center justify-center">
+  <div class="text-center">
+    <div class="inline-block w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></div>
+    <p class="text-slate-500 font-bold text-sm">Verifying your session...</p>
+  </div>
+
+  <script>
+    var SUPABASE_CONFIG = {
+      url: 'https://ubnvjmvobwzsystdktpk.supabase.co',
+      anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVibnZqbXZvYnd6c3l0ZGt0cGsiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzE2MjIwMSwiZXhwIjoxOTU4NzM4MjAxfQ.VHm8R3QkY8GbnGMoJCL-FP3T3Y3fqBfNLqhYJ3Ew1R8'
+    };
+    var supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+    var TOOLS_URL = 'https://tools.nexgenweblab.com';
+
+    (async function () {
+      try {
+        var sessionResult = await supabase.auth.getSession();
+        if (!sessionResult.data.session) {
+          window.location.href = '/auth.html';
+          return;
+        }
+
+        var adminResult = await supabase.from('admin_users').select('id, role').eq('id', sessionResult.data.session.user.id).single();
+        if (adminResult.data) {
+          sessionStorage.setItem('nexgen_admin_role', adminResult.data.role);
+          window.location.href = '/admin/dashboard.html';
+          return;
+        }
+
+        window.location.href = TOOLS_URL;
+      } catch (err) {
+        window.location.href = '/auth.html';
+      }
+    })();
+  </script>
+</body>
+</html>

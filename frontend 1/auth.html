@@ -1,632 +1,346 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up | NexGenWebLab — Free SEO Audit Tool Account</title>
-    <meta name="description" content="Sign up for NexGenWebLab and start running professional technical SEO audits instantly. No credit card required.">
-    <link rel="canonical" href="https://nexgenweblab.com/auth">
-    <link rel="icon" type="image/png" href="/assets/images/favicon.png?v=2">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { primary: '#6D28D9', secondary: '#DB2777' } } } }
-    </script>
-    <style>
-        .gradient-bg { background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%); }
-        .card-shadow { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.03); }
-        .input-focus:focus { box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.15); }
-        .btn-hover:hover { transform: translateY(-1px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15); }
-        .btn-hover:active { transform: translateY(0); }
-        .password-strength { transition: width 0.3s ease, background-color 0.3s ease; }
-        .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .shake { animation: shake 0.5s ease-in-out; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-        .plan-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .plan-card:hover { transform: translateY(-2px); }
-        .check-icon { animation: checkPop 0.3s ease-out; }
-        @keyframes checkPop { 0% { transform: scale(0); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Sign In — NexGenWebLab</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: { primary: '#6D28D9', secondary: '#DB2777' }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --purple: #6D28D9;
+      --pink: #DB2777;
+      --slate-900: #0f172a;
+      --slate-700: #334155;
+      --slate-600: #475569;
+      --slate-500: #64748b;
+      --slate-400: #94a3b8;
+      --slate-300: #cbd5e1;
+      --slate-200: #e2e8f0;
+      --slate-100: #f1f5f9;
+      --slate-50: #f8fafc;
+      --red: #dc2626;
+      --red-light: #fef2f2;
+      --green-light: #f0fdf4;
+      --radius-sm: 10px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #fff; color: var(--slate-900); min-height: 100vh; }
+    .login-split { display: flex; min-height: 100vh; }
+    .login-brand-panel {
+      flex: 0 0 40%;
+      background: linear-gradient(135deg, var(--purple) 0%, var(--pink) 100%);
+      display: flex; flex-direction: column; padding: 40px; position: relative; overflow: hidden; min-height: 100vh;
+    }
+    .login-brand-panel::before {
+      content: '';
+      position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+      background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .login-brand-top { position: relative; z-index: 1; margin-bottom: auto; }
+    .login-brand-logo-img { height: 28px; filter: brightness(0) invert(1); }
+    .login-brand-center {
+      position: relative; z-index: 1; flex: 1;
+      display: flex; flex-direction: column; justify-content: center; color: #fff;
+    }
+    .login-brand-bottom { position: relative; z-index: 1; margin-top: auto; }
+    .login-brand-title {
+      font-size: 32px; font-weight: 900; line-height: 1.2; margin-bottom: 12px; letter-spacing: -0.02em;
+    }
+    .login-brand-title span {
+      background: linear-gradient(135deg, #fcd34d, #fbbf24);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .login-brand-features {
+      list-style: none; padding: 0; display: flex; flex-direction: column; gap: 18px;
+    }
+    .login-brand-features li {
+      display: flex; align-items: center; gap: 12px;
+      font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.9);
+    }
+    .login-brand-features li svg { flex-shrink: 0; opacity: 0.8; }
+    .login-brand-bottom-text {
+      font-size: 13px; font-weight: 500; opacity: 0.7; margin: 0;
+    }
+    .login-form-panel {
+      flex: 0 0 60%; display: flex; align-items: center; justify-content: center;
+      padding: 40px; background: #fff;
+    }
+    .login-form-container { width: 100%; max-width: 420px; }
+    .login-welcome {
+      font-size: 24px; font-weight: 900; color: var(--slate-900); margin-bottom: 4px;
+    }
+    .login-welcome-sub {
+      font-size: 14px; font-weight: 500; color: var(--slate-400); margin-bottom: 28px;
+    }
+    .login-form-body { display: flex; flex-direction: column; gap: 18px; }
+    .login-submit-error {
+      padding: 12px 16px; background: var(--red-light);
+      border: 1px solid #fecaca; color: var(--red);
+      border-radius: var(--radius-sm); font-size: 14px; font-weight: 600;
+    }
+    .login-field { display: flex; flex-direction: column; gap: 6px; }
+    .login-field label {
+      font-size: 13px; font-weight: 700; color: var(--slate-600); letter-spacing: 0.3px;
+    }
+    .input-wrapper {
+      display: flex; align-items: center; height: 48px;
+      border: 2px solid var(--slate-200); border-radius: var(--radius-sm);
+      background: var(--slate-50); transition: all 0.15s; overflow: hidden;
+    }
+    .input-wrapper:focus-within {
+      border-color: var(--purple); background: #fff;
+      box-shadow: 0 0 0 3px rgba(109,40,217,0.08);
+    }
+    .input-wrapper.input-error {
+      border-color: var(--red); background: var(--red-light);
+    }
+    .input-icon {
+      flex-shrink: 0; color: var(--slate-400); margin-left: 14px; font-size: 16px;
+    }
+    .input-wrapper input {
+      flex: 1; height: 100%; padding: 0 12px; border: none;
+      background: transparent; font-size: 15px; font-weight: 500; color: var(--slate-900);
+    }
+    .input-wrapper input:focus { outline: none; }
+    .input-wrapper input::placeholder { color: var(--slate-400); }
+    .input-toggle {
+      flex-shrink: 0; width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--slate-400); background: none; border: none;
+      cursor: pointer; border-radius: 6px; transition: all 0.15s; margin-right: 4px;
+    }
+    .input-toggle:hover { color: var(--slate-600); background: var(--slate-100); }
+    .field-error {
+      font-size: 12px; font-weight: 600; color: var(--red); margin-top: 2px;
+    }
+    .btn-primary {
+      width: 100%; height: 50px; border: none; border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      color: #fff; font-size: 16px; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.9; transform: scale(1.01); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .back-link {
+      text-align: center; font-size: 13px; color: var(--slate-500); margin: 0;
+    }
+    .back-link a {
+      color: var(--purple); font-weight: 700; text-decoration: none;
+    }
+    .back-link a:hover { text-decoration: underline; }
+    .spinner {
+      display: inline-block; width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .skip-link { position: absolute; left: -9999px; }
+    .skip-link:focus { left: 16px; top: 16px; z-index: 999; background: #fff; padding: 8px 16px; border-radius: 6px; }
+    @media (max-width: 767px) {
+      .login-split { flex-direction: column; }
+      .login-brand-panel { display: none; }
+      .login-form-panel { flex: 1; padding: 32px 24px; }
+      .login-form-container { max-width: 100%; }
+    }
+  </style>
 </head>
-<body class="min-h-screen gradient-bg font-sans text-slate-900 antialiased flex flex-col">
-    <!-- Background Elements -->
-    <div class="fixed inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-primary/10 to-secondary/5 rounded-full blur-[120px] -translate-y-1/3 translate-x-1/3"></div>
-        <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-secondary/10 to-primary/5 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/3"></div>
+<body>
+  <a href="#login-form" class="skip-link">Skip to form</a>
+  <div class="login-split">
+
+    <!-- Brand Panel -->
+    <div class="login-brand-panel">
+      <div class="login-brand-top">
+        <img src="/assets/images/logo.png" alt="NexGenWebLab" class="login-brand-logo-img">
+      </div>
+      <div class="login-brand-center">
+        <h1 class="login-brand-title">
+          Admin<br>
+          <span>Dashboard</span>
+        </h1>
+        <ul class="login-brand-features">
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Manage blog posts & content
+          </li>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Rich text editing with Quill.js
+          </li>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Draft / published workflow
+          </li>
+        </ul>
+      </div>
+      <div class="login-brand-bottom">
+        <p class="login-brand-bottom-text">NexGenWebLab CMS v1.0</p>
+      </div>
     </div>
 
-    <!-- Header -->
-    <header class="relative z-10 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <a href="/" class="flex items-center gap-2">
-                    <img src="/assets/images/logo.png" alt="NexGenWebLab" class="h-7">
-                </a>
-                <div class="flex items-center gap-4 text-sm">
-                    <span class="text-slate-500">Need help?</span>
-                    <a href="/contact" class="text-primary font-semibold hover:underline flex items-center gap-1">
-                        <i class="fa-solid fa-headset"></i> Contact Us
-                    </a>
-                </div>
+    <!-- Form Panel -->
+    <div class="login-form-panel">
+      <div class="login-form-container">
+        <p class="login-welcome">Welcome back</p>
+        <p class="login-welcome-sub">Sign in to the admin panel.</p>
+
+        <div id="messages-area"></div>
+
+        <form class="login-form-body" id="login-form" novalidate>
+          <div class="login-field">
+            <label for="email">Email Address</label>
+            <div class="input-wrapper" id="email-wrap">
+              <i class="fa-regular fa-envelope input-icon"></i>
+              <input type="email" id="email" placeholder="admin@nexgenweblab.com" autocomplete="email" required>
             </div>
-        </div>
-    </header>
+            <span class="field-error" id="email-error"></span>
+          </div>
 
-    <!-- Main Content -->
-    <main class="flex-grow flex items-center justify-center px-4 py-8 relative z-10">
-        <div class="w-full max-w-md fade-in">
-            <!-- Auth Card -->
-            <div class="bg-white rounded-3xl card-shadow p-8 sm:p-10 relative overflow-hidden">
-                <!-- Logo & Title -->
-                <div class="text-center mb-8">
-                    <div class="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                        <i class="fa-solid fa-chart-line text-white text-2xl"></i>
-                    </div>
-                    <h1 id="auth-title" class="text-2xl font-black tracking-tight text-slate-900">Create your account</h1>
-                    <p id="auth-subtitle" class="text-slate-500 font-medium text-sm mt-2">Start auditing websites in seconds</p>
-                </div>
-
-                <!-- Tab Switcher -->
-                <div class="flex bg-slate-100 rounded-xl p-1 mb-6">
-                    <button type="button" id="tab-signup" onclick="switchTab('signup')" class="flex-1 py-2.5 text-sm font-bold rounded-lg bg-white text-slate-900 shadow-sm transition-all">Sign Up</button>
-                    <button type="button" id="tab-login" onclick="switchTab('login')" class="flex-1 py-2.5 text-sm font-bold rounded-lg text-slate-500 hover:text-slate-700 transition-all">Log In</button>
-                </div>
-
-                <!-- Form Container -->
-                <div id="form-container">
-                    <!-- Sign Up Form -->
-                    <form id="signup-form" class="space-y-5">
-                        <!-- Plan Selection -->
-                        <div class="space-y-3">
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Choose your plan</label>
-                            <div class="grid grid-cols-2 gap-3">
-                                <label class="plan-card cursor-pointer relative">
-                                    <input type="radio" name="plan" value="free" class="peer sr-only" checked>
-                                    <div class="rounded-xl border-2 border-slate-200 p-4 peer-checked:border-primary peer-checked:bg-primary/5 transition-all">
-                                        <div class="flex items-center justify-between mb-2">
-                                            <span class="font-bold text-slate-900">Starter</span>
-                                            <span class="w-5 h-5 rounded-full border-2 border-slate-300 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center">
-                                                <i class="fa-solid fa-check text-white text-[8px] peer-checked:block"></i>
-                                            </span>
-                                        </div>
-                                        <div class="text-2xl font-black text-slate-900">$0</div>
-                                        <div class="text-xs text-slate-500 mt-1">Free forever</div>
-                                        <div class="mt-3 space-y-1">
-                                            <div class="flex items-center gap-1.5 text-xs text-slate-600"><i class="fa-solid fa-check text-emerald-500 text-[10px]"></i> 10 audits/month</div>
-                                            <div class="flex items-center gap-1.5 text-xs text-slate-600"><i class="fa-solid fa-check text-emerald-500 text-[10px]"></i> Basic reports</div>
-                                        </div>
-                                    </div>
-                                </label>
-                                <label class="plan-card cursor-pointer relative">
-                                    <input type="radio" name="plan" value="pro" class="peer sr-only">
-                                    <div class="rounded-xl border-2 border-slate-200 p-4 peer-checked:border-secondary peer-checked:bg-secondary/5 transition-all relative">
-                                        <div class="absolute -top-2 -right-2 bg-gradient-to-r from-primary to-secondary text-white text-[10px] font-bold px-2 py-1 rounded-full">POPULAR</div>
-                                        <div class="flex items-center justify-between mb-2">
-                                            <span class="font-bold text-secondary">Pro</span>
-                                            <span class="w-5 h-5 rounded-full border-2 border-slate-300 peer-checked:border-secondary peer-checked:bg-secondary flex items-center justify-center">
-                                                <i class="fa-solid fa-check text-white text-[8px] peer-checked:block"></i>
-                                            </span>
-                                        </div>
-                                        <div class="text-2xl font-black text-slate-900">$9.99<span class="text-sm font-medium text-slate-400">/mo</span></div>
-                                        <div class="text-xs text-slate-500 mt-1">Billed monthly</div>
-                                        <div class="mt-3 space-y-1">
-                                            <div class="flex items-center gap-1.5 text-xs text-slate-600"><i class="fa-solid fa-check text-emerald-500 text-[10px]"></i> Unlimited audits</div>
-                                            <div class="flex items-center gap-1.5 text-xs text-slate-600"><i class="fa-solid fa-check text-emerald-500 text-[10px]"></i> White label reports</div>
-                                        </div>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Name Input -->
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Full Name</label>
-                            <div class="relative">
-                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"><i class="fa-solid fa-user"></i></span>
-                                <input type="text" id="signup-name" required placeholder="John Doe" class="w-full pl-11 pr-4 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:outline-none input-focus transition-all font-medium text-base">
-                            </div>
-                        </div>
-
-                        <!-- Email Input -->
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Email Address</label>
-                            <div class="relative">
-                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"><i class="fa-solid fa-envelope"></i></span>
-                                <input type="email" id="signup-email" required placeholder="you@company.com" class="w-full pl-11 pr-4 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:outline-none input-focus transition-all font-medium text-base">
-                            </div>
-                            <p id="email-error" class="text-xs text-red-500 mt-1.5 hidden flex items-center gap-1"><i class="fa-solid fa-circle-exclamation"></i> <span></span></p>
-                        </div>
-
-                        <!-- Password Input -->
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Password</label>
-                            <div class="relative">
-                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"><i class="fa-solid fa-lock"></i></span>
-                                <input type="password" id="signup-password" required placeholder="Min 8 characters" minlength="8" class="w-full pl-11 pr-12 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:outline-none input-focus transition-all font-medium text-base">
-                                <button type="button" id="toggle-password" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
-                                    <i class="fa-solid fa-eye"></i>
-                                </button>
-                            </div>
-                            <!-- Password Strength -->
-                            <div class="mt-2">
-                                <div class="flex gap-1">
-                                    <div id="strength-1" class="h-1 flex-1 rounded-full bg-slate-200"></div>
-                                    <div id="strength-2" class="h-1 flex-1 rounded-full bg-slate-200"></div>
-                                    <div id="strength-3" class="h-1 flex-1 rounded-full bg-slate-200"></div>
-                                    <div id="strength-4" class="h-1 flex-1 rounded-full bg-slate-200"></div>
-                                </div>
-                                <p id="strength-text" class="text-xs text-slate-400 mt-1">Password strength: <span>Enter password</span></p>
-                            </div>
-                            <p id="password-error" class="text-xs text-red-500 mt-1.5 hidden flex items-center gap-1"><i class="fa-solid fa-circle-exclamation"></i> <span></span></p>
-                        </div>
-
-                        <!-- Terms Checkbox -->
-                        <div class="flex items-start gap-3">
-                            <input type="checkbox" id="terms" required class="mt-0.5 w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary">
-                            <label for="terms" class="text-sm text-slate-600">I agree to the <a href="/terms" class="text-primary font-semibold hover:underline">Terms of Service</a> and <a href="/privacy" class="text-primary font-semibold hover:underline">Privacy Policy</a></label>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <button type="submit" id="signup-btn" class="w-full py-4 rounded-xl font-bold bg-gradient-to-r from-primary to-secondary text-white hover:brightness-110 transition-all text-base shadow-lg btn-hover flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
-                            <span id="signup-btn-text">Create Account</span>
-                            <i id="signup-btn-icon" class="fa-solid fa-arrow-right"></i>
-                            <i id="signup-btn-spinner" class="fa-solid fa-spinner fa-spin hidden"></i>
-                        </button>
-
-                        <!-- Divider -->
-                        <div class="relative flex items-center justify-center my-6">
-                            <div class="absolute w-full border-t border-slate-200"></div>
-                            <span class="bg-white px-4 text-xs font-bold text-slate-400 relative z-10 uppercase tracking-widest">Or continue with</span>
-                        </div>
-
-                        <!-- Social Login -->
-                        <button type="button" id="google-signup-btn" class="w-full py-4 rounded-xl font-bold border-2 border-slate-200 text-slate-700 bg-white hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center justify-center gap-3 text-base btn-hover disabled:opacity-50 disabled:cursor-not-allowed">
-                            <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                            Continue with Google
-                        </button>
-                    </form>
-
-                    <!-- Login Form (Hidden by default) -->
-                    <form id="login-form" class="space-y-5 hidden">
-                        <!-- Email Input -->
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Email Address</label>
-                            <div class="relative">
-                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"><i class="fa-solid fa-envelope"></i></span>
-                                <input type="email" id="login-email" required placeholder="you@company.com" class="w-full pl-11 pr-4 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:outline-none input-focus transition-all font-medium text-base">
-                            </div>
-                        </div>
-
-                        <!-- Password Input -->
-                        <div>
-                            <div class="flex items-center justify-between mb-1.5">
-                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Password</label>
-                                <a href="#" id="forgot-password-link" class="text-xs text-primary font-semibold hover:underline">Forgot password?</a>
-                            </div>
-                            <div class="relative">
-                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"><i class="fa-solid fa-lock"></i></span>
-                                <input type="password" id="login-password" required placeholder="••••••••" class="w-full pl-11 pr-12 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:outline-none input-focus transition-all font-medium text-base">
-                                <button type="button" id="toggle-login-password" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
-                                    <i class="fa-solid fa-eye"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <button type="submit" id="login-btn" class="w-full py-4 rounded-xl font-bold bg-gradient-to-r from-primary to-secondary text-white hover:brightness-110 transition-all text-base shadow-lg btn-hover flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
-                            <span id="login-btn-text">Log In</span>
-                            <i id="login-btn-icon" class="fa-solid fa-arrow-right"></i>
-                            <i id="login-btn-spinner" class="fa-solid fa-spinner fa-spin hidden"></i>
-                        </button>
-
-                        <!-- Divider -->
-                        <div class="relative flex items-center justify-center my-6">
-                            <div class="absolute w-full border-t border-slate-200"></div>
-                            <span class="bg-white px-4 text-xs font-bold text-slate-400 relative z-10 uppercase tracking-widest">Or continue with</span>
-                        </div>
-
-                        <!-- Social Login -->
-                        <button type="button" id="google-login-btn" class="w-full py-4 rounded-xl font-bold border-2 border-slate-200 text-slate-700 bg-white hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center justify-center gap-3 text-base btn-hover disabled:opacity-50 disabled:cursor-not-allowed">
-                            <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                            Continue with Google
-                        </button>
-                    </form>
-
-                    <!-- Forgot Password Form (Hidden) -->
-                    <form id="forgot-form" class="space-y-5 hidden">
-                        <div class="text-center mb-4">
-                            <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-3">
-                                <i class="fa-solid fa-key text-primary text-xl"></i>
-                            </div>
-                            <h3 class="text-lg font-bold text-slate-900">Reset your password</h3>
-                            <p class="text-sm text-slate-500 mt-1">Enter your email and we'll send you a reset link</p>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Email Address</label>
-                            <div class="relative">
-                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"><i class="fa-solid fa-envelope"></i></span>
-                                <input type="email" id="forgot-email" required placeholder="you@company.com" class="w-full pl-11 pr-4 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:outline-none input-focus transition-all font-medium text-base">
-                            </div>
-                        </div>
-                        <button type="submit" id="forgot-btn" class="w-full py-4 rounded-xl font-bold bg-gradient-to-r from-primary to-secondary text-white hover:brightness-110 transition-all text-base shadow-lg btn-hover flex items-center justify-center gap-2">
-                            <span>Send Reset Link</span>
-                            <i class="fa-solid fa-paper-plane"></i>
-                        </button>
-                        <button type="button" id="back-to-login" class="w-full py-3 text-sm font-semibold text-slate-500 hover:text-slate-700 transition-colors flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-arrow-left"></i> Back to Login
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Success Message (Hidden) -->
-                <div id="success-message" class="hidden text-center py-8">
-                    <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 check-icon">
-                        <i class="fa-solid fa-check text-emerald-600 text-2xl"></i>
-                    </div>
-                    <h3 id="success-title" class="text-xl font-bold text-slate-900">Check your email!</h3>
-                    <p id="success-text" class="text-slate-500 mt-2">We've sent a confirmation link to your email address.</p>
-                    <button type="button" id="success-dismiss" class="mt-6 text-sm font-semibold text-primary hover:underline">Dismiss</button>
-                </div>
-
-                <!-- Error Message (Hidden) -->
-                <div id="error-message" class="hidden bg-red-50 border border-red-200 rounded-xl p-4 mt-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center shrink-0">
-                            <i class="fa-solid fa-exclamation text-red-600 text-sm"></i>
-                        </div>
-                        <p id="error-text" class="text-sm text-red-700 font-medium"></p>
-                    </div>
-                    <button type="button" id="error-dismiss" class="absolute top-2 right-2 text-red-400 hover:text-red-600"><i class="fa-solid fa-xmark"></i></button>
-                </div>
+          <div class="login-field">
+            <label for="password">Password</label>
+            <div class="input-wrapper" id="password-wrap">
+              <i class="fa-solid fa-lock input-icon"></i>
+              <input type="password" id="password" placeholder="Enter password" autocomplete="current-password" required>
+              <button type="button" class="input-toggle" id="toggle-pw" tabindex="-1" aria-label="Toggle password visibility">
+                <i class="fa-regular fa-eye" id="toggle-icon"></i>
+              </button>
             </div>
+            <span class="field-error" id="password-error"></span>
+          </div>
 
-            <!-- Footer Note -->
-            <p class="text-center text-slate-500 text-sm mt-6">
-                Already have an account? <a href="https://tools.nexgenweblab.com" class="text-primary font-bold hover:underline">Log in to Dashboard →</a>
-            </p>
-        </div>
-    </main>
+          <button type="submit" class="btn-primary" id="login-btn">
+            <span id="submit-text">Sign In</span>
+          </button>
 
-    <!-- Footer -->
-    <footer class="relative z-10 bg-white/80 backdrop-blur-md border-t border-slate-200/50 mt-auto">
-        <div class="max-w-7xl mx-auto px-6 py-6">
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-500">
-                <p>© 2026 NexGenWebLab. All rights reserved.</p>
-                <div class="flex gap-6">
-                    <a href="/privacy" class="hover:text-slate-900 transition-colors">Privacy</a>
-                    <a href="/terms" class="hover:text-slate-900 transition-colors">Terms</a>
-                    <a href="/contact" class="hover:text-slate-900 transition-colors">Contact</a>
-                </div>
-            </div>
-        </div>
-    </footer>
+          <p class="back-link">&larr; <a href="/">Back to site</a></p>
+        </form>
+      </div>
+    </div>
+  </div>
 
-    <script>
-        const SUPABASE_URL = "https://ubnvjmvobwzsystdktpk.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVibnZqbXZvYnd6c3l0ZGt0cGsiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzE2MjIwMSwiZXhwIjoxOTU4NzM4MjAxfQ.VHm8R3QkY8GbnGMoJCL-FP3T3Y3fqBfNLqhYJ3Ew1R8";
+  <script>
+    var SUPABASE_CONFIG = {
+      url: 'https://ubnvjmvobwzsystdktpk.supabase.co',
+      anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVibnZqbXZvYnd6c3l0ZGt0cGsiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzE2MjIwMSwiZXhwIjoxOTU4NzM4MjAxfQ.VHm8R3QkY8GbnGMoJCL-FP3T3Y3fqBfNLqhYJ3Ew1R8'
+    };
+    var supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
 
-        const { createClient } = window.supabase;
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    var emailInput = document.getElementById('email');
+    var passwordInput = document.getElementById('password');
+    var loginBtn = document.getElementById('login-btn');
+    var submitText = document.getElementById('submit-text');
+    var messagesArea = document.getElementById('messages-area');
+    var toggleBtn = document.getElementById('toggle-pw');
+    var toggleIcon = document.getElementById('toggle-icon');
+    var emailWrap = document.getElementById('email-wrap');
+    var passwordWrap = document.getElementById('password-wrap');
+    var emailError = document.getElementById('email-error');
+    var passwordError = document.getElementById('password-error');
 
-        const urlParams = new URLSearchParams(window.location.search);
+    toggleBtn.addEventListener('click', function () {
+      var isPassword = passwordInput.type === 'password';
+      passwordInput.type = isPassword ? 'text' : 'password';
+      toggleIcon.className = isPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+    });
 
-        var $ = function (id) { return document.getElementById(id); };
-        var q = function (sel, ctx) { return (ctx || document).querySelector(sel); };
+    function showMessage(text, type) {
+      var cls = type === 'error' ? 'login-submit-error' : 'login-reset-sent';
+      messagesArea.innerHTML = '<div class="' + cls + '">' + text + '</div>';
+    }
+    function clearMessages() { messagesArea.innerHTML = ''; }
 
-        function showError(msg) { var el = $('error-message'), t = $('error-text'); if (t) t.textContent = msg; if (el) el.classList.remove('hidden'); }
-        function hideError() { var el = $('error-message'); if (el) el.classList.add('hidden'); }
+    function clearErrors() {
+      emailWrap.classList.remove('input-error');
+      passwordWrap.classList.remove('input-error');
+      emailError.textContent = '';
+      passwordError.textContent = '';
+    }
 
-        function showForm(formId) {
-            ['signup-form', 'login-form', 'forgot-form', 'success-message'].forEach(function (id) {
-                var el = $(id);
-                if (el) el.classList.toggle('hidden', id !== formId);
-            });
-            hideError();
+    function setLoading(loading) {
+      loginBtn.disabled = loading;
+      if (loading) {
+        loginBtn.innerHTML = '<span class="spinner"></span>';
+      } else {
+        loginBtn.innerHTML = '<span id="submit-text">Sign In</span>';
+        submitText = document.getElementById('submit-text');
+      }
+    }
+
+    document.getElementById('login-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      clearMessages();
+      clearErrors();
+
+      var email = emailInput.value.trim();
+      var password = passwordInput.value;
+
+      if (!email) { emailError.textContent = 'Email is required'; emailWrap.classList.add('input-error'); emailInput.focus(); return; }
+      if (!/\S+@\S+\.\S+/.test(email)) { emailError.textContent = 'Please enter a valid email (e.g., admin@example.com)'; emailWrap.classList.add('input-error'); emailInput.focus(); return; }
+      if (!password) { passwordError.textContent = 'Password is required'; passwordWrap.classList.add('input-error'); passwordInput.focus(); return; }
+
+      setLoading(true);
+
+      try {
+        var authResult = await supabase.auth.signInWithPassword({ email: email, password: password });
+        if (authResult.error) { setLoading(false); showMessage(authResult.error.message, 'error'); return; }
+
+        var user = authResult.data.user;
+        var role = user.app_metadata && user.app_metadata.role;
+
+        if (role !== 'admin') {
+          var adminResult = await supabase.from('admin_users').select('id, email, role').eq('id', user.id).maybeSingle();
+          if (adminResult.data) { role = adminResult.data.role; }
         }
 
-        function switchTab(tab) {
-            var isLogin = tab === 'login';
-            var t1 = $('tab-signup'), t2 = $('tab-login');
-            if (!t1 || !t2) return;
-            t1.classList.toggle('bg-white', !isLogin);
-            t1.classList.toggle('text-slate-900', !isLogin);
-            t1.classList.toggle('shadow-sm', !isLogin);
-            t1.classList.toggle('text-slate-500', isLogin);
-            t2.classList.toggle('bg-white', isLogin);
-            t2.classList.toggle('text-slate-900', isLogin);
-            t2.classList.toggle('shadow-sm', isLogin);
-            t2.classList.toggle('text-slate-500', !isLogin);
-            showForm(isLogin ? 'login-form' : 'signup-form');
+        if (role !== 'admin') {
+          await supabase.auth.signOut();
+          setLoading(false);
+          showMessage('Access denied. You are not authorized to access this panel.', 'error');
+          return;
         }
 
-        function setLoading(btnId, loading, text, restoreText) {
-            var btn = $(btnId);
-            if (!btn) return;
-            btn.disabled = loading;
-            btn.innerHTML = loading
-                ? '<i class="fa-solid fa-spinner fa-spin"></i> ' + text + '...'
-                : restoreText;
+        sessionStorage.setItem('nexgen_admin_role', role);
+        window.location.href = '/admin/dashboard.html';
+      } catch (err) {
+        setLoading(false);
+        showMessage(err.message || 'An unexpected error occurred.', 'error');
+      }
+    });
+
+    (async function () {
+      var sessionResult = await supabase.auth.getSession();
+      if (sessionResult.data.session) {
+        var user = sessionResult.data.session.user;
+        var role = user.app_metadata && user.app_metadata.role;
+
+        if (role !== 'admin') {
+          var adminCheck = await supabase.from('admin_users').select('id, role').eq('id', user.id).maybeSingle();
+          if (adminCheck.data) { role = adminCheck.data.role; }
         }
 
-        function getSelectedPlan() {
-            var checked = document.querySelector('input[name="plan"]:checked');
-            return checked ? checked.value : 'free';
+        if (role === 'admin') {
+          sessionStorage.setItem('nexgen_admin_role', role);
+          window.location.href = '/admin/dashboard.html';
         }
-
-        function validateEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
-
-        function getPasswordScore(pw) {
-            var s = 0;
-            if (pw.length >= 8) s++;
-            if (pw.length >= 12) s++;
-            if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) s++;
-            if (/\d/.test(pw)) s++;
-            if (/[^a-zA-Z0-9]/.test(pw)) s++;
-            return s;
-        }
-
-        function formatError(err) {
-            if (!err) return 'An unexpected error occurred. Please try again.';
-            var m = err.message || err.error_description || err.msg || '';
-            if (m.includes('Invalid login credentials') || m.includes('invalid_credentials')) return 'Invalid email or password. Please try again.';
-            if (m.includes('Email not confirmed') || m.includes('email_not_confirmed')) return 'Please confirm your email address first. Check your inbox for the confirmation link.';
-            if (m.includes('rate limit') || m.includes('429') || m.includes('too many')) return 'Too many attempts. Please wait and try again.';
-            if (m.includes('User already registered') || m.includes('already registered')) return 'An account with this email already exists. Please log in instead.';
-            if (m.includes('Password should be at least')) return 'Password must be at least 6 characters.';
-            if (m.includes('Invalid email')) return 'Please enter a valid email address.';
-            if (m.includes('network') || m.includes('fetch') || m.includes('Failed to fetch')) return 'Network error. Check your internet connection and try again.';
-            if (m.includes('timeout')) return 'Request timed out. Please try again.';
-            if (m.includes('session_not_found') || m.includes('Session from')) return 'Session expired. Please log in again.';
-            return m || 'An unexpected error occurred. Please try again.';
-        }
-
-        function handleOAuthRedirect() {
-            var hash = window.location.hash;
-            if (!hash || hash.indexOf('access_token') === -1) return;
-            var params = new URLSearchParams(hash.replace('#', '?'));
-            var at = params.get('access_token'), rt = params.get('refresh_token');
-            if (at && rt) {
-                supabase.auth.setSession({ access_token: at, refresh_token: rt }).then(function (r) {
-                    if (!r.error) {
-                        window.location.href = urlParams.get('redirect') === 'admin'
-                            ? '/admin.html?authorized=true&t=' + Date.now()
-                            : 'https://tools.nexgenweblab.com';
-                    }
-                });
-            }
-        }
-
-        handleOAuthRedirect();
-
-        document.addEventListener('DOMContentLoaded', function () {
-            if ($('plan-pro') && urlParams.get('plan') === 'pro') $('plan-pro').checked = true;
-
-            // Tab clicks handled via onclick attributes
-
-            var forgotLink = $('forgot-password-link');
-            if (forgotLink) forgotLink.addEventListener('click', function (e) { e.preventDefault(); showForm('forgot-form'); });
-
-            var backToLogin = $('back-to-login');
-            if (backToLogin) backToLogin.addEventListener('click', function () { showForm('login-form'); });
-
-            var togglePw = $('toggle-password'), pwInput = $('signup-password');
-            if (togglePw && pwInput) {
-                togglePw.addEventListener('click', function () {
-                    var isPw = pwInput.type === 'password';
-                    pwInput.type = isPw ? 'text' : 'password';
-                    this.querySelector('i').className = isPw ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
-                });
-            }
-
-            var toggleLoginPw = $('toggle-login-password'), loginPwInput = $('login-password');
-            if (toggleLoginPw && loginPwInput) {
-                toggleLoginPw.addEventListener('click', function () {
-                    var isPw = loginPwInput.type === 'password';
-                    loginPwInput.type = isPw ? 'text' : 'password';
-                    this.querySelector('i').className = isPw ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
-                });
-            }
-
-            var strengthInput = $('signup-password');
-            if (strengthInput) {
-                strengthInput.addEventListener('input', function () {
-                    var pw = this.value;
-                    var bars = [$('strength-1'), $('strength-2'), $('strength-3'), $('strength-4')];
-                    var score = getPasswordScore(pw);
-                    var colors = ['', 'bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-emerald-500', 'bg-emerald-600'];
-                    var labels = ['Enter password', 'Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
-                    var c = colors[score] || 'bg-red-500';
-                    bars.forEach(function (bar, i) {
-                        if (bar) bar.className = 'h-1 flex-1 rounded-full ' + (i < score ? c : 'bg-slate-200');
-                    });
-                    var st = $('strength-text');
-                    if (st) st.innerHTML = 'Password strength: <span class="' + (score > 0 ? c.replace('bg-', 'text-') : 'text-slate-400') + '">' + (pw.length > 0 ? labels[score] || 'Weak' : 'Enter password') + '</span>';
-                });
-            }
-
-            var emailInput = $('signup-email'), emailError = $('email-error');
-            if (emailInput) {
-                emailInput.addEventListener('blur', function () {
-                    if (this.value && emailError) {
-                        if (!validateEmail(this.value)) {
-                            emailError.classList.remove('hidden');
-                            var s = emailError.querySelector('span');
-                            if (s) s.textContent = 'Please enter a valid email address';
-                            this.classList.add('border-red-500');
-                        } else {
-                            emailError.classList.add('hidden');
-                            this.classList.remove('border-red-500');
-                        }
-                    }
-                });
-                emailInput.addEventListener('input', function () {
-                    if (this.classList.contains('border-red-500') && emailError) {
-                        emailError.classList.add('hidden');
-                        this.classList.remove('border-red-500');
-                    }
-                });
-            }
-
-            var errorDismiss = $('error-dismiss');
-            if (errorDismiss) errorDismiss.addEventListener('click', hideError);
-
-            var signupForm = $('signup-form');
-            if (signupForm) {
-                signupForm.addEventListener('submit', async function (e) {
-                    e.preventDefault();
-                    hideError();
-                    var name = ($('signup-name')?.value || '').trim();
-                    var email = ($('signup-email')?.value || '').trim();
-                    var password = ($('signup-password')?.value || '');
-                    var terms = $('terms')?.checked || false;
-                    var plan = getSelectedPlan();
-
-                    if (!name) { showError('Please enter your full name.'); return; }
-                    if (!email) { showError('Please enter your email address.'); return; }
-                    if (!validateEmail(email)) { showError('Please enter a valid email address.'); return; }
-                    if (!password) { showError('Please enter a password.'); return; }
-                    if (password.length < 6) { showError('Password must be at least 6 characters.'); return; }
-                    if (getPasswordScore(password) < 1) { showError('Password too weak. Use 8+ characters with letters, numbers, and symbols.'); return; }
-                    if (!terms) { showError('Please accept the Terms of Service and Privacy Policy.'); return; }
-
-                    setLoading('signup-btn', true, 'Creating account', '<i class="fa-solid fa-cloud-upload-alt"></i> Create Account');
-
-                    try {
-                        var { data: sd, error: se } = await supabase.auth.signUp({
-                            email: email, password: password,
-                            options: {
-                                data: { full_name: name, plan: plan },
-                                emailRedirectTo: window.location.origin + '/auth?redirect=' + (urlParams.get('redirect') || 'tools')
-                            }
-                        });
-                        if (se) throw se;
-                        if (!sd || !sd.user) throw new Error('No user data returned from signup.');
-
-                        try {
-                            await supabase.from('profiles').insert({
-                                id: sd.user.id, email: email, full_name: name, plan: plan, role: 'user'
-                            });
-                        } catch (pe) {
-                            if (pe && pe.message && pe.message.indexOf('duplicate') === -1) console.warn('Profile warn:', pe.message);
-                        }
-
-                        showForm('success-message');
-                        var st = $('success-title'), stx = $('success-text');
-                        if (st) st.textContent = 'Account created!';
-                        if (stx) stx.textContent = 'Welcome! Check your email to confirm your account. Also check spam folder.';
-
-                    } catch (err) {
-                        console.error('Signup error:', err);
-                        showError(formatError(err));
-                    } finally {
-                        setLoading('signup-btn', false, '', '<i class="fa-solid fa-cloud-upload-alt"></i> Create Account');
-                    }
-                });
-            }
-
-            var loginForm = $('login-form');
-            if (loginForm) {
-                loginForm.addEventListener('submit', async function (e) {
-                    e.preventDefault();
-                    hideError();
-                    var email = ($('login-email')?.value || '').trim();
-                    var password = ($('login-password')?.value || '');
-
-                    if (!email) { showError('Please enter your email address.'); return; }
-                    if (!validateEmail(email)) { showError('Please enter a valid email address.'); return; }
-                    if (!password) { showError('Please enter your password.'); return; }
-
-                    setLoading('login-btn', true, 'Logging in', '<i class="fa-solid fa-arrow-right"></i> Log In');
-
-                    try {
-                        var { data, error } = await supabase.auth.signInWithPassword({ email: email, password: password });
-                        if (error) throw error;
-                        if (!data || !data.user) throw new Error('No user data returned.');
-                        if (!data.session) throw new Error('No session returned.');
-
-                        if (urlParams.get('redirect') === 'admin') {
-                            window.location.href = '/admin.html?authorized=true&t=' + Date.now();
-                            return;
-                        }
-
-                        var plan = 'free';
-                        try {
-                            var p = await supabase.from('profiles').select('plan').eq('id', data.user.id).single();
-                            if (p.data && p.data.plan) plan = p.data.plan;
-                        } catch (_) { }
-
-                        window.location.href = 'https://tools.nexgenweblab.com' + (plan === 'pro' ? '?plan=pro' : '');
-
-                    } catch (err) {
-                        console.error('Login error:', err);
-                        showError(formatError(err));
-                    } finally {
-                        setLoading('login-btn', false, '', '<i class="fa-solid fa-arrow-right"></i> Log In');
-                    }
-                });
-            }
-
-            var forgotForm = $('forgot-form');
-            if (forgotForm) {
-                forgotForm.addEventListener('submit', async function (e) {
-                    e.preventDefault();
-                    hideError();
-                    var email = ($('forgot-email')?.value || '').trim();
-                    if (!email) { showError('Please enter your email address.'); return; }
-                    if (!validateEmail(email)) { showError('Please enter a valid email address.'); return; }
-
-                    setLoading('forgot-btn', true, 'Sending', '<span>Send Reset Link</span> <i class="fa-solid fa-paper-plane"></i>');
-
-                    try {
-                        var { error } = await supabase.auth.resetPasswordForEmail(email, {
-                            redirectTo: window.location.origin + '/auth?reset=true'
-                        });
-                        if (error) throw error;
-
-                        showForm('success-message');
-                        var st = $('success-title'), stx = $('success-text');
-                        if (st) st.textContent = 'Reset link sent!';
-                        if (stx) stx.textContent = 'Check your email for a password reset link. Check spam folder too.';
-
-                    } catch (err) {
-                        console.error('Forgot password error:', err);
-                        showError(formatError(err));
-                        setLoading('forgot-btn', false, '', '<span>Send Reset Link</span> <i class="fa-solid fa-paper-plane"></i>');
-                    }
-                });
-            }
-
-            var googleSignup = $('google-signup-btn'), googleLogin = $('google-login-btn');
-            var googleHandler = async function () {
-                hideError();
-                var dest = urlParams.get('redirect') === 'admin'
-                    ? window.location.origin + '/admin.html?authorized=true&t=' + Date.now()
-                    : 'https://tools.nexgenweblab.com';
-                try {
-                    var { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: dest } });
-                    if (error) throw error;
-                } catch (err) {
-                    console.error('Google auth error:', err);
-                    showError(formatError(err));
-                }
-            };
-            if (googleSignup) googleSignup.addEventListener('click', googleHandler);
-            if (googleLogin) googleLogin.addEventListener('click', googleHandler);
-
-            if (urlParams.get('reset') === 'true') switchTab('login');
-
-            supabase.auth.getSession().then(function (r) {
-                var session = r.data ? r.data.session : null;
-                if (session) {
-                    window.location.href = urlParams.get('redirect') === 'admin'
-                        ? '/admin.html?authorized=true&t=' + Date.now()
-                        : (urlParams.get('plan') === 'pro' ? 'https://tools.nexgenweblab.com/upgrade' : 'https://tools.nexgenweblab.com');
-                }
-            });
-        });
-    </script>
+      }
+    })();
+  </script>
 </body>
 </html>

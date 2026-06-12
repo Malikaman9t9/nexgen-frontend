@@ -32,13 +32,13 @@
       </a>
     </div>
     <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-      <a href="/admin/dashboard" class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700">
+      <a href="/admin/dashboard.html" class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700">
         <i class="fa-solid fa-table-columns w-5 text-center"></i> Posts
       </a>
-      <a href="/admin/editor" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500">
+      <a href="/admin/editor.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500">
         <i class="fa-solid fa-plus w-5 text-center"></i> New Post
       </a>
-      <a href="/admin/dashboard?tab=settings" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500">
+      <a href="/admin/dashboard.html?tab=settings" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500">
         <i class="fa-solid fa-gear w-5 text-center"></i> Settings
       </a>
     </nav>
@@ -58,7 +58,7 @@
           </button>
           <h1 class="text-lg font-black text-slate-900">Blog Posts</h1>
         </div>
-        <a href="/admin/editor" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white text-sm font-bold hover:bg-slate-800 transition-all">
+        <a href="/admin/editor.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white text-sm font-bold hover:bg-slate-800 transition-all">
           <i class="fa-solid fa-plus"></i> New Post
         </a>
       </div>
@@ -109,9 +109,9 @@
         <button id="close-mobile" class="p-2 rounded-lg hover:bg-slate-100"><i class="fa-solid fa-xmark text-lg text-slate-500"></i></button>
       </div>
       <nav class="space-y-1">
-        <a href="/admin/dashboard" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-primary bg-primary/10"><i class="fa-solid fa-table-columns w-5 text-center"></i> Posts</a>
-        <a href="/admin/editor" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-50"><i class="fa-solid fa-plus w-5 text-center"></i> New Post</a>
-        <a href="/admin/dashboard?tab=settings" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-50"><i class="fa-solid fa-gear w-5 text-center"></i> Settings</a>
+        <a href="/admin/dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-primary bg-primary/10"><i class="fa-solid fa-table-columns w-5 text-center"></i> Posts</a>
+        <a href="/admin/editor.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-50"><i class="fa-solid fa-plus w-5 text-center"></i> New Post</a>
+        <a href="/admin/dashboard.html?tab=settings" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-50"><i class="fa-solid fa-gear w-5 text-center"></i> Settings</a>
       </nav>
       <div class="absolute bottom-4 left-4 right-4">
         <button id="mobile-logout" class="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-semibold text-red-500 hover:bg-red-50 transition-all"><i class="fa-solid fa-right-from-bracket w-5 text-center"></i> Logout</button>
@@ -130,9 +130,15 @@
     // Auth check
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { window.location.href = '/admin'; return; }
-      const { data: admin } = await supabase.from('admin_users').select('id').eq('id', session.user.id).single();
-      if (!admin) { await supabase.auth.signOut(); window.location.href = '/admin'; return; }
+      if (!session) { window.location.href = '/auth.html'; return; }
+      const user = session.user;
+      let role = user.app_metadata && user.app_metadata.role;
+      if (role !== 'admin') {
+        const { data: admin } = await supabase.from('admin_users').select('id, role').eq('id', user.id).maybeSingle();
+        if (admin) { role = admin.role; }
+      }
+      if (role !== 'admin') { await supabase.auth.signOut(); window.location.href = '/auth.html'; return; }
+      sessionStorage.setItem('nexgen_admin_role', role);
       loadPosts();
     })();
 
@@ -204,7 +210,7 @@
           </td>
           <td class="px-5 py-4 text-slate-500 text-sm hidden lg:table-cell">${date}</td>
           <td class="px-5 py-4 text-right">
-            <a href="/admin/editor?id=${post.id}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-primary hover:bg-primary/5 transition-all">
+            <a href="/admin/editor.html?id=${post.id}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-primary hover:bg-primary/5 transition-all">
               <i class="fa-solid fa-pen"></i> Edit
             </a>
             <button onclick="promptDelete('${post.id}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-red-500 hover:bg-red-50 transition-all">
@@ -265,7 +271,8 @@
     // Logout
     async function logout() {
       await supabase.auth.signOut();
-      window.location.href = '/admin';
+      sessionStorage.removeItem('nexgen_admin_role');
+      window.location.href = '/auth.html';
     }
     document.getElementById('logout-btn').addEventListener('click', logout);
     document.getElementById('mobile-logout').addEventListener('click', logout);
