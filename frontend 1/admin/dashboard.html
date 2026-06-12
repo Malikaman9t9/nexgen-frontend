@@ -123,7 +123,7 @@
   <script>
     const SUPABASE_URL = 'https://ubnvjmvobwzsystdktpk.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_Fj_rv9LPpfh5nDouVW-bSw_hdfpn4-v';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let currentFilter = 'all';
     let deletePostId = null;
@@ -146,15 +146,15 @@
     // Auth check
     (async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session } } = await sbClient.auth.getSession();
         if (!session) { window.location.href = '/auth.html'; return; }
         const user = session.user;
         let role = user.app_metadata && user.app_metadata.role;
         if (role !== 'admin') {
-          const { data: admin } = await supabase.from('admin_users').select('id, role').eq('id', user.id).maybeSingle();
+          const { data: admin } = await sbClient.from('admin_users').select('id, role').eq('id', user.id).maybeSingle();
           if (admin) { role = admin.role; }
         }
-        if (role !== 'admin') { await supabase.auth.signOut(); window.location.href = '/auth.html'; return; }
+        if (role !== 'admin') { await sbClient.auth.signOut(); window.location.href = '/auth.html'; return; }
         sessionStorage.setItem('nexgen_admin_role', role);
         loadPosts();
       } catch (err) {
@@ -176,7 +176,7 @@
       }, 15000);
 
       try {
-        var { data: { session } } = await supabase.auth.getSession();
+        var { data: { session } } = await sbClient.auth.getSession();
         var token = session ? session.access_token : '';
 
         var url = SUPABASE_URL + '/rest/v1/blog_posts?select=*&order=created_at.desc';
@@ -284,7 +284,7 @@
     document.getElementById('confirm-delete').addEventListener('click', async () => {
       if (!deletePostId) return;
       try {
-        var { data: { session } } = await supabase.auth.getSession();
+        var { data: { session } } = await sbClient.auth.getSession();
         var token = session ? session.access_token : '';
         var url = SUPABASE_URL + '/rest/v1/blog_posts?id=eq.' + deletePostId;
         var resp = await fetch(url, {
@@ -335,7 +335,7 @@
 
     // Logout
     async function logout() {
-      await supabase.auth.signOut();
+      await sbClient.auth.signOut();
       sessionStorage.removeItem('nexgen_admin_role');
       window.location.href = '/auth.html';
     }
