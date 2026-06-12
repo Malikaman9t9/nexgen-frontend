@@ -166,7 +166,9 @@
     async function loadPosts() {
       showLoading();
 
+      var timedOut = false;
       var timeout = setTimeout(function () {
+        timedOut = true;
         var container = document.getElementById('posts-container');
         if (container) container.innerHTML = '<div class="text-center py-16"><p class="text-red-500 font-bold">Request timed out. Check your Supabase connection.</p></div>';
         hideLoading();
@@ -174,13 +176,29 @@
       }, 15000);
 
       try {
-        var { data: posts, error } = await supabase.from('blog_posts').select('*');
+        var { data: { session } } = await supabase.auth.getSession();
+        var token = session ? session.access_token : '';
 
+        var url = SUPABASE_URL + '/rest/v1/blog_posts?select=*&order=created_at.desc';
+        var resp = await fetch(url, {
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': 'Bearer ' + token
+          }
+        });
+
+        if (timedOut) return;
         clearTimeout(timeout);
-        if (error) throw error;
 
+        if (!resp.ok) {
+          var text = await resp.text();
+          throw new Error('HTTP ' + resp.status + ': ' + text.slice(0, 200));
+        }
+
+        var posts = await resp.json();
         renderPosts(posts || []);
       } catch (err) {
+        if (timedOut) return;
         clearTimeout(timeout);
         var container = document.getElementById('posts-container');
         if (container) container.innerHTML = '<div class="text-center py-16"><p class="text-red-500 font-bold">Error: ' + err.message + '</p></div>';
@@ -266,7 +284,21 @@
     document.getElementById('confirm-delete').addEventListener('click', async () => {
       if (!deletePostId) return;
       try {
-        await supabase.from('blog_posts').delete().eq('id', deletePostId);
+        var { data: { session } } = await supabase.auth.getSession();
+        var token = session ? session.access_token : '';
+        var url = SUPABASE_URL + '/rest/v1/blog_posts?id=eq.' + deletePostId;
+        var resp = await fetch(url, {
+          method: 'DELETE',
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          }
+        });
+        if (!resp.ok) {
+          var text = await resp.text();
+          throw new Error('HTTP ' + resp.status + ': ' + text.slice(0, 200));
+        }
         deletePostId = null;
         document.getElementById('delete-modal').classList.add('hidden');
         loadPosts();
