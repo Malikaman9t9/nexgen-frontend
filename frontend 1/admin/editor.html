@@ -167,9 +167,14 @@
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { window.location.href = '/auth.html'; return; }
-      const { data: admin } = await supabase.from('admin_users').select('id, role').eq('id', session.user.id).single();
-      if (!admin) { await supabase.auth.signOut(); window.location.href = '/auth.html'; return; }
-      sessionStorage.setItem('nexgen_admin_role', admin.role);
+      const user = session.user;
+      let role = user.app_metadata && user.app_metadata.role;
+      if (role !== 'admin') {
+        const { data: admin } = await supabase.from('admin_users').select('id, role').eq('id', user.id).maybeSingle();
+        if (admin) { role = admin.role; }
+      }
+      if (role !== 'admin') { await supabase.auth.signOut(); window.location.href = '/auth.html'; return; }
+      sessionStorage.setItem('nexgen_admin_role', role);
       initEditor();
     })();
 

@@ -292,6 +292,7 @@
       var password = passwordInput.value;
 
       if (!email) { emailError.textContent = 'Email is required'; emailWrap.classList.add('input-error'); emailInput.focus(); return; }
+      if (!/\S+@\S+\.\S+/.test(email)) { emailError.textContent = 'Please enter a valid email (e.g., admin@example.com)'; emailWrap.classList.add('input-error'); emailInput.focus(); return; }
       if (!password) { passwordError.textContent = 'Password is required'; passwordWrap.classList.add('input-error'); passwordInput.focus(); return; }
 
       setLoading(true);
@@ -300,15 +301,22 @@
         var authResult = await supabase.auth.signInWithPassword({ email: email, password: password });
         if (authResult.error) { setLoading(false); showMessage(authResult.error.message, 'error'); return; }
 
-        var adminResult = await supabase.from('admin_users').select('id, email, role').eq('id', authResult.data.user.id).single();
-        if (adminResult.error || !adminResult.data) {
+        var user = authResult.data.user;
+        var role = user.app_metadata && user.app_metadata.role;
+
+        if (role !== 'admin') {
+          var adminResult = await supabase.from('admin_users').select('id, email, role').eq('id', user.id).maybeSingle();
+          if (adminResult.data) { role = adminResult.data.role; }
+        }
+
+        if (role !== 'admin') {
           await supabase.auth.signOut();
           setLoading(false);
           showMessage('Access denied. You are not authorized to access this panel.', 'error');
           return;
         }
 
-        sessionStorage.setItem('nexgen_admin_role', adminResult.data.role);
+        sessionStorage.setItem('nexgen_admin_role', role);
         window.location.href = '/admin/dashboard.html';
       } catch (err) {
         setLoading(false);
@@ -319,9 +327,16 @@
     (async function () {
       var sessionResult = await supabase.auth.getSession();
       if (sessionResult.data.session) {
-        var adminCheck = await supabase.from('admin_users').select('id, role').eq('id', sessionResult.data.session.user.id).single();
-        if (adminCheck.data) {
-          sessionStorage.setItem('nexgen_admin_role', adminCheck.data.role);
+        var user = sessionResult.data.session.user;
+        var role = user.app_metadata && user.app_metadata.role;
+
+        if (role !== 'admin') {
+          var adminCheck = await supabase.from('admin_users').select('id, role').eq('id', user.id).maybeSingle();
+          if (adminCheck.data) { role = adminCheck.data.role; }
+        }
+
+        if (role === 'admin') {
+          sessionStorage.setItem('nexgen_admin_role', role);
           window.location.href = '/admin/dashboard.html';
         }
       }
