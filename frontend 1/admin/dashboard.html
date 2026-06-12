@@ -159,7 +159,8 @@
       } catch (err) {
         container.innerHTML = `<div class="text-center py-16"><p class="text-red-500 font-bold">Error: ${err.message}</p></div>`;
       } finally {
-        document.getElementById('loading-state').classList.add('hidden');
+        var ls = document.getElementById('loading-state');
+        if (ls) ls.classList.add('hidden');
       }
     }
 
