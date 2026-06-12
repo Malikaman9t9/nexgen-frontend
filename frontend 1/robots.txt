@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /assets/
 Disallow: /auth
-Disallow: /upgrade
 Disallow: /admin/
+Disallow: /api/
 
 Sitemap: https://nexgenweblab.com/sitemap.xml
