@@ -127,40 +127,60 @@
     let currentFilter = 'all';
     let deletePostId = null;
 
+    function showLoading() {
+      var el = document.getElementById('loading-state');
+      if (el) el.style.display = '';
+    }
+    function hideLoading() {
+      var el = document.getElementById('loading-state');
+      if (el) el.style.display = 'none';
+    }
+
     // Auth check
     (async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { window.location.href = '/auth.html'; return; }
-      const user = session.user;
-      let role = user.app_metadata && user.app_metadata.role;
-      if (role !== 'admin') {
-        const { data: admin } = await supabase.from('admin_users').select('id, role').eq('id', user.id).maybeSingle();
-        if (admin) { role = admin.role; }
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) { window.location.href = '/auth.html'; return; }
+        const user = session.user;
+        let role = user.app_metadata && user.app_metadata.role;
+        if (role !== 'admin') {
+          const { data: admin } = await supabase.from('admin_users').select('id, role').eq('id', user.id).maybeSingle();
+          if (admin) { role = admin.role; }
+        }
+        if (role !== 'admin') { await supabase.auth.signOut(); window.location.href = '/auth.html'; return; }
+        sessionStorage.setItem('nexgen_admin_role', role);
+        loadPosts();
+      } catch (err) {
+        console.error('Auth error:', err);
+        window.location.href = '/auth.html';
       }
-      if (role !== 'admin') { await supabase.auth.signOut(); window.location.href = '/auth.html'; return; }
-      sessionStorage.setItem('nexgen_admin_role', role);
-      loadPosts();
     })();
 
     async function loadPosts() {
-      const container = document.getElementById('posts-container');
-      document.getElementById('loading-state').classList.remove('hidden');
+      showLoading();
 
       try {
-        let query = supabase.from('blog_posts').select('*').order('created_at', { ascending: false });
+        var { data: posts, error } = await supabase.from('blog_posts').select('*').order('created_at', { ascending: false });
 
-        if (currentFilter === 'published') query = query.eq('status', 'published');
-        else if (currentFilter === 'draft') query = query.eq('status', 'draft');
-
-        const { data: posts, error } = await query;
         if (error) throw error;
 
-        renderPosts(posts || []);
+        if (!posts || posts.length === 0) {
+          document.getElementById('posts-container').innerHTML = `
+            <div class="text-center py-16">
+              <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-newspaper text-slate-300 text-2xl"></i>
+              </div>
+              <p class="text-slate-500 font-bold">No posts found.</p>
+              <a href="/admin/editor.html" class="inline-block mt-4 px-5 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-bold hover:bg-slate-800 transition-all">Create your first post</a>
+            </div>
+          `;
+        } else {
+          renderPosts(posts);
+        }
       } catch (err) {
-        container.innerHTML = `<div class="text-center py-16"><p class="text-red-500 font-bold">Error: ${err.message}</p></div>`;
+        document.getElementById('posts-container').innerHTML = '<div class="text-center py-16"><p class="text-red-500 font-bold">Error: ' + err.message + '</p></div>';
       } finally {
-        var ls = document.getElementById('loading-state');
-        if (ls) ls.classList.add('hidden');
+        hideLoading();
       }
     }
 
