@@ -291,7 +291,7 @@
         document.getElementById('slug').value = post.slug;
         document.getElementById('slug').dataset.manual = 'true';
         document.getElementById('excerpt').value = post.excerpt || '';
-        document.getElementById('cover-image').value = post.cover_image_url || '';
+        document.getElementById('cover-image').value = post.featured_image || post.cover_image_url || '';
         document.getElementById('author-name').value = post.author_name || 'NexGenWebLab Team';
         document.getElementById('tags').value = (post.tags || []).join(', ');
         setStatus(post.status || 'draft');
@@ -331,7 +331,7 @@
         slug,
         content,
         excerpt,
-        cover_image_url: coverImageUrl,
+        featured_image: coverImageUrl,
         tags,
         status,
         updated_at: new Date().toISOString()

@@ -165,10 +165,11 @@
                 postEl.setAttribute('data-aos', 'fade-up');
                 postEl.setAttribute('data-aos-delay', String(100 + index * 50));
 
+                var postImg = post.featured_image || post.cover_image_url;
                 let imageHtml = '';
-                if (post.cover_image_url) {
+                if (postImg) {
                     imageHtml = `<div class="h-48 md:h-56 bg-slate-100 overflow-hidden">
-                        <img src="${post.cover_image_url}" alt="${post.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" onerror="this.parentElement.classList.add('bg-gradient-to-br','from-primary/5','to-secondary/5');this.style.display='none'">
+                        <img src="${postImg}" alt="${post.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" onerror="this.parentElement.classList.add('bg-gradient-to-br','from-primary/5','to-secondary/5');this.style.display='none'">
                     </div>`;
                 } else {
                     imageHtml = `<div class="h-48 md:h-56 bg-gradient-to-br from-primary/5 to-secondary/5 flex items-center justify-center">

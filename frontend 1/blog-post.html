@@ -150,9 +150,10 @@
       document.getElementById('post-date').innerHTML += date;
       document.getElementById('post-author').innerHTML += post.author_name || 'NexGenWebLab Team';
 
-      if (post.cover_image_url) {
-        document.getElementById('post-cover').classList.remove('hidden');
-        document.getElementById('cover-img').src = post.cover_image_url;
+      var imgUrl = post.featured_image || post.cover_image_url;
+      if (imgUrl) {
+        document.getElementById('cover-img').parentElement.classList.remove('hidden');
+        document.getElementById('cover-img').src = imgUrl;
         document.getElementById('cover-img').alt = post.title;
       }
 
