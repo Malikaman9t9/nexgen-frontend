@@ -326,25 +326,15 @@
       btn.disabled = true;
       btn.querySelector('span').textContent = 'Saving...';
 
-      const payload = {
-        title,
-        slug,
-        content,
-        excerpt,
+      var payload = {
+        title: title,
+        content: content,
+        excerpt: excerpt,
         featured_image: coverImageUrl,
-        tags,
-        status,
+        tags: tags,
+        status: status,
         updated_at: new Date().toISOString()
       };
-
-      if (status === 'published') {
-        const { data: existing } = editPostId
-          ? await sbClient.from('blog_posts').select('published_at').eq('id', editPostId).single()
-          : { data: null };
-        if (!existing || !existing.published_at) {
-          payload.published_at = new Date().toISOString();
-        }
-      }
 
       try {
         if (editPostId) {
