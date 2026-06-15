@@ -1,0 +1,12 @@
+{
+  "name": "nexgenweblab",
+  "private": true,
+  "scripts": {
+    "export-blog": "node scripts/export-blog.js",
+    "build-blog": "node scripts/build-blog.js",
+    "sync": "npm run export-blog && npm run build-blog"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}
