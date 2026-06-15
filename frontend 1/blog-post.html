@@ -79,6 +79,15 @@
 
         <div id="post-body" class="blog-content max-w-none" data-aos="fade-up" data-aos-delay="100"></div>
 
+        <div class="mt-12 p-6 bg-slate-50 rounded-2xl border border-slate-200" data-aos="fade-up">
+          <details>
+            <summary class="text-xs font-black uppercase tracking-wider text-slate-400 cursor-pointer select-none hover:text-slate-600 transition-colors flex items-center gap-2">
+              <i class="fa-solid fa-code text-primary"></i> Blog Schema (JSON-LD)
+            </summary>
+            <pre id="post-schema" class="mt-3 p-4 bg-slate-900 text-slate-200 text-xs font-mono rounded-xl overflow-x-auto max-h-96 overflow-y-auto leading-relaxed"></pre>
+          </details>
+        </div>
+
         <div class="mt-16 pt-8 border-t border-slate-200" data-aos="fade-up">
           <a href="/blog" class="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-secondary transition-colors">
             <i class="fa-solid fa-arrow-left"></i> Back to Blog
@@ -168,6 +177,42 @@
       }
 
       document.getElementById('post-body').innerHTML = post.content || '';
+
+      // Inject JSON-LD schema
+      var schema = {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        'headline': post.title,
+        'description': post.excerpt || '',
+        'url': 'https://nexgenweblab.com/blog/' + (post.slug || ''),
+        'datePublished': post.published_at || post.created_at,
+        'dateModified': post.updated_at || post.created_at,
+        'author': {
+          '@type': 'Person',
+          'name': post.author_name || 'NexGenWebLab Team'
+        },
+        'publisher': {
+          '@type': 'Organization',
+          'name': 'NexGenWebLab',
+          'url': 'https://nexgenweblab.com'
+        }
+      };
+      if (post.featured_image || post.cover_image_url) {
+        schema.image = post.featured_image || post.cover_image_url;
+      }
+      if (post.tags && post.tags.length > 0) {
+        schema.keywords = post.tags.join(', ');
+      }
+      var script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.textContent = JSON.stringify(schema, null, 2);
+      document.head.appendChild(script);
+
+      // Display schema at page bottom
+      var schemaDisplay = document.getElementById('post-schema');
+      if (schemaDisplay) {
+        schemaDisplay.textContent = JSON.stringify(schema, null, 2);
+      }
     }
 
     function showError(msg) {

@@ -105,13 +105,19 @@
         </div>
 
         <div class="grid sm:grid-cols-2 gap-5">
-        <div>
-          <label for="cover-image" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Cover Image URL</label>
-          <input type="url" id="cover-image" placeholder="https://example.com/image.jpg" class="w-full h-11 px-4 rounded-xl border-2 border-slate-200 bg-white text-sm font-medium outline-none transition-all focus:border-primary focus:shadow-[0_0_0_3px_rgba(109,40,217,0.08)]">
-          <div id="cover-preview" class="hidden mt-2 rounded-xl overflow-hidden border border-slate-200 max-h-40">
-            <img id="cover-preview-img" src="" alt="Cover preview" class="w-full h-full object-cover">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Cover Image</label>
+            <div class="flex gap-2">
+              <label class="flex-1 flex items-center gap-3 px-4 py-2.5 rounded-xl border-2 border-dashed border-slate-200 bg-white text-sm font-semibold text-slate-500 cursor-pointer hover:border-primary/40 hover:text-primary transition-all">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Upload
+                <input type="file" id="cover-file" accept="image/*" class="hidden">
+              </label>
+              <input type="url" id="cover-image" placeholder="or paste URL..." class="flex-1 w-full h-11 px-4 rounded-xl border-2 border-slate-200 bg-white text-sm font-medium outline-none transition-all focus:border-primary focus:shadow-[0_0_0_3px_rgba(109,40,217,0.08)]">
+            </div>
+            <div id="cover-preview" class="hidden mt-2 rounded-xl overflow-hidden border border-slate-200 max-h-40">
+              <img id="cover-preview-img" src="" alt="Cover preview" class="w-full h-full object-cover">
+            </div>
           </div>
-        </div>
           <div>
             <label for="author-name" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Author Name</label>
             <input type="text" id="author-name" placeholder="NexGenWebLab Team" class="w-full h-11 px-4 rounded-xl border-2 border-slate-200 bg-white text-sm font-semibold outline-none transition-all focus:border-primary focus:shadow-[0_0_0_3px_rgba(109,40,217,0.08)]">
@@ -229,17 +235,46 @@
         this.dataset.manual = this.value.length > 0 ? 'true' : '';
       });
 
-      // Cover image preview
+      // Cover image preview (URL input)
       document.getElementById('cover-image').addEventListener('input', function () {
-        const preview = document.getElementById('cover-preview');
-        const img = document.getElementById('cover-preview-img');
-        const url = this.value.trim();
+        var preview = document.getElementById('cover-preview');
+        var img = document.getElementById('cover-preview-img');
+        var url = this.value.trim();
         if (url) {
           preview.classList.remove('hidden');
           img.src = url;
           img.onerror = function () { preview.classList.add('hidden'); };
         } else {
           preview.classList.add('hidden');
+        }
+      });
+
+      // Cover image upload from device
+      document.getElementById('cover-file').addEventListener('change', async function () {
+        var file = this.files[0];
+        if (!file) return;
+        var preview = document.getElementById('cover-preview');
+        var img = document.getElementById('cover-preview-img');
+        var urlInput = document.getElementById('cover-image');
+
+        // Show local preview
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          preview.classList.remove('hidden');
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+
+        // Upload to Supabase Storage
+        try {
+          var fileName = Date.now() + '-' + file.name.replace(/[^a-zA-Z0-9.-]/g, '');
+          var { data, error } = await sbClient.storage.from('blog-images').upload(fileName, file);
+          if (error) throw error;
+          var { data: publicUrl } = sbClient.storage.from('blog-images').getPublicUrl(fileName);
+          urlInput.value = publicUrl.publicUrl;
+        } catch (err) {
+          // Keep local preview but warn
+          console.warn('Storage upload failed, using local preview only:', err.message);
         }
       });
 
@@ -328,11 +363,14 @@
 
       var payload = {
         title: title,
+        slug: slug,
         content: content,
         excerpt: excerpt,
         featured_image: coverImageUrl,
+        author_name: authorName,
         tags: tags,
         status: status,
+        published_at: status === 'published' ? new Date().toISOString() : null,
         updated_at: new Date().toISOString()
       };
 
