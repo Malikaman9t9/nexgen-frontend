@@ -168,12 +168,14 @@
     const postId = params.get('id');
     let editPostId = postId;
     let currentStatus = 'draft';
+    let currentUserId = null;
 
     // Auth check
     (async () => {
       const { data: { session } } = await sbClient.auth.getSession();
       if (!session) { window.location.href = '/auth.html'; return; }
       const user = session.user;
+      currentUserId = user.id;
       let role = user.app_metadata && user.app_metadata.role;
       if (role !== 'admin') {
         const { data: admin } = await sbClient.from('admin_users').select('id, role').eq('id', user.id).maybeSingle();
@@ -367,6 +369,7 @@
         content: content,
         excerpt: excerpt,
         featured_image: coverImageUrl,
+        author_id: currentUserId,
         author_name: authorName,
         tags: tags,
         status: status,
