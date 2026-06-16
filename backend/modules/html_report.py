@@ -211,7 +211,7 @@ def get_score_label(score):
 def generate_html_report_single(url, onpage_data=None, speed_data=None, traffic_data=None, ai_suggestions=None,
                                  agency_name="NexGenWebLab", client_name="Client", author_name="SEO Team",
                                  logo_url="", custom_css="", primary_color="#6D28D9", secondary_color="#DB2777",
-                                 language="en", white_label=False):
+                                 language="en", white_label=False, ai_paragraphs=None):
     if onpage_data is None:
         onpage_data = {}
     if speed_data is None:
@@ -236,13 +236,14 @@ def generate_html_report_single(url, onpage_data=None, speed_data=None, traffic_
         secondary_color=secondary_color,
         language=language,
         white_label=white_label,
+        ai_paragraphs=ai_paragraphs,
     )
 
 def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai_suggestions,
                                    agency_name="NexGenWebLab", client_name="Client",
                                    author_name="SEO Team", logo_base64=None, custom_css="",
                                    primary_color="#6D28D9", secondary_color="#DB2777",
-                                   language="en", white_label=False):
+                                   language="en", white_label=False, ai_paragraphs=None):
     
     t = get_translations(language)
     site_title = url
@@ -334,6 +335,8 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
         .section-icon {{ width: 48px; height: 48px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; }}
         .section-title {{ font-size: 24px; font-weight: 700; color: #0f172a; }}
         .section-subtitle {{ font-size: 14px; color: #64748b; margin-top: 4px; }}
+        .ai-paragraph {{ font-size: 15px; line-height: 1.8; color: #475569; margin-bottom: 16px; font-weight: 400; }}
+        .ai-paragraph strong {{ color: #0f172a; }}
         
         .scores-grid {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }}
         .score-card {{ background: linear-gradient(135deg, #f8fafc, #f1f5f9); border-radius: 16px; padding: 30px; text-align: center; border: 1px solid #e2e8f0; }}
@@ -471,8 +474,22 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
                     <div class="summary-label">{t.get('issue_found', 'Issues Found')}</div>
                 </div>
             </div>
-        </div>
-        
+        </div>'''
+
+    if ai_paragraphs and ai_paragraphs.get('executive_summary'):
+        html += f'''
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon">📋</div>
+                <div>
+                    <h2 class="section-title">Executive Summary</h2>
+                    <p class="section-subtitle">AI-powered overview of SEO performance</p>
+                </div>
+            </div>
+            <div class="ai-paragraph">{ai_paragraphs['executive_summary']}</div>
+        </div>'''
+
+    html += f'''
         <div class="section">
             <div class="section-header">
                 <div class="section-icon">📈</div>
@@ -526,7 +543,33 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
     html += '''
             </div>
         </div>'''
+
+    if ai_paragraphs and ai_paragraphs.get('onpage_analysis'):
+        html += f'''
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon">📝</div>
+                <div>
+                    <h2 class="section-title">On-Page SEO Assessment</h2>
+                    <p class="section-subtitle">Detailed AI analysis of page-level factors</p>
+                </div>
+            </div>
+            <div class="ai-paragraph">{ai_paragraphs['onpage_analysis']}</div>
+        </div>'''
     
+    if ai_paragraphs and ai_paragraphs.get('speed_analysis'):
+        html += f'''
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon">⚡</div>
+                <div>
+                    <h2 class="section-title">Core Web Vitals & Speed Analysis</h2>
+                    <p class="section-subtitle">AI interpretation of page speed and user experience metrics</p>
+                </div>
+            </div>
+            <div class="ai-paragraph">{ai_paragraphs['speed_analysis']}</div>
+        </div>'''
+
     # Traffic Sources Section
     if traffic_data and any([
         traffic_data.get('search_traffic', 'N/A') != 'N/A',
@@ -562,6 +605,19 @@ def generate_advanced_html_report(url, onpage_data, speed_data, traffic_data, ai
         html += '''
                 </div>
             </div>
+        </div>'''
+
+    if ai_paragraphs and ai_paragraphs.get('traffic_analysis'):
+        html += f'''
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon">📊</div>
+                <div>
+                    <h2 class="section-title">Traffic Analytics Insights</h2>
+                    <p class="section-subtitle">AI evaluation of search visibility and audience engagement</p>
+                </div>
+            </div>
+            <div class="ai-paragraph">{ai_paragraphs['traffic_analysis']}</div>
         </div>'''
     
     # Top Keywords Section

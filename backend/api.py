@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from modules.onpage_scraper import get_basic_onpage
 from modules.speed_checker import check_speed
 from modules.traffic_checker import get_traffic_data
-from modules.ai_analyzer import get_ai_suggestions
+from modules.ai_analyzer import get_ai_suggestions, get_ai_paragraphs
 from modules.report_export import generate_word_report
 from modules.html_report import generate_html_report_single, generate_html_report_bulk, generate_advanced_html_report
 
@@ -70,6 +70,7 @@ class HTMLReportRequest(BaseModel):
     speed_data: dict = {}
     traffic_data: dict = {}
     ai_suggestions: list = []
+    ai_paragraphs: dict | None = None
     agency_name: str = "NexGenWebLab"
     client_name: str = "Client"
     author_name: str = "SEO Team"
@@ -79,6 +80,12 @@ class HTMLReportRequest(BaseModel):
     secondary_color: str = "#DB2777"
     language: str = "en"
     white_label: bool = False
+
+
+class AIParagraphsRequest(BaseModel):
+    onpage_data: dict
+    mobile_speed: int = 0
+    desktop_speed: int = 0
 
 
 class BulkReportRequest(BaseModel):
@@ -145,6 +152,18 @@ def ai(req: AIRequest):
     except Exception as e:
         traceback.print_exc()
         return JSONResponse({"error": f"AI analysis failed: {str(e)}"}, status_code=500)
+
+
+@app.post("/api/ai/paragraphs")
+def ai_paragraphs(req: AIParagraphsRequest):
+    if not req.onpage_data:
+        return JSONResponse({"error": "onpage_data is required"}, status_code=422)
+    try:
+        seo_data = {**req.onpage_data, "mobile_speed": req.mobile_speed, "desktop_speed": req.desktop_speed}
+        return get_ai_paragraphs(seo_data, GEMINI_API_KEY)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse({"error": f"AI paragraphs failed: {str(e)}"}, status_code=500)
 
 
 @app.post("/api/export")
@@ -221,6 +240,7 @@ def preview_html_report(req: HTMLReportRequest):
             speed_data=req.speed_data or {},
             traffic_data=req.traffic_data or {},
             ai_suggestions=req.ai_suggestions or [],
+            ai_paragraphs=req.ai_paragraphs or None,
             agency_name=req.agency_name or "NexGenWebLab",
             client_name=req.client_name or "Client",
             author_name=req.author_name or "SEO Team",
