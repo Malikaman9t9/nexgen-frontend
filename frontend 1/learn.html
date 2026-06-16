@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en-US" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEO Knowledge Base & Glossary | NexGenWebLab</title>
+    <meta name="description" content="Learn everything about SEO tools, strategies, and best practices. Free guides on technical SEO, keyword research, website auditing, and more.">
+    <link rel="canonical" href="https://nexgenweblab.com/learn">
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png?v=2">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { primary: '#6D28D9', secondary: '#DB2777' } } } }
+    </script>
+    <style>
+        .hero-gradient { background: radial-gradient(circle at top right, rgba(109, 40, 217, 0.08), transparent), radial-gradient(circle at bottom left, rgba(219, 39, 119, 0.05), transparent); }
+        .learn-card { transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .learn-card:hover { transform: translateY(-6px); }
+    </style>
+</head>
+<body class="bg-white text-slate-900 antialiased selection:bg-primary selection:text-white flex flex-col min-h-screen hero-gradient overflow-x-hidden">
+    <main class="flex-grow pt-16 md:pt-28">
+        <section class="relative pb-16 md:pb-20">
+            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12 md:mb-16" data-aos="fade-up">
+                    <span class="inline-block text-primary font-black uppercase tracking-widest text-xs md:text-sm mb-4 md:mb-6 bg-primary/5 px-4 py-2 rounded-full">Knowledge Base</span>
+                    <h1 class="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter mb-6 leading-[1.05] md:leading-[0.95] text-slate-950">
+                        SEO Knowledge <span class="text-primary block md:inline">Base &amp; Glossary</span>
+                    </h1>
+                    <p class="text-lg md:text-xl text-slate-500 font-bold max-w-3xl mx-auto leading-relaxed">
+                        Free educational guides on SEO tools, website auditing, keyword research, and advanced technical strategies.
+                    </p>
+                </div>
+
+                <div id="learn-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="/assets/js/site.js"></script>
+    <script>
+        var LEARN_DATA = [
+            {
+                title: "AI SEO Tools",
+                slug: "ai-seo-tools",
+                description: "Discover the best AI-powered SEO tools for automation, content generation, and competitive analysis.",
+                icon: "fa-solid fa-robot"
+            },
+            {
+                title: "Backlink Analysis Guide",
+                slug: "backlink-analysis-guide",
+                description: "Learn how to analyze and build high-quality backlinks to improve domain authority and search rankings.",
+                icon: "fa-solid fa-link"
+            },
+            {
+                title: "Bulk SEO Analysis",
+                slug: "bulk-seo-analysis",
+                description: "How to run bulk SEO audits on multiple websites simultaneously. Save time with automated reporting.",
+                icon: "fa-solid fa-layer-group"
+            },
+            {
+                title: "Google PageSpeed Insights Guide",
+                slug: "google-pagespeed-insights-guide",
+                description: "Master Google's PageSpeed Insights tool. Improve Core Web Vitals and boost your Lighthouse scores.",
+                icon: "fa-solid fa-gauge-high"
+            },
+            {
+                title: "Keyword Research Strategy",
+                slug: "keyword-research-strategy",
+                description: "A complete guide to finding profitable keywords using modern SEO research techniques and tools.",
+                icon: "fa-solid fa-magnifying-glass"
+            },
+            {
+                title: "Local SEO Audit",
+                slug: "local-seo-audit",
+                description: "Step-by-step local SEO audit checklist for businesses targeting geographic search results.",
+                icon: "fa-solid fa-location-dot"
+            },
+            {
+                title: "Mobile SEO Optimization",
+                slug: "mobile-seo-optimization",
+                description: "Optimize your website for mobile-first indexing, responsive design, and touch-friendly UX.",
+                icon: "fa-solid fa-mobile-screen"
+            },
+            {
+                title: "On-Page SEO Checker",
+                slug: "on-page-seo-checker",
+                description: "Check your on-page SEO factors including meta tags, heading structure, and content optimization.",
+                icon: "fa-solid fa-file-lines"
+            },
+            {
+                title: "SEO Audit Checklist",
+                slug: "seo-audit-checklist",
+                description: "A comprehensive technical SEO audit checklist covering 100+ ranking factors and best practices.",
+                icon: "fa-solid fa-list-check"
+            },
+            {
+                title: "SEO Competitor Analysis",
+                slug: "seo-competitor-analysis",
+                description: "Learn how to analyze competitor SEO strategies using domain comparison and gap analysis.",
+                icon: "fa-solid fa-chart-bar"
+            },
+            {
+                title: "SEO Report Generator",
+                slug: "seo-report-generator",
+                description: "Automate branded SEO report generation for clients. White label reports with custom branding.",
+                icon: "fa-solid fa-file-pdf"
+            },
+            {
+                title: "Website Health Checker",
+                slug: "website-health-checker",
+                description: "A complete website health diagnostic covering SEO, performance, security, and accessibility.",
+                icon: "fa-solid fa-stethoscope"
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var grid = document.getElementById('learn-grid');
+            LEARN_DATA.forEach(function (item, index) {
+                var card = document.createElement('div');
+                card.className = 'learn-card bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden group hover:shadow-xl';
+                card.setAttribute('data-aos', 'fade-up');
+                card.setAttribute('data-aos-delay', String(100 + index * 50));
+
+                card.innerHTML =
+                    '<div class="p-8 md:p-10">' +
+                    '  <div class="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl flex items-center justify-center text-primary text-2xl lg:text-3xl mb-6 group-hover:scale-110 transition-transform"><i class="' + item.icon + '"></i></div>' +
+                    '  <h3 class="text-xl lg:text-2xl font-black text-slate-900 mb-4">' + item.title + '</h3>' +
+                    '  <p class="text-slate-600 font-medium leading-relaxed text-sm lg:text-base mb-6">' + item.description + '</p>' +
+                    '  <a href="/learn/' + item.slug + '" class="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-secondary transition-colors">' +
+                    '    Read Guide <i class="fa-solid fa-arrow-right text-xs"></i>' +
+                    '  </a>' +
+                    '</div>';
+
+                grid.appendChild(card);
+            });
+
+            if (typeof AOS !== 'undefined') {
+                AOS.refresh();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en-US" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our SEO Solutions | NexGenWebLab</title>
+    <meta name="description" content="Explore our comprehensive suite of white label SEO solutions tailored for WordPress, Shopify, agencies, freelancers, and more.">
+    <link rel="canonical" href="https://nexgenweblab.com/solutions">
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png?v=2">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { primary: '#6D28D9', secondary: '#DB2777' } } } }
+    </script>
+    <style>
+        .hero-gradient { background: radial-gradient(circle at top right, rgba(109, 40, 217, 0.08), transparent), radial-gradient(circle at bottom left, rgba(219, 39, 119, 0.05), transparent); }
+        .sol-card { transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .sol-card:hover { transform: translateY(-6px); }
+    </style>
+</head>
+<body class="bg-white text-slate-900 antialiased selection:bg-primary selection:text-white flex flex-col min-h-screen hero-gradient overflow-x-hidden">
+    <main class="flex-grow pt-16 md:pt-28">
+        <section class="relative pb-16 md:pb-20">
+            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12 md:mb-16" data-aos="fade-up">
+                    <span class="inline-block text-primary font-black uppercase tracking-widest text-xs md:text-sm mb-4 md:mb-6 bg-primary/5 px-4 py-2 rounded-full">Programmatic SEO</span>
+                    <h1 class="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter mb-6 leading-[1.05] md:leading-[0.95] text-slate-950">
+                        Our <span class="text-primary block md:inline">SEO Solutions</span>
+                    </h1>
+                    <p class="text-lg md:text-xl text-slate-500 font-bold max-w-3xl mx-auto leading-relaxed">
+                        White label SEO report solutions tailored to your specific industry and audience. Each solution is built with AI-powered insights and branded reporting.
+                    </p>
+                </div>
+
+                <div id="solutions-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="/assets/js/site.js"></script>
+    <script>
+        var SOLUTIONS_DATA = [
+            {
+                modifier: "WordPress",
+                slug: "wordpress",
+                description: "White label SEO reports optimized for WordPress sites. Deep technical audits of themes, plugins, and Core Web Vitals.",
+                icon: "fa-brands fa-wordpress"
+            },
+            {
+                modifier: "Shopify",
+                slug: "shopify",
+                description: "E-commerce SEO auditing tailored to Shopify stores. Analyze product pages, collection structure, and site speed.",
+                icon: "fa-brands fa-shopify"
+            },
+            {
+                modifier: "Digital Agencies",
+                slug: "digital-agencies",
+                description: "Scale your agency with bulk white label SEO reports. Branded audits for unlimited client websites.",
+                icon: "fa-solid fa-building"
+            },
+            {
+                modifier: "Freelancers",
+                slug: "freelancers",
+                description: "Professional SEO reporting tools for independent consultants. Impress clients with data-driven insights.",
+                icon: "fa-solid fa-laptop-code"
+            },
+            {
+                modifier: "E-commerce Stores",
+                slug: "e-commerce-stores",
+                description: "Comprehensive technical SEO audits for online stores. Boost product visibility and reduce cart abandonment.",
+                icon: "fa-solid fa-cart-shopping"
+            },
+            {
+                modifier: "Real Estate Agents",
+                slug: "real-estate-agents",
+                description: "SEO reporting for real estate websites. Optimize property listings and local search presence.",
+                icon: "fa-solid fa-house-chimney"
+            },
+            {
+                modifier: "Local Businesses",
+                slug: "local-businesses",
+                description: "Local SEO audit tools for brick-and-mortar businesses. Improve Google Business Profile and local rankings.",
+                icon: "fa-solid fa-store"
+            },
+            {
+                modifier: "SaaS Companies",
+                slug: "saas-companies",
+                description: "Technical SEO audits for software-as-a-service platforms. Optimize content marketing and conversion funnels.",
+                icon: "fa-solid fa-cloud"
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var grid = document.getElementById('solutions-grid');
+            SOLUTIONS_DATA.forEach(function (item, index) {
+                var card = document.createElement('div');
+                card.className = 'sol-card bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden group hover:shadow-xl';
+                card.setAttribute('data-aos', 'fade-up');
+                card.setAttribute('data-aos-delay', String(100 + index * 50));
+
+                card.innerHTML =
+                    '<div class="p-8 md:p-10">' +
+                    '  <div class="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl flex items-center justify-center text-primary text-2xl lg:text-3xl mb-6 group-hover:scale-110 transition-transform"><i class="' + item.icon + '"></i></div>' +
+                    '  <h3 class="text-xl lg:text-2xl font-black text-slate-900 mb-4">' + item.modifier + '</h3>' +
+                    '  <p class="text-slate-600 font-medium leading-relaxed text-sm lg:text-base mb-6">' + item.description + '</p>' +
+                    '  <a href="/solutions/' + item.slug + '" class="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-secondary transition-colors">' +
+                    '    Learn More <i class="fa-solid fa-arrow-right text-xs"></i>' +
+                    '  </a>' +
+                    '</div>';
+
+                grid.appendChild(card);
+            });
+
+            if (typeof AOS !== 'undefined') {
+                AOS.refresh();
+            }
+        });
+    </script>
+</body>
+</html>
