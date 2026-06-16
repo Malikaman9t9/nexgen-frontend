@@ -155,8 +155,11 @@
             '    <div>' +
             '      <h4 class="text-sm font-bold text-white mb-3">Legal</h4>' +
             '      <ul class="space-y-1.5 text-xs font-medium text-slate-500">' +
-            '        <li><a href="' + BASE_URL + '/privacy" class="hover:text-white transition-colors">Privacy Policy</a></li>' +
-            '        <li><a href="' + BASE_URL + '/terms" class="hover:text-white transition-colors">Terms of Service</a></li>' +
+      '        <li><a href="' + BASE_URL + '/privacy" class="hover:text-white transition-colors">Privacy Policy</a></li>' +
+      '        <li><a href="' + BASE_URL + '/terms" class="hover:text-white transition-colors">Terms of Service</a></li>' +
+      '        <li><a href="' + BASE_URL + '/cookie-policy" class="hover:text-white transition-colors">Cookie Policy</a></li>' +
+      '        <li><a href="' + BASE_URL + '/disclaimer" class="hover:text-white transition-colors">Disclaimer</a></li>' +
+      '        <li><a href="' + BASE_URL + '/editorial-guidelines" class="hover:text-white transition-colors">Editorial Guidelines</a></li>' +
             '      </ul>' +
             '    </div>' +
             '  </div>' +
