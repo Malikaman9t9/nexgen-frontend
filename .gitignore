@@ -1,5 +1,5 @@
 .env.production
 .env.local
 .env.development
-backend/frontend 2
+# frontend 2 is part of this monorepo now
 node_modules
