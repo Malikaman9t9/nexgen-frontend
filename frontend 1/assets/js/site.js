@@ -22,6 +22,34 @@
         return a;
     };
 
+    var SOLUTIONS = [
+        { label: "WordPress", href: "/solutions/wordpress" },
+        { label: "Shopify", href: "/solutions/shopify" },
+        { label: "Digital Agencies", href: "/solutions/digital-agencies" },
+        { label: "Freelancers", href: "/solutions/freelancers" },
+        { label: "E-commerce Stores", href: "/solutions/e-commerce-stores" },
+        { label: "Real Estate Agents", href: "/solutions/real-estate-agents" },
+        { label: "Local Businesses", href: "/solutions/local-businesses" },
+        { label: "SaaS Companies", href: "/solutions/saas-companies" }
+    ];
+
+    var solutionsDropdownHtml = function () {
+        var items = SOLUTIONS.map(function (s) {
+            return '<a href="' + s.href + '" class="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition-colors">' + s.label + '</a>';
+        }).join('');
+        return '<div class="relative group">' +
+            '<button class="flex items-center gap-1.5 text-slate-600 hover:text-slate-900 font-semibold text-sm transition-colors cursor-pointer">' +
+            'Solutions' +
+            '<i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200 group-hover:rotate-180"></i>' +
+            '</button>' +
+            '<div class="absolute top-full left-1/2 -translate-x-1/2 pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 translate-y-1 group-hover:translate-y-0">' +
+            '<div class="bg-white rounded-xl shadow-xl border border-slate-100 p-2 min-w-[220px]">' +
+            items +
+            '</div>' +
+            '</div>' +
+            '</div>';
+    };
+
     function injectHeader() {
         if (document.getElementById("global-header")) return;
 
@@ -41,6 +69,7 @@
             navLink(BASE_URL + "/", "Home").outerHTML +
             navLink(BASE_URL + "/about", "About").outerHTML +
             navLink(BASE_URL + "/blog", "Blog").outerHTML +
+            solutionsDropdownHtml() +
             navLink(BASE_URL + "/pricing", "Pricing").outerHTML +
             navLink(BASE_URL + "/contact", "Contact").outerHTML +
             '      <a href="' + TOOLS_URL + '" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-slate-900 text-white hover:bg-slate-800 transition-colors shadow-md">' +
@@ -55,6 +84,12 @@
 '    <a href="' + BASE_URL + '/" class="block px-4 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors" role="menuitem">Home</a>' +
 '    <a href="' + BASE_URL + '/about" class="block px-4 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors" role="menuitem">About</a>' +
 '    <a href="' + BASE_URL + '/blog" class="block px-4 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors" role="menuitem">Blog</a>' +
+'    <div class="px-2">' +
+'      <div class="text-xs font-black uppercase tracking-widest text-slate-400 px-4 pt-2 pb-1">Solutions</div>' +
+      SOLUTIONS.map(function(s) {
+        return '<a href="' + s.href + '" class="block px-4 py-2.5 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors" role="menuitem">' + s.label + '</a>';
+      }).join('') +
+'    </div>' +
 '    <a href="' + BASE_URL + '/pricing" class="block px-4 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors" role="menuitem">Pricing</a>' +
 '    <a href="' + BASE_URL + '/contact" class="block px-4 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors" role="menuitem">Contact</a>' +
             '    <a href="' + TOOLS_URL + '" class="block px-4 py-3 rounded-xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 transition-colors text-center" role="menuitem">Dashboard</a>' +
