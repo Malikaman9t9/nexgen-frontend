@@ -7,6 +7,7 @@
     "sync": "npm run export-blog && npm run build-blog"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.39.0"
+    "@supabase/supabase-js": "^2.39.0",
+    "xlsx": "^0.18.5"
   }
 }

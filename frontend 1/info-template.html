@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en-US" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{meta_title}}</title>
+    <meta name="description" content="{{meta_description}}">
+    <link rel="canonical" href="{{canonical_url}}">
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png?v=2">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { primary: '#6D28D9', secondary: '#DB2777' } } } }
+    </script>
+    <style>
+        .info-content h2 { font-size: 1.6rem; font-weight: 800; margin-top: 2em; margin-bottom: 0.6em; color: #0f172a; }
+        .info-content h3 { font-size: 1.3rem; font-weight: 800; margin-top: 1.5em; margin-bottom: 0.5em; color: #0f172a; }
+        .info-content p { margin-bottom: 1.2em; line-height: 1.8; color: #334155; font-size: 1.05rem; }
+        .info-content ul, .info-content ol { margin-bottom: 1.2em; padding-left: 1.6em; }
+        .info-content li { margin-bottom: 0.3em; color: #334155; font-size: 1.05rem; line-height: 1.7; }
+        .info-content strong { color: #0f172a; }
+        .info-content hr { margin: 2em 0; border-color: #e2e8f0; }
+    </style>
+</head>
+<body class="bg-white text-slate-900 antialiased selection:bg-primary selection:text-white flex flex-col min-h-screen">
+    <main class="flex-grow">
+        <section class="py-16 md:py-24 bg-gradient-to-br from-slate-50 to-white">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <nav class="text-sm font-semibold text-slate-400 mb-6" aria-label="Breadcrumb">
+                    <a href="/" class="hover:text-primary transition-colors">Home</a>
+                    <span class="mx-2">/</span>
+                    <a href="/learn" class="hover:text-primary transition-colors">Learn</a>
+                    <span class="mx-2">/</span>
+                    <span class="text-slate-700">{{keyword_title}}</span>
+                </nav>
+                <h1 class="text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter text-slate-950 mb-6 leading-tight">{{keyword_title}}</h1>
+                <p class="text-lg md:text-xl text-slate-500 font-medium leading-relaxed mb-10 border-l-4 border-primary pl-6">{{meta_description}}</p>
+                <div class="info-content">
+                    {{gemini_informational_content}}
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="/assets/js/site.js"></script>
+</body>
+</html>

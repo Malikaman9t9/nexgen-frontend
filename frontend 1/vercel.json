@@ -21,7 +21,8 @@
     { "source": "/upgrade", "destination": "/upgrade.html" },
     { "source": "/sitemap.xml", "destination": "/sitemap.xml" },
     { "source": "/auth-callback", "destination": "/auth-callback.html" },
-    { "source": "/solutions/:slug", "destination": "/solutions/:slug.html" }
+    { "source": "/solutions/:slug", "destination": "/solutions/:slug.html" },
+    { "source": "/learn/:slug", "destination": "/learn/:slug.html" }
   ],
   "headers": [
     {
