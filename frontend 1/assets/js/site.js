@@ -33,6 +33,14 @@
         { label: "SaaS Companies", href: "/solutions/saas-companies" }
     ];
 
+    var LEARN_PAGES = [
+        { label: "Website Health Checker", href: "/learn/website-health-checker" },
+        { label: "SEO Audit Checklist", href: "/learn/seo-audit-checklist" },
+        { label: "SEO Report Generator", href: "/learn/seo-report-generator" },
+        { label: "Google PageSpeed Insights Guide", href: "/learn/google-pagespeed-insights-guide" },
+        { label: "Backlink Analysis Guide", href: "/learn/backlink-analysis-guide" }
+    ];
+
     var solutionsDropdownHtml = function () {
         var items = SOLUTIONS.map(function (s) {
             return '<a href="' + s.href + '" class="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition-colors">' + s.label + '</a>';
@@ -45,6 +53,25 @@
             '<div class="absolute top-full left-1/2 -translate-x-1/2 pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 translate-y-1 group-hover:translate-y-0">' +
             '<div class="bg-white rounded-xl shadow-xl border border-slate-100 p-2 min-w-[220px]">' +
             items +
+            '</div>' +
+            '</div>' +
+            '</div>';
+    };
+
+    var learnDropdownHtml = function () {
+        var items = LEARN_PAGES.map(function (p) {
+            return '<a href="' + p.href + '" class="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-primary transition-colors">' + p.label + '</a>';
+        }).join('');
+        return '<div class="relative group">' +
+            '<a href="' + BASE_URL + '/learn" class="flex items-center gap-1.5 text-slate-600 hover:text-slate-900 font-semibold text-sm transition-colors cursor-pointer">' +
+            'Learn' +
+            '<i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200 group-hover:rotate-180"></i>' +
+            '</a>' +
+            '<div class="absolute top-full left-1/2 -translate-x-1/2 pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 translate-y-1 group-hover:translate-y-0">' +
+            '<div class="bg-white rounded-xl shadow-xl border border-slate-100 p-2 min-w-[220px]">' +
+            items +
+            '      <hr class="my-1.5 border-slate-100">' +
+            '      <a href="' + BASE_URL + '/learn" class="block px-4 py-2.5 rounded-lg text-sm font-bold text-primary hover:bg-primary/5 transition-colors">View All Topics <i class="fa-solid fa-arrow-right text-xs ml-1"></i></a>' +
             '</div>' +
             '</div>' +
             '</div>';
@@ -70,7 +97,7 @@
             navLink(BASE_URL + "/about", "About").outerHTML +
             navLink(BASE_URL + "/blog", "Blog").outerHTML +
             solutionsDropdownHtml() +
-            navLink(BASE_URL + "/learn", "Learn").outerHTML +
+            learnDropdownHtml() +
             navLink(BASE_URL + "/pricing", "Pricing").outerHTML +
             navLink(BASE_URL + "/contact", "Contact").outerHTML +
             '      <a href="' + TOOLS_URL + '" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-slate-900 text-white hover:bg-slate-800 transition-colors shadow-md">' +
@@ -92,7 +119,13 @@
         return '<a href="' + s.href + '" class="block px-4 py-2.5 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors" role="menuitem">' + s.label + '</a>';
       }).join('') +
 '    </div>' +
-'    <a href="' + BASE_URL + '/learn" class="block px-4 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors" role="menuitem">Learn</a>' +
+'    <div class="px-2">' +
+'      <div class="text-xs font-black uppercase tracking-widest text-slate-400 px-4 pt-2 pb-1">Learn</div>' +
+'      <a href="' + BASE_URL + '/learn" class="block px-4 py-2.5 rounded-xl text-sm font-bold text-primary hover:bg-primary/5 transition-colors" role="menuitem">All Topics</a>' +
+      LEARN_PAGES.map(function(p) {
+        return '<a href="' + p.href + '" class="block px-4 py-2.5 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors" role="menuitem">' + p.label + '</a>';
+      }).join('') +
+'    </div>' +
 '    <a href="' + BASE_URL + '/pricing" class="block px-4 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors" role="menuitem">Pricing</a>' +
 '    <a href="' + BASE_URL + '/contact" class="block px-4 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors" role="menuitem">Contact</a>' +
             '    <a href="' + TOOLS_URL + '" class="block px-4 py-3 rounded-xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 transition-colors text-center" role="menuitem">Dashboard</a>' +
