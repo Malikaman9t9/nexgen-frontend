@@ -13,6 +13,17 @@ from modules.traffic_checker import get_traffic_data
 from modules.ai_analyzer import get_ai_suggestions, get_ai_paragraphs
 from modules.report_export import generate_word_report
 from modules.html_report import generate_html_report_single, generate_html_report_bulk, generate_advanced_html_report
+from services.rapidapi_suite import (
+    get_moz_metrics,
+    get_seo_analyzer,
+    get_web_shield_scan,
+    get_ssl_cert_verify,
+    get_robots_txt_check,
+    get_sitemap_detector,
+    get_keyword_research,
+    get_top_keyword,
+    get_semrush_global_volume,
+)
 
 load_dotenv()
 
@@ -281,6 +292,137 @@ def export_bulk_html_report(req: BulkReportRequest):
     except Exception as e:
         traceback.print_exc()
         return JSONResponse({"error": f"Bulk export failed: {str(e)}"}, status_code=500)
+
+
+# ── RapidAPI Suite Request Models ──
+
+class DomainRequest(BaseModel):
+    domain: str
+
+class DomainsRequest(BaseModel):
+    domains: list[str]
+
+class URLWithDomainRequest(BaseModel):
+    url: str
+    domain: str = ""
+
+class KeywordRequest(BaseModel):
+    keyword: str
+    country_code: str = "us"
+    lang_code: str = "en"
+
+class SemrushRequest(BaseModel):
+    keyword: str
+    database: str = "us"
+
+
+# ── a. Moz DA PA ──
+
+@app.post("/api/v2/moz-metrics")
+def moz_metrics(req: DomainsRequest):
+    if not req.domains:
+        return JSONResponse({"error": "domains list is required"}, status_code=422)
+    try:
+        return get_moz_metrics(RAPIDAPI_KEY, req.domains)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+# ── b. SEO Analyzer ──
+
+@app.post("/api/v2/advanced-audit")
+def advanced_audit(req: URLWithDomainRequest):
+    if not req.url:
+        return JSONResponse({"error": "url is required"}, status_code=422)
+    try:
+        return get_seo_analyzer(RAPIDAPI_KEY, req.url)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+# ── c. SEO Fast Audit ──
+
+@app.post("/api/v2/fast/web-shield")
+def web_shield_scan(req: URLWithDomainRequest):
+    if not req.url:
+        return JSONResponse({"error": "url is required"}, status_code=422)
+    try:
+        return get_web_shield_scan(RAPIDAPI_KEY, req.url)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+@app.post("/api/v2/fast/ssl-verify")
+def ssl_verify(req: URLWithDomainRequest):
+    if not req.url:
+        return JSONResponse({"error": "url is required"}, status_code=422)
+    try:
+        return get_ssl_cert_verify(RAPIDAPI_KEY, req.url)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+@app.post("/api/v2/fast/robots-txt")
+def robots_txt_check(req: URLWithDomainRequest):
+    if not req.url:
+        return JSONResponse({"error": "url is required"}, status_code=422)
+    try:
+        return get_robots_txt_check(RAPIDAPI_KEY, req.url)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+@app.post("/api/v2/fast/sitemap-detect")
+def sitemap_detect(req: URLWithDomainRequest):
+    if not req.url:
+        return JSONResponse({"error": "url is required"}, status_code=422)
+    try:
+        return get_sitemap_detector(RAPIDAPI_KEY, req.url)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+# ── d. Google Keyword Insight ──
+
+@app.post("/api/v2/keyword-research")
+def keyword_research(req: KeywordRequest):
+    if not req.keyword:
+        return JSONResponse({"error": "keyword is required"}, status_code=422)
+    try:
+        return get_keyword_research(RAPIDAPI_KEY, req.keyword, req.country_code, req.lang_code)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+@app.post("/api/v2/keyword-research/top")
+def keyword_top(req: KeywordRequest):
+    if not req.keyword:
+        return JSONResponse({"error": "keyword is required"}, status_code=422)
+    try:
+        return get_top_keyword(RAPIDAPI_KEY, req.keyword, req.country_code, req.lang_code)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+# ── e. Semrush Keyword Magic ──
+
+@app.post("/api/v2/semrush/global-volume")
+def semrush_global_volume(req: SemrushRequest):
+    if not req.keyword:
+        return JSONResponse({"error": "keyword is required"}, status_code=422)
+    try:
+        return get_semrush_global_volume(RAPIDAPI_KEY, req.keyword, req.database)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse({"error": str(e)}, status_code=500)
 
 
 @app.get("/api/report-template")
