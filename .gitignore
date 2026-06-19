@@ -1,5 +1,6 @@
 .env.production
 .env.local
 .env.development
-backend/frontend 2
+backend/frontend 2/
+backend/frontend_2/
 node_modules
