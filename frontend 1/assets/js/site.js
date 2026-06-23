@@ -3,7 +3,7 @@
 
     var SITE_NAME = "NexGenWebLab";
     var BASE_URL = window.location.origin;
-    var TOOLS_URL = "https://tools.nexgenweblab.com";
+    var TOOLS_URL = "https://dashboard.nexgenweblab.com";
 
     var isActive = function (path) {
         var p = window.location.pathname.replace(/\/$/, "");

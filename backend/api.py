@@ -40,7 +40,7 @@ else:
     CORS_ORIGINS = [
         "https://nexgenweblab.com",
         "https://www.nexgenweblab.com",
-        "https://tools.nexgenweblab.com",
+        "https://dashboard.nexgenweblab.com",
         "http://localhost:5173",
         "http://localhost:3000",
     ]

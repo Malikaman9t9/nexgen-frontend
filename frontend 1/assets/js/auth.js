@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (plan === 'pro') {
                     window.location.href = `/upgrade`;
                 } else {
-                    window.location.href = `https://tools.nexgenweblab.com`;
+                    window.location.href = `https://dashboard.nexgenweblab.com`;
                 }
                 return;
             }
@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (selectedPlan === 'pro') {
                     window.location.href = `/upgrade`;
                 } else {
-                    window.location.href = `https://tools.nexgenweblab.com`;
+                    window.location.href = `https://dashboard.nexgenweblab.com`;
                 }
             }
         });
@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 options: {
                     redirectTo: selectedPlan === 'pro'
                         ? window.location.origin + '/upgrade'
-                        : 'https://tools.nexgenweblab.com'
+                        : 'https://dashboard.nexgenweblab.com'
                 }
             });
 
