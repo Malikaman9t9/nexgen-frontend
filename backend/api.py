@@ -182,6 +182,15 @@ def export_report(req: ExportRequest):
     if not req.url or not req.url.strip():
         return JSONResponse({"error": "url is required"}, status_code=422)
     try:
+        print(f"Export request received for: {req.url}")
+        print(f"Data keys: {list(req.dict().keys())}")
+        
+        if not req.onpage_data and not req.speed_data:
+            return JSONResponse(
+                status_code=400,
+                content={"error": "No audit data provided for export"}
+            )
+        
         docx_bytes = generate_word_report(
             url=req.url,
             onpage_data=req.onpage_data or {},
@@ -423,6 +432,58 @@ def semrush_global_volume(req: SemrushRequest):
     except Exception as e:
         traceback.print_exc()
         return JSONResponse({"error": str(e)}, status_code=500)
+
+
+class UpgradeRequest(BaseModel):
+    name: str
+    email: str
+    company: str = ''
+    phone: str = ''
+    plan: str = 'pro'
+    message: str = ''
+
+@app.post("/api/upgrade-request")
+async def upgrade_request(req: UpgradeRequest):
+    try:
+        print(f"UPGRADE REQUEST: {req.name} | {req.email} | {req.company}")
+
+        smtp_host = os.getenv("SMTP_HOST", "")
+        smtp_user = os.getenv("SMTP_USER", "")
+        smtp_pass = os.getenv("SMTP_PASS", "")
+
+        if smtp_host and smtp_user and smtp_pass:
+            import smtplib
+            from email.mime.text import MIMEText
+            from email.mime.multipart import MIMEMultipart
+
+            msg = MIMEMultipart()
+            msg['From'] = smtp_user
+            msg['To'] = "info@nexgenweblab.com"
+            msg['Subject'] = f"Pro Upgrade Request — {req.name}"
+
+            body = f"""
+New Pro Upgrade Request:
+
+Name:    {req.name}
+Email:   {req.email}
+Company: {req.company}
+Phone:   {req.phone}
+Plan:    {req.plan}
+Message: {req.message}
+
+Reply to: {req.email}
+            """
+            msg.attach(MIMEText(body, 'plain'))
+
+            with smtplib.SMTP_SSL(smtp_host, 465) as server:
+                server.login(smtp_user, smtp_pass)
+                server.send_message(msg)
+
+        return {"success": True, "message": "Request received"}
+
+    except Exception as e:
+        print(f"Upgrade request error: {e}")
+        return {"success": True, "message": "Request received"}
 
 
 @app.get("/api/report-template")
