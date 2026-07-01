@@ -1,6 +1,16 @@
+.env
 .env.production
 .env.local
 .env.development
+__pycache__/
+.git/
+.venv/
+venv/
+env/
+*.pyc
+*.pyo
+*.pyd
+.Python
 backend/frontend 2/
 backend/frontend_2/
 node_modules
