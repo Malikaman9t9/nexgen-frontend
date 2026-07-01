@@ -13,4 +13,7 @@ env/
 .Python
 backend/frontend 2/
 backend/frontend_2/
-node_modules
+node_modules/
+dist/
+build/
+*.db
